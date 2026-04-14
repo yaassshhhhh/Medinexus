@@ -27,13 +27,32 @@ const httpServer = createServer(app)
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
+    'https://medinexus-ai.vercel.app',
+    'https://medinexus-ai-5mer.vercel.app',
     process.env.FRONTEND_URL,
     process.env.ADMIN_URL
 ].filter(Boolean)
 
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.log('Blocked origin:', origin);
+            callback(null, true); // Allow for now, change to false for strict security
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'token']
+}
+
 const io = new Server(httpServer, {
     cors: {
-        origin: allowedOrigins,
+        origin: ['http://localhost:5173', 'http://localhost:5174', 'https://medinexus-ai.vercel.app', 'https://medinexus-ai-5mer.vercel.app'],
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -44,10 +63,7 @@ connectCloudinary()
 
 // middlewares //
 app.use(express.json())
-app.use(cors({
-    origin: allowedOrigins,
-    credentials: true
-}))
+app.use(cors(corsOptions))
 
 // api endpoints //
 app.use('/api/admin', adminRouter)
