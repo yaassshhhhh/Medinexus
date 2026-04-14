@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" fill="none">
+  <rect width="200" height="240" rx="16" fill="#FFF8F0"/>
+  <!-- Body -->
+  <rect x="50" y="145" width="100" height="95" rx="12" fill="#EA580C"/>
+  <!-- Neck -->
+  <rect x="88" y="125" width="24" height="25" rx="8" fill="#FBBF8A"/>
+  <!-- Head -->
+  <ellipse cx="100" cy="108" rx="34" ry="36" fill="#FBBF8A"/>
+  <!-- Receding / salt-pepper hair -->
+  <path d="M66 90 Q66 72 100 70 Q134 72 134 90" fill="#9ca3af"/>
+  <rect x="66" y="76" width="68" height="14" fill="#9ca3af"/>
+  <!-- Grey temples -->
+  <rect x="66" y="76" width="14" height="20" rx="4" fill="#d1d5db"/>
+  <rect x="120" y="76" width="14" height="20" rx="4" fill="#d1d5db"/>
+  <!-- Ears -->
+  <ellipse cx="66" cy="110" rx="6" ry="8" fill="#FBBF8A"/>
+  <ellipse cx="134" cy="110" rx="6" ry="8" fill="#FBBF8A"/>
+  <!-- Eyes with slight wrinkles -->
+  <ellipse cx="88" cy="108" rx="4" ry="4.5" fill="white"/>
+  <ellipse cx="112" cy="108" rx="4" ry="4.5" fill="white"/>
+  <circle cx="89" cy="109" r="2.5" fill="#374151"/>
+  <circle cx="113" cy="109" r="2.5" fill="#374151"/>
+  <!-- Crow's feet -->
+  <path d="M118 106 L122 104 M118 109 L122 109 M118 112 L122 114" stroke="#d4a574" stroke-width="1" stroke-linecap="round"/>
+  <!-- Eyebrows - greying -->
+  <path d="M83 101 Q88 98 93 101" stroke="#9ca3af" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M107 101 Q112 98 117 101" stroke="#9ca3af" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <!-- Smile -->
+  <path d="M91 120 Q100 127 109 120" stroke="#c0703a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Coat lapels -->
+  <polygon points="50,145 85,145 68,185 50,185" fill="white" opacity="0.9"/>
+  <polygon points="150,145 115,145 132,185 150,185" fill="white" opacity="0.9"/>
+  <!-- Stethoscope -->
+  <path d="M76 162 Q66 177 71 187 Q76 197 86 192" stroke="#7c2d12" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="86" cy="192" r="5" fill="#7c2d12"/>
+  <!-- Badge -->
+  <rect x="88" y="168" width="24" height="14" rx="3" fill="#ffedd5"/>
+  <rect x="91" y="171" width="18" height="2" rx="1" fill="#EA580C"/>
+  <rect x="91" y="175" width="12" height="2" rx="1" fill="#fdba74"/>
+</svg>

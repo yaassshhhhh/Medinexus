@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" fill="none">
+  <rect width="200" height="240" rx="16" fill="#F0F4FF"/>
+  <!-- Body -->
+  <rect x="50" y="145" width="100" height="95" rx="12" fill="#3B82F6"/>
+  <!-- Neck -->
+  <rect x="88" y="125" width="24" height="25" rx="8" fill="#D4956A"/>
+  <!-- Head - medium brown -->
+  <ellipse cx="100" cy="108" rx="34" ry="36" fill="#D4956A"/>
+  <!-- Mustache -->
+  <path d="M90 120 Q95 124 100 122 Q105 124 110 120" stroke="#1c1917" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Short hair -->
+  <ellipse cx="100" cy="76" rx="34" ry="16" fill="#292524"/>
+  <rect x="66" y="76" width="68" height="14" fill="#292524"/>
+  <!-- Ears -->
+  <ellipse cx="66" cy="110" rx="6" ry="8" fill="#D4956A"/>
+  <ellipse cx="134" cy="110" rx="6" ry="8" fill="#D4956A"/>
+  <!-- Eyes -->
+  <ellipse cx="88" cy="106" rx="4" ry="4.5" fill="white"/>
+  <ellipse cx="112" cy="106" rx="4" ry="4.5" fill="white"/>
+  <circle cx="89" cy="107" r="2.5" fill="#1c1917"/>
+  <circle cx="113" cy="107" r="2.5" fill="#1c1917"/>
+  <!-- Eyebrows -->
+  <path d="M82 99 Q88 96 94 99" stroke="#292524" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M106 99 Q112 96 118 99" stroke="#292524" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Coat lapels -->
+  <polygon points="50,145 85,145 68,185 50,185" fill="white" opacity="0.9"/>
+  <polygon points="150,145 115,145 132,185 150,185" fill="white" opacity="0.9"/>
+  <!-- Stethoscope -->
+  <path d="M76 162 Q66 177 71 187 Q76 197 86 192" stroke="#1e3a8a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="86" cy="192" r="5" fill="#1e3a8a"/>
+  <!-- Badge -->
+  <rect x="88" y="168" width="24" height="14" rx="3" fill="#dbeafe"/>
+  <rect x="91" y="171" width="18" height="2" rx="1" fill="#3B82F6"/>
+  <rect x="91" y="175" width="12" height="2" rx="1" fill="#93c5fd"/>
+</svg>

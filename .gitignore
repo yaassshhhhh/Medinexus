@@ -1,0 +1,82 @@
+# Dependencies
+node_modules/
+*/node_modules/
+**/node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*/.env
+**/.env
+
+# Build outputs
+dist/
+build/
+*/dist/
+*/build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Uploads
+uploads/
+temp/
+
+# Database
+*.db
+*.sqlite
+
+# Cloudinary
+.cloudinary/
+
+# Vercel
+.vercel
+
+# Next.js
+.next/
+
+# Package manager (keep package-lock for deployment)
+# package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Misc
+.eslintcache
+.stylelintcache
+
+# Test/Dev scripts
+test_api.js
+check_models.js
+cleanup.js
+update_db.js

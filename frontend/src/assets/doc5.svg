@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" fill="none">
+  <rect width="200" height="240" rx="16" fill="#F5F3FF"/>
+  <!-- Body -->
+  <rect x="50" y="145" width="100" height="95" rx="12" fill="#7C3AED"/>
+  <!-- Neck -->
+  <rect x="88" y="125" width="24" height="25" rx="8" fill="#F5C5A3"/>
+  <!-- Head -->
+  <ellipse cx="100" cy="108" rx="34" ry="36" fill="#F5C5A3"/>
+  <!-- Bun hairstyle -->
+  <ellipse cx="100" cy="76" rx="34" ry="16" fill="#b45309"/>
+  <rect x="66" y="76" width="68" height="14" fill="#b45309"/>
+  <circle cx="100" cy="68" r="14" fill="#b45309"/>
+  <!-- Bun detail -->
+  <circle cx="100" cy="68" r="10" fill="#92400e"/>
+  <circle cx="100" cy="68" r="6" fill="#b45309"/>
+  <!-- Ears -->
+  <ellipse cx="66" cy="110" rx="6" ry="8" fill="#F5C5A3"/>
+  <ellipse cx="134" cy="110" rx="6" ry="8" fill="#F5C5A3"/>
+  <!-- Earrings -->
+  <circle cx="66" cy="116" r="3" fill="#fbbf24"/>
+  <circle cx="134" cy="116" r="3" fill="#fbbf24"/>
+  <!-- Eyes -->
+  <ellipse cx="88" cy="108" rx="4" ry="4.5" fill="white"/>
+  <ellipse cx="112" cy="108" rx="4" ry="4.5" fill="white"/>
+  <circle cx="89" cy="109" r="2.5" fill="#1a1a2e"/>
+  <circle cx="113" cy="109" r="2.5" fill="#1a1a2e"/>
+  <!-- Eyebrows -->
+  <path d="M83 100 Q88 97 93 100" stroke="#b45309" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M107 100 Q112 97 117 100" stroke="#b45309" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Smile -->
+  <path d="M91 120 Q100 128 109 120" stroke="#c0703a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Coat lapels -->
+  <polygon points="50,145 85,145 68,185 50,185" fill="white" opacity="0.9"/>
+  <polygon points="150,145 115,145 132,185 150,185" fill="white" opacity="0.9"/>
+  <!-- Stethoscope -->
+  <path d="M76 162 Q66 177 71 187 Q76 197 86 192" stroke="#4c1d95" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="86" cy="192" r="5" fill="#4c1d95"/>
+  <!-- Badge -->
+  <rect x="88" y="168" width="24" height="14" rx="3" fill="#ede9fe"/>
+  <rect x="91" y="171" width="18" height="2" rx="1" fill="#7C3AED"/>
+  <rect x="91" y="175" width="12" height="2" rx="1" fill="#c4b5fd"/>
+</svg>
