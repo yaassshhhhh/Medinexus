@@ -82,7 +82,11 @@ import callModel from './models/callModel.js'
 // ── Email reminder cron (runs every hour) ──────────────────────────────────
 const getTransporter = () => nodemailer.createTransport({
     service: 'gmail',
-    auth: { user: process.env.ADMIN_EMAIL, pass: process.env.ADMIN_PASSWORD }
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: { user: process.env.ADMIN_EMAIL, pass: process.env.ADMIN_PASSWORD },
+    tls: { rejectUnauthorized: false }
 });
 
 const sendReminderEmails = async () => {

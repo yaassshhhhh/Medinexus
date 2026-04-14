@@ -1,11 +1,17 @@
 import nodemailer from 'nodemailer';
 
-// Create transporter for sending emails
+// Create transporter for sending emails with better configuration
 const transporter = nodemailer.createTransport({
     service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // Use TLS
     auth: {
         user: process.env.ADMIN_EMAIL,
         pass: process.env.ADMIN_PASSWORD
+    },
+    tls: {
+        rejectUnauthorized: false // Allow self-signed certificates
     }
 });
 
@@ -129,16 +135,29 @@ const subscribeNewsletter = async (req, res) => {
 
         await transporter.sendMail(mailOptions);
 
+        console.log('✅ Newsletter email sent successfully to:', email);
+
         res.json({
             success: true,
             message: 'Successfully subscribed! Check your email for health tips.'
         });
 
     } catch (error) {
-        console.error('Newsletter subscription error:', error);
+        console.error('❌ Newsletter subscription error:', error.message);
+        console.error('Error code:', error.code);
+
+        let errorMessage = 'Failed to subscribe. ';
+        if (error.code === 'EAUTH') {
+            errorMessage += 'Email authentication failed.';
+        } else if (error.code === 'ECONNECTION') {
+            errorMessage += 'Connection error. Please try again.';
+        } else {
+            errorMessage += 'Please try again later.';
+        }
+
         res.json({
             success: false,
-            message: 'Failed to subscribe. Please try again later.'
+            message: errorMessage
         });
     }
 };

@@ -9,15 +9,26 @@ import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import otpModel from "../models/otpModel.js";
 
-// Utility for Nodemailer transport
+// Utility for Nodemailer transport with better error handling
 const getTransporter = () => {
-    return nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.ADMIN_EMAIL,
-            pass: process.env.ADMIN_PASSWORD
-        }
-    });
+    try {
+        return nodemailer.createTransport({
+            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // Use TLS
+            auth: {
+                user: process.env.ADMIN_EMAIL,
+                pass: process.env.ADMIN_PASSWORD
+            },
+            tls: {
+                rejectUnauthorized: false // Allow self-signed certificates
+            }
+        });
+    } catch (error) {
+        console.error('Transporter creation error:', error);
+        throw error;
+    }
 };
 
 // API to register user
@@ -172,13 +183,25 @@ const sendBookingOTP = async (req, res) => {
 
         try {
             const info = await transporter.sendMail(mailOptions);
-            console.log("Email sent successfully:", info.messageId);
+            console.log("✅ Email sent successfully:", info.messageId);
+            console.log("Email sent to:", userData.email);
             res.json({ success: true, message: "OTP sent to your email." });
         } catch (emailError) {
-            console.error("Email send failed:", emailError);
-            // Still return success since OTP is saved - user can check spam or retry
-            // This handles cases where Gmail blocks the email but OTP is in DB
-            res.json({ success: false, message: "Failed to send OTP email. Please check your email or try again." });
+            console.error("❌ Email send failed:", emailError.message);
+            console.error("Error code:", emailError.code);
+            console.error("Error response:", emailError.response);
+
+            // Return more specific error message
+            let errorMessage = "Failed to send OTP email. ";
+            if (emailError.code === 'EAUTH') {
+                errorMessage += "Email authentication failed. Please contact support.";
+            } else if (emailError.code === 'ECONNECTION') {
+                errorMessage += "Connection error. Please try again.";
+            } else {
+                errorMessage += "Please check your email or try again.";
+            }
+
+            res.json({ success: false, message: errorMessage });
         }
 
     } catch (error) {
