@@ -160,7 +160,8 @@ const sendBookingOTP = async (req, res) => {
 
         // Generate 6 digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        console.log("OTP generated for", userData.email);
+        console.log("✅ OTP GENERATED:", otp);
+        console.log("📧 Sending OTP to:", userData.email);
 
         // Save OTP in database
         await otpModel.create({
@@ -170,7 +171,7 @@ const sendBookingOTP = async (req, res) => {
             slotDate,
             slotTime
         });
-        console.log("OTP saved to database");
+        console.log("✅ OTP saved to database");
 
         // Send Email
         const transporter = getTransporter();
@@ -190,6 +191,10 @@ const sendBookingOTP = async (req, res) => {
             console.error("❌ Email send failed:", emailError.message);
             console.error("Error code:", emailError.code);
             console.error("Error response:", emailError.response);
+
+            // IMPORTANT: Log OTP for testing when email fails
+            console.log("⚠️ EMAIL FAILED BUT OTP IS AVAILABLE");
+            console.log("🔑 USE THIS OTP FOR TESTING:", otp);
 
             // Return more specific error message
             let errorMessage = "Failed to send OTP email. ";
