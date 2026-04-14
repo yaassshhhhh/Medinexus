@@ -44,7 +44,7 @@ const Navbar = () => {
                 <rect x="3" y="3" width="18" height="18" rx="3"/>
               </svg>
             </div>
-            <span className='text-xl font-bold gradient-text'>MediNexus</span>
+            <span className='text-xl font-bold gradient-text'>Rogveda</span>
           </div>
 
           {/* Desktop nav */}
@@ -151,7 +151,7 @@ const Navbar = () => {
         <div className={`absolute inset-0 bg-black/40 transition-opacity ${showMenu ? 'opacity-100' : 'opacity-0'}`} onClick={() => setShowMenu(false)} />
         <div className={`absolute right-0 top-0 bottom-0 w-72 transition-transform duration-300 ${showMenu ? 'translate-x-0' : 'translate-x-full'} ${darkMode ? 'bg-gray-900' : 'bg-white'} shadow-2xl flex flex-col`}>
           <div className='flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800'>
-            <span className='text-lg font-bold gradient-text'>MediNexus</span>
+            <span className='text-lg font-bold gradient-text'>Rogveda</span>
             <button onClick={() => setShowMenu(false)} className='p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10'>
               <X size={18} className={darkMode ? 'text-gray-400' : 'text-gray-600'} />
             </button>

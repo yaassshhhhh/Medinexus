@@ -177,8 +177,8 @@ const sendBookingOTP = async (req, res) => {
         const mailOptions = {
             from: process.env.ADMIN_EMAIL,
             to: userData.email,
-            subject: 'Medinexus - Appointment Booking OTP',
-            text: `Your OTP for booking an appointment with Medinexus is ${otp}. It is valid for 10 minutes.`
+            subject: 'Rogveda - Appointment Booking OTP',
+            text: `Your OTP for booking an appointment with Rogveda is ${otp}. It is valid for 10 minutes.`
         };
 
         try {
@@ -276,8 +276,8 @@ const bookAppointment = async (req, res) => {
                 const mailOptions = {
                     from: process.env.ADMIN_EMAIL,
                     to: process.env.ADMIN_EMAIL, // Acting as Doctor Email for development
-                    subject: `Medinexus - Video Consult Scheduled with ${userData.name}`,
-                    text: `Hello Dr. ${docData.name},\n\nYou have a scheduled Video Consultation with ${userData.name} on ${slotDate.split('_').join('/')} at ${slotTime}.\n\nPlease click the link below to join the meeting at the scheduled time:\nhttps://doctor-appointment-system-s54z.vercel.app/video-consult?roomId=${roomId}&doctorView=true\n\nThanks,\nMedinexus Team`
+                    subject: `Rogveda - Video Consult Scheduled with ${userData.name}`,
+                    text: `Hello Dr. ${docData.name},\n\nYou have a scheduled Video Consultation with ${userData.name} on ${slotDate.split('_').join('/')} at ${slotTime}.\n\nPlease click the link below to join the meeting at the scheduled time:\nhttps://doctor-appointment-system-s54z.vercel.app/video-consult?roomId=${roomId}&doctorView=true\n\nThanks,\nRogveda Team`
                 };
                 transporter.sendMail(mailOptions, (err) => {
                     if (err) console.error("Doctor Email Notice Failed: ", err);
@@ -425,7 +425,7 @@ const forgotPassword = async (req, res) => {
         await transporter.sendMail({
             from: process.env.ADMIN_EMAIL,
             to: email,
-            subject: 'Password Reset OTP - MediNexus',
+            subject: 'Password Reset OTP - Rogveda',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #5f57ff;">Password Reset Request</h2>

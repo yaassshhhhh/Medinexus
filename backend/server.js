@@ -111,7 +111,7 @@ const sendReminderEmails = async () => {
                         from: process.env.ADMIN_EMAIL,
                         to: email,
                         subject: `Reminder: Appointment with Dr. ${appt.docData?.name} tomorrow`,
-                        text: `Hi ${appt.userData?.name},\n\nThis is a reminder that you have an appointment with Dr. ${appt.docData?.name} (${appt.docData?.speciality}) on ${appt.slotDate.split('_').join('/')} at ${appt.slotTime}.\n\n${appt.isVideoConsult ? `Join your video call here: ${process.env.FRONTEND_URL || 'http://localhost:5173'}/video-consult?roomId=${appt.roomId}` : `Location: ${appt.docData?.address?.line1 || ''}`}\n\nThanks,\nMedinexus Team`
+                        text: `Hi ${appt.userData?.name},\n\nThis is a reminder that you have an appointment with Dr. ${appt.docData?.name} (${appt.docData?.speciality}) on ${appt.slotDate.split('_').join('/')} at ${appt.slotTime}.\n\n${appt.isVideoConsult ? `Join your video call here: ${process.env.FRONTEND_URL || 'http://localhost:5173'}/video-consult?roomId=${appt.roomId}` : `Location: ${appt.docData?.address?.line1 || ''}`}\n\nThanks,\nRogveda Team`
                     });
                     await appointmentModel.findByIdAndUpdate(appt._id, { reminderSent: true });
                     console.log(`Reminder sent to ${email}`);

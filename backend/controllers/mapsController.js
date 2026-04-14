@@ -12,7 +12,7 @@ export const getNearbyDoctors = async (req, res) => {
         // Step 1: Geocode city using Nominatim (OSM)
         const geoRes = await fetch(
             `${NOMINATIM_URL}/search?q=${encodeURIComponent(city)}&format=json&limit=1`,
-            { headers: { 'User-Agent': 'MediNexusAI/1.0 (medical-app)' } }
+            { headers: { 'User-Agent': 'Rogveda/1.0 (medical-app)' } }
         );
         const geoData = await geoRes.json();
 

@@ -11,7 +11,7 @@ const MODELS = [
 
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com';
 
-const SYSTEM_PROMPT = `You are MediNexus AI, a multilingual medical assistant chatbot for India.
+const SYSTEM_PROMPT = `You are Rogveda AI, a multilingual medical assistant chatbot for India.
 
 LANGUAGE RULE: Detect the language of the user's message and ALWAYS reply in the EXACT same language.
 - If user writes in Hindi → reply in Hindi
@@ -74,7 +74,7 @@ export const analyzeSymptoms = async (req, res) => {
 
         const contents = [
             { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
-            { role: 'model', parts: [{ text: 'Understood! I am MediNexus AI, ready to help in Hindi, English, or Marathi. 🏥' }] },
+            { role: 'model', parts: [{ text: 'Understood! I am Rogveda AI, ready to help in Hindi, English, or Marathi. 🏥' }] },
             ...messages.map(msg => ({
                 role: msg.role === 'user' ? 'user' : 'model',
                 parts: [{ text: msg.content }]

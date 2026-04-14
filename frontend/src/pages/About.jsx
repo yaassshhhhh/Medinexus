@@ -28,7 +28,7 @@ const About = () => {
           Our Story
         </span>
         <h1 className={`text-4xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-          About <span className='gradient-text'>MediNexus Ai</span>
+          About <span className='gradient-text'>Rogveda</span>
         </h1>
         <p className={`mt-3 text-base max-w-xl mx-auto ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
           Revolutionizing healthcare accessibility through AI-powered technology and compassionate care.
@@ -62,7 +62,7 @@ const About = () => {
           className='w-full md:w-2/5'
         >
           <div className='relative'>
-            <img className='w-full rounded-2xl shadow-2xl object-cover' src={assets.about_image} alt='About MediNexus' />
+            <img className='w-full rounded-2xl shadow-2xl object-cover' src={assets.about_image} alt='About Rogveda' />
             <div className={`absolute -bottom-4 -right-4 px-5 py-4 rounded-2xl shadow-xl border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
               <p className={`text-2xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>10+</p>
               <p className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Years of Excellence</p>

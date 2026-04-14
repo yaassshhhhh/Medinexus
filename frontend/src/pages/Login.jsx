@@ -102,7 +102,7 @@ const Login = () => {
               {state === "Sign Up" ? "Create your account" : "Welcome back"}
             </h2>
             <p className={`text-sm mt-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-              {state === "Sign Up" ? "Join thousands of patients on MediNexus" : "Sign in to manage your appointments"}
+              {state === "Sign Up" ? "Join thousands of patients on Rogveda" : "Sign in to manage your appointments"}
             </p>
           </div>
 

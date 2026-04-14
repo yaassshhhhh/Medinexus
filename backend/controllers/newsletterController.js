@@ -98,7 +98,7 @@ const subscribeNewsletter = async (req, res) => {
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">🏥 MediNexus Ai</div>
+            <div class="logo">🏥 Rogveda</div>
             <h2>Welcome to Your Health Journey!</h2>
             <p>Thank you for subscribing to our health tips newsletter</p>
           </div>
@@ -113,12 +113,12 @@ const subscribeNewsletter = async (req, res) => {
               </div>
             `).join('')}
             
-            <p style="margin-top: 30px;">Stay tuned for more health tips, wellness advice, and updates from MediNexus Ai!</p>
-            <p>To your health,<br><strong>The MediNexus Ai Team</strong></p>
+            <p style="margin-top: 30px;">Stay tuned for more health tips, wellness advice, and updates from Rogveda!</p>
+            <p>To your health,<br><strong>The Rogveda Team</strong></p>
           </div>
           <div class="footer">
-            <p>© 2025 MediNexus Ai. All rights reserved.</p>
-            <p>📧 support@medinexus.ai | 📞 +1-212-456-7890</p>
+            <p>© 2025 Rogveda. All rights reserved.</p>
+            <p>📧 support@rogveda.com | 📞 +91-11-4567-8900</p>
           </div>
         </div>
       </body>
@@ -127,9 +127,9 @@ const subscribeNewsletter = async (req, res) => {
 
         // Send email
         const mailOptions = {
-            from: `"MediNexus Ai" <${process.env.ADMIN_EMAIL}>`,
+            from: `"Rogveda" <${process.env.ADMIN_EMAIL}>`,
             to: email,
-            subject: '🏥 Welcome to MediNexus Ai - Your Health Tips Inside!',
+            subject: '🏥 Welcome to Rogveda - Your Health Tips Inside!',
             html: emailHTML
         };
 

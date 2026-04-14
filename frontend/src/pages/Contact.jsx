@@ -66,7 +66,7 @@ const Contact = () => {
             <div className={`space-y-3 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               <p className='flex items-center gap-3'><MapPin size={15} className='text-primary flex-shrink-0' /> 42, Connaught Place, New Delhi - 110001, India</p>
               <p className='flex items-center gap-3 hover:text-primary transition-colors cursor-pointer'><Phone size={15} className='text-primary flex-shrink-0' /> +91-11-4567-8900</p>
-              <p className='flex items-center gap-3 hover:text-primary transition-colors cursor-pointer'><Mail size={15} className='text-primary flex-shrink-0' /> contact@medinexus.ai</p>
+              <p className='flex items-center gap-3 hover:text-primary transition-colors cursor-pointer'><Mail size={15} className='text-primary flex-shrink-0' /> contact@rogveda.com</p>
             </div>
           </motion.div>
 
@@ -80,7 +80,7 @@ const Contact = () => {
           >
             <h3 className={`font-bold text-base mb-2 flex items-center gap-2 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
               <span className={`p-2 rounded-lg ${darkMode ? 'bg-gray-700 text-indigo-400' : 'bg-indigo-100 text-indigo-700'}`}><Briefcase size={16} /></span>
-              Careers at MediNexus
+              Careers at Rogveda
             </h3>
             <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Join our mission to revolutionize healthcare accessibility through AI.</p>
             <button className={`flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl border transition-all group hover:bg-primary hover:text-white hover:border-primary ${

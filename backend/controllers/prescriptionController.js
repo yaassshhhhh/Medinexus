@@ -61,7 +61,7 @@ const createPrescription = async (req, res) => {
         await transporter.sendMail({
             from: process.env.ADMIN_EMAIL,
             to: appointment.userData.email,
-            subject: 'Your Medical Prescription - MediNexus Ai',
+            subject: 'Your Medical Prescription - Rogveda',
             html: emailHTML
         });
 
