@@ -187,6 +187,9 @@ const sendBookingOTP = async (req, res) => {
         });
         console.log("✅ OTP saved to database");
 
+        // TEMPORARY FIX: If email fails, still return success with OTP in console
+        // This allows testing while email issues are being resolved
+
         // Send Email
         const transporter = getTransporter();
         const mailOptions = {
@@ -204,29 +207,42 @@ const sendBookingOTP = async (req, res) => {
         } catch (emailError) {
             console.error("❌ Email send failed:", emailError.message);
             console.error("Error code:", emailError.code);
-            console.error("Error response:", emailError.response);
 
-            // IMPORTANT: Log OTP for testing when email fails
-            console.log("⚠️ EMAIL FAILED BUT OTP IS AVAILABLE");
-            console.log("🔑 USE THIS OTP FOR TESTING:", otp);
+            // CRITICAL: Log OTP prominently for testing
+            console.log("\n" + "=".repeat(50));
+            console.log("⚠️  EMAIL FAILED - USE THIS OTP FOR TESTING");
+            console.log("🔑 OTP:", otp);
+            console.log("👤 User:", userData.email);
+            console.log("=".repeat(50) + "\n");
 
-            // Return more specific error message
-            let errorMessage = "Failed to send OTP email. ";
-            if (emailError.code === 'EAUTH') {
-                errorMessage += "Email authentication failed. Please contact support.";
-            } else if (emailError.code === 'ECONNECTION') {
-                errorMessage += "Connection error. Please try again.";
-            } else {
-                errorMessage += "Please check your email or try again.";
-            }
-
-            res.json({ success: false, message: errorMessage });
+            // TEMPORARY: Return success anyway so user can proceed with testing
+            // OTP is saved in database, so it will work for booking
+            res.json({
+                success: true,
+                message: "OTP generated. Check Render logs for OTP (email service temporarily unavailable)."
+            });
         }
 
     } catch (error) {
         console.error("sendBookingOTP Error:", error);
         res.json({ success: false, message: error.message });
     }
+};
+if (emailError.code === 'EAUTH') {
+    errorMessage += "Email authentication failed. Please contact support.";
+} else if (emailError.code === 'ECONNECTION') {
+    errorMessage += "Connection error. Please try again.";
+} else {
+    errorMessage += "Please check your email or try again.";
+}
+
+res.json({ success: false, message: errorMessage });
+        }
+
+    } catch (error) {
+    console.error("sendBookingOTP Error:", error);
+    res.json({ success: false, message: error.message });
+}
 };
 
 // API to book appointment
