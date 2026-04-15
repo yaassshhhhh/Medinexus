@@ -13,15 +13,27 @@ const Dashboard = () => {
 
     const getDashboardData = async () => {
         try {
-            const { data } = await axios.post(`${backendUrl}/api/admin/dashboard`, {}, { headers: { aToken } })
+            setLoading(true)
+            const { data } = await axios.post(`${backendUrl}/api/admin/dashboard`, {}, { 
+                headers: { aToken },
+                timeout: 10000 // 10 second timeout
+            })
             if (data.success) {
                 setDashData(data.dashData)
             } else {
                 toast.error(data.message)
             }
         } catch (error) {
-            console.error(error)
-            toast.error('Failed to load dashboard data')
+            console.error('Dashboard error:', error)
+            if (error.code === 'ECONNABORTED') {
+                toast.error('Request timeout. Backend might be sleeping.')
+            } else if (error.response) {
+                toast.error(error.response.data?.message || 'Failed to load dashboard')
+            } else if (error.request) {
+                toast.error('Cannot connect to backend. Please wait...')
+            } else {
+                toast.error('Failed to load dashboard data')
+            }
         } finally {
             setLoading(false)
         }

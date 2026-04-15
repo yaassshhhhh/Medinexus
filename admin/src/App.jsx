@@ -17,7 +17,18 @@ const App = () => {
 
   return aToken ? (
     <div className='bg-[#F8F9FD] min-h-screen'>
-      <ToastContainer />
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        limit={3}
+      />
       <Navbar />
       <div className='flex items-start'>
         <Sidebar />
@@ -33,7 +44,11 @@ const App = () => {
   ) : (
     <>
       <Login />
-      <ToastContainer />
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        limit={3}
+      />
     </>
   )
 }

@@ -17,7 +17,16 @@ const AdminContextProvider = (props) => {
       const { data } = await axios.get(backendUrl + '/api/admin/appointments', { headers: { aToken } });
       if (data.success) setAppointments(data.appointments.reverse());
       else toast.error(data.message);
-    } catch (error) { toast.error(error.message); }
+    } catch (error) { 
+      console.error('getAllAppointments error:', error);
+      if (error.response) {
+        toast.error(error.response.data?.message || 'Failed to fetch appointments');
+      } else if (error.request) {
+        toast.error('Network error. Please check your connection.');
+      } else {
+        toast.error(error.message);
+      }
+    }
   };
 
   const cancelAppointment = async (appointmentId) => {
@@ -25,7 +34,10 @@ const AdminContextProvider = (props) => {
       const { data } = await axios.post(backendUrl + '/api/admin/cancel-appointment', { appointmentId }, { headers: { aToken } });
       if (data.success) { toast.success(data.message); getAllAppointments(); }
       else toast.error(data.message);
-    } catch (error) { toast.error(error.message); }
+    } catch (error) { 
+      console.error('cancelAppointment error:', error);
+      toast.error(error.response?.data?.message || 'Failed to cancel appointment');
+    }
   };
 
   const getAllDoctors = async () => {
@@ -33,7 +45,16 @@ const AdminContextProvider = (props) => {
       const { data } = await axios.get(backendUrl + '/api/admin/all-doctors', { headers: { aToken } });
       if (data.success) setDoctors(data.doctors);
       else toast.error(data.message);
-    } catch (error) { toast.error(error.message); }
+    } catch (error) { 
+      console.error('getAllDoctors error:', error);
+      if (error.response) {
+        toast.error(error.response.data?.message || 'Failed to fetch doctors');
+      } else if (error.request) {
+        toast.error('Network error. Please check your connection.');
+      } else {
+        toast.error(error.message);
+      }
+    }
   };
 
   const addDoctor = async (formData) => {
