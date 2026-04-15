@@ -80,14 +80,24 @@ app.use('/api/medical-record', medicalRecordRouter)
 import callModel from './models/callModel.js'
 
 // ── Email reminder cron (runs every hour) ──────────────────────────────────
-const getTransporter = () => nodemailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: { user: process.env.ADMIN_EMAIL, pass: process.env.ADMIN_PASSWORD },
-    tls: { rejectUnauthorized: false }
-});
+const getTransporter = () => nodemailer.createTransport(
+    process.env.SENDGRID_API_KEY ? {
+        host: 'smtp.sendgrid.net',
+        port: 587,
+        secure: false,
+        auth: {
+            user: 'apikey',
+            pass: process.env.SENDGRID_API_KEY
+        }
+    } : {
+        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: { user: process.env.ADMIN_EMAIL, pass: process.env.ADMIN_PASSWORD },
+        tls: { rejectUnauthorized: false }
+    }
+);
 
 const sendReminderEmails = async () => {
     try {
@@ -197,6 +207,48 @@ io.on('connection', (socket) => {
 
 app.get('/', (req, res) => {
     res.send('API WORKING')
+})
+
+// Debug endpoint to test email configuration
+app.get('/api/test-email', async (req, res) => {
+    try {
+        const testEmail = req.query.email || process.env.ADMIN_EMAIL;
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false,
+            auth: {
+                user: process.env.ADMIN_EMAIL,
+                pass: process.env.ADMIN_PASSWORD
+            },
+            tls: {
+                rejectUnauthorized: false
+            }
+        });
+
+        const info = await transporter.sendMail({
+            from: process.env.ADMIN_EMAIL,
+            to: testEmail,
+            subject: 'Rogveda - Email Test',
+            text: 'If you receive this email, your email configuration is working correctly!'
+        });
+
+        res.json({
+            success: true,
+            message: 'Test email sent successfully',
+            messageId: info.messageId,
+            to: testEmail
+        });
+    } catch (error) {
+        res.json({
+            success: false,
+            message: 'Email test failed',
+            error: error.message,
+            code: error.code
+        });
+    }
 })
 
 httpServer.listen(port, () => console.log("Server Started", port))

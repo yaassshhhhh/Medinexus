@@ -12,6 +12,20 @@ import otpModel from "../models/otpModel.js";
 // Utility for Nodemailer transport with better error handling
 const getTransporter = () => {
     try {
+        // Check if using SendGrid
+        if (process.env.SENDGRID_API_KEY) {
+            return nodemailer.createTransport({
+                host: 'smtp.sendgrid.net',
+                port: 587,
+                secure: false,
+                auth: {
+                    user: 'apikey',
+                    pass: process.env.SENDGRID_API_KEY
+                }
+            });
+        }
+
+        // Default Gmail configuration
         return nodemailer.createTransport({
             service: 'gmail',
             host: 'smtp.gmail.com',

@@ -1,19 +1,29 @@
 import nodemailer from 'nodemailer';
 
 // Create transporter for sending emails with better configuration
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // Use TLS
-    auth: {
-        user: process.env.ADMIN_EMAIL,
-        pass: process.env.ADMIN_PASSWORD
-    },
-    tls: {
-        rejectUnauthorized: false // Allow self-signed certificates
+const transporter = nodemailer.createTransport(
+    process.env.SENDGRID_API_KEY ? {
+        host: 'smtp.sendgrid.net',
+        port: 587,
+        secure: false,
+        auth: {
+            user: 'apikey',
+            pass: process.env.SENDGRID_API_KEY
+        }
+    } : {
+        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // Use TLS
+        auth: {
+            user: process.env.ADMIN_EMAIL,
+            pass: process.env.ADMIN_PASSWORD
+        },
+        tls: {
+            rejectUnauthorized: false // Allow self-signed certificates
+        }
     }
-});
+);
 
 // Health tips array
 const healthTips = [
