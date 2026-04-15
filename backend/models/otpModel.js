@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 
 const otpSchema = new mongoose.Schema({
-    userId: { type: String, required: true },
+    userId: { type: String },
+    email: { type: String },
     otp: { type: String, required: true },
+    type: { type: String, default: 'booking' }, // 'booking' or 'password-reset'
     docId: { type: String },
     slotDate: { type: String },
     slotTime: { type: String },

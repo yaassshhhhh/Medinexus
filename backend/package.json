@@ -9,7 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "update-doctors": "node scripts/updateDoctors.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

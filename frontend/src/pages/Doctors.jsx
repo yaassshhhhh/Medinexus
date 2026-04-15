@@ -214,11 +214,19 @@ const Doctors = () => {
                 }`}
               >
                 {/* Image */}
-                <div className={`relative overflow-hidden aspect-[3/4] ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-50 to-indigo-100/30'}`}>
-                  <img
-                    className='w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500'
-                    src={item.image} alt={item.name}
-                  />
+                <div className='relative overflow-hidden bg-gradient-to-b from-gray-100 to-gray-50'>
+                  {item.image ? (
+                    <img
+                      className='w-full h-64 object-cover object-top group-hover:scale-105 transition-transform duration-500'
+                      src={item.image} 
+                      alt={item.name}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className='w-full h-64 bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center'>
+                      <span className='text-white text-6xl font-bold'>{item.name?.charAt(0) || 'D'}</span>
+                    </div>
+                  )}
                   <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity' />
                   <div className='absolute top-3 left-3 flex items-center gap-1.5 bg-white/95 backdrop-blur-sm text-green-600 text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm'>
                     <span className='w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse' /> Available

@@ -53,12 +53,19 @@ const TopDoctors = () => {
             }`}
           >
             {/* Image */}
-            <div className={`relative overflow-hidden aspect-[3/4] ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-50 to-indigo-100/50'}`}>
-              <img
-                className='w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500'
-                src={item.image}
-                alt={item.name}
-              />
+            <div className='relative overflow-hidden bg-gradient-to-b from-gray-100 to-gray-50'>
+              {item.image ? (
+                <img
+                  className='w-full h-48 object-cover object-top group-hover:scale-105 transition-transform duration-500'
+                  src={item.image}
+                  alt={item.name}
+                  loading="lazy"
+                />
+              ) : (
+                <div className='w-full h-48 bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center'>
+                  <span className='text-white text-5xl font-bold'>{item.name?.charAt(0) || 'D'}</span>
+                </div>
+              )}
               <div className='absolute top-2.5 left-2.5 flex items-center gap-1 bg-white/90 backdrop-blur-sm text-green-600 text-[10px] font-bold px-2 py-1 rounded-full shadow-sm'>
                 <span className='w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse' />
                 Available
