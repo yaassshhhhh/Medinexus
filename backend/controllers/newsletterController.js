@@ -1,29 +1,26 @@
 import nodemailer from 'nodemailer';
 
 // Create transporter for sending emails with better configuration
-const transporter = nodemailer.createTransport(
-    process.env.SENDGRID_API_KEY ? {
-        host: 'smtp.sendgrid.net',
-        port: 587,
-        secure: false,
-        auth: {
-            user: 'apikey',
-            pass: process.env.SENDGRID_API_KEY
-        }
-    } : {
-        service: 'gmail',
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // Use TLS
-        auth: {
-            user: process.env.ADMIN_EMAIL,
-            pass: process.env.ADMIN_PASSWORD
-        },
-        tls: {
-            rejectUnauthorized: false // Allow self-signed certificates
-        }
+const getTransporter = () => {
+    try {
+        return nodemailer.createTransport({
+            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // Use TLS
+            auth: {
+                user: process.env.ADMIN_EMAIL,
+                pass: process.env.ADMIN_PASSWORD // Gmail App Password
+            },
+            tls: {
+                rejectUnauthorized: false
+            }
+        });
+    } catch (error) {
+        console.error('❌ Transporter creation error:', error);
+        throw error;
     }
-);
+};
 
 // Health tips array
 const healthTips = [
@@ -65,6 +62,8 @@ const healthTips = [
 const subscribeNewsletter = async (req, res) => {
     try {
         const { email } = req.body;
+
+        console.log('📧 Newsletter subscription request for:', email);
 
         if (!email) {
             return res.json({ success: false, message: 'Email is required' });
@@ -108,7 +107,7 @@ const subscribeNewsletter = async (req, res) => {
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">🏥 Rogveda</div>
+            <div class="logo">🏥 MediNexus Ai</div>
             <h2>Welcome to Your Health Journey!</h2>
             <p>Thank you for subscribing to our health tips newsletter</p>
           </div>
@@ -123,51 +122,74 @@ const subscribeNewsletter = async (req, res) => {
               </div>
             `).join('')}
             
-            <p style="margin-top: 30px;">Stay tuned for more health tips, wellness advice, and updates from Rogveda!</p>
-            <p>To your health,<br><strong>The Rogveda Team</strong></p>
+            <p style="margin-top: 30px;">Stay tuned for more health tips, wellness advice, and updates from MediNexus Ai!</p>
+            <p>To your health,<br><strong>The MediNexus Ai Team</strong></p>
           </div>
           <div class="footer">
-            <p>© 2025 Rogveda. All rights reserved.</p>
-            <p>📧 support@rogveda.com | 📞 +91-11-4567-8900</p>
+            <p>© 2025 MediNexus Ai. All rights reserved.</p>
+            <p>📧 support@medinexus.ai | 📞 +91-11-4567-8900</p>
           </div>
         </div>
       </body>
       </html>
     `;
 
+        // Get transporter
+        const transporter = getTransporter();
+
         // Send email
         const mailOptions = {
-            from: `"Rogveda" <${process.env.ADMIN_EMAIL}>`,
+            from: `"MediNexus Ai" <${process.env.ADMIN_EMAIL}>`,
             to: email,
-            subject: '🏥 Welcome to Rogveda - Your Health Tips Inside!',
+            subject: '🏥 Welcome to MediNexus Ai - Your Health Tips Inside!',
             html: emailHTML
         };
 
-        await transporter.sendMail(mailOptions);
+        console.log('📤 Attempting to send newsletter email...');
 
-        console.log('✅ Newsletter email sent successfully to:', email);
+        try {
+            const info = await transporter.sendMail(mailOptions);
+            console.log('✅ Newsletter email sent successfully!');
+            console.log('📧 Message ID:', info.messageId);
+            console.log('👤 Sent to:', email);
 
-        res.json({
-            success: true,
-            message: 'Successfully subscribed! Check your email for health tips.'
-        });
+            res.json({
+                success: true,
+                message: 'Successfully subscribed! Check your email for health tips.'
+            });
+        } catch (emailError) {
+            console.error('❌ Email send failed:', emailError.message);
+            console.error('Error code:', emailError.code);
+
+            // Log detailed error for debugging
+            if (emailError.code === 'EAUTH') {
+                console.error('Authentication failed. Check ADMIN_EMAIL and ADMIN_PASSWORD');
+            } else if (emailError.code === 'ECONNECTION') {
+                console.error('Connection failed. Check internet/SMTP settings');
+            }
+
+            let errorMessage = 'Failed to send email. ';
+            if (emailError.code === 'EAUTH') {
+                errorMessage += 'Email authentication failed. Please contact support.';
+            } else if (emailError.code === 'ECONNECTION') {
+                errorMessage += 'Connection error. Please try again.';
+            } else {
+                errorMessage += 'Please try again later.';
+            }
+
+            res.json({
+                success: false,
+                message: errorMessage
+            });
+        }
 
     } catch (error) {
         console.error('❌ Newsletter subscription error:', error.message);
-        console.error('Error code:', error.code);
-
-        let errorMessage = 'Failed to subscribe. ';
-        if (error.code === 'EAUTH') {
-            errorMessage += 'Email authentication failed.';
-        } else if (error.code === 'ECONNECTION') {
-            errorMessage += 'Connection error. Please try again.';
-        } else {
-            errorMessage += 'Please try again later.';
-        }
+        console.error('Stack:', error.stack);
 
         res.json({
             success: false,
-            message: errorMessage
+            message: 'An error occurred. Please try again later.'
         });
     }
 };
