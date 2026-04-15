@@ -214,9 +214,9 @@ const Doctors = () => {
                 }`}
               >
                 {/* Image */}
-                <div className={`relative overflow-hidden h-56 ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-50 to-indigo-100/30'}`}>
+                <div className={`relative overflow-hidden aspect-[3/4] ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-50 to-indigo-100/30'}`}>
                   <img
-                    className='w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500'
+                    className='w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500'
                     src={item.image} alt={item.name}
                   />
                   <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity' />
@@ -236,9 +236,21 @@ const Doctors = () => {
                     {item.name}
                   </p>
                   <p className={`text-sm mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.speciality}</p>
+                  
+                  {/* Rating Display */}
+                  <div className='flex items-center gap-1.5 mt-2'>
+                    <span className='text-yellow-500 text-sm'>⭐</span>
+                    <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {item.rating || 4.5}
+                    </span>
+                    <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      ({item.reviewCount || 0} reviews)
+                    </span>
+                  </div>
+                  
                   <div className={`flex items-center gap-2 mt-3 pt-3 border-t ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
                     <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${darkMode ? 'bg-green-900/40 text-green-400' : 'bg-green-50 text-green-700'}`}>
-                      ⭐ Highly Rated
+                      Available
                     </span>
                     <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${darkMode ? 'bg-indigo-900/40 text-indigo-400' : 'bg-indigo-50 text-indigo-700'}`}>
                       📹 Video

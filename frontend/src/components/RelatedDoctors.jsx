@@ -47,8 +47,8 @@ const RelatedDoctors = ({ speciality, docId }) => {
               darkMode ? 'bg-gray-800 border-gray-700 hover:border-primary/40' : 'bg-white border-gray-100 hover:border-primary/20 hover:shadow-indigo-100/60'
             }`}
           >
-            <div className={`relative overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-50 to-indigo-100/30'}`}>
-              <img className='w-full h-40 object-cover object-top group-hover:scale-105 transition-transform duration-500' src={item.image} alt={item.name} />
+            <div className={`relative overflow-hidden aspect-[3/4] ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-50 to-indigo-100/30'}`}>
+              <img className='w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500' src={item.image} alt={item.name} />
               <div className='absolute top-2 left-2 flex items-center gap-1 bg-white/90 backdrop-blur-sm text-green-600 text-[10px] font-bold px-2 py-0.5 rounded-full'>
                 <span className='w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse' /> Available
               </div>

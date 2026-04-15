@@ -53,9 +53,9 @@ const TopDoctors = () => {
             }`}
           >
             {/* Image */}
-            <div className={`relative overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-50 to-indigo-100/50'}`}>
+            <div className={`relative overflow-hidden aspect-[3/4] ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-50 to-indigo-100/50'}`}>
               <img
-                className='w-full h-44 object-cover object-top group-hover:scale-105 transition-transform duration-500'
+                className='w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500'
                 src={item.image}
                 alt={item.name}
               />
@@ -73,6 +73,15 @@ const TopDoctors = () => {
               <p className={`text-xs mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                 {item.speciality}
               </p>
+              
+              {/* Rating */}
+              <div className='flex items-center gap-1 mt-2'>
+                <span className='text-yellow-500 text-xs'>⭐</span>
+                <span className={`text-xs font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {item.rating || 4.5}
+                </span>
+              </div>
+              
               <div className={`mt-3 pt-3 border-t flex items-center justify-between ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${darkMode ? 'bg-indigo-900/50 text-indigo-300' : 'bg-indigo-50 text-indigo-600'}`}>
                   Book Now

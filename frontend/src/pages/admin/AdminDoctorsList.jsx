@@ -34,8 +34,8 @@ const AdminDoctorsList = () => {
         {doctors.map((item, index) => (
           <motion.div whileHover={{ y: -6 }} key={index}
             className='bg-white border border-gray-100 rounded-2xl overflow-hidden group hover:shadow-xl transition-all duration-300 w-full sm:w-72'>
-            <div className='bg-[#F2F3FF] overflow-hidden'>
-              <img className='w-full h-48 object-cover object-top group-hover:scale-105 transition-transform duration-500'
+            <div className='bg-[#F2F3FF] overflow-hidden aspect-[3/4]'>
+              <img className='w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500'
                 src={item.image} alt={item.name} />
             </div>
             <div className='p-5'>

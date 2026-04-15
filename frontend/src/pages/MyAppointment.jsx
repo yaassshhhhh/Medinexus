@@ -145,7 +145,7 @@ const MyAppointment = () => {
                 <div className='flex flex-col sm:flex-row gap-0'>
                   {/* Doctor image */}
                   <div className={`sm:w-36 flex-shrink-0 ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-50 to-indigo-100/30'}`}>
-                    <img className='w-full h-36 sm:h-full object-cover object-top' src={item.docData?.image} alt={item.docData?.name} />
+                    <img className='w-full h-36 sm:h-full object-cover object-center' src={item.docData?.image} alt={item.docData?.name} />
                   </div>
 
                   {/* Details */}

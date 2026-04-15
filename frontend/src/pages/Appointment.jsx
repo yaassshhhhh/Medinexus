@@ -97,7 +97,7 @@ const Appointment = () => {
         {/* Photo */}
         <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.15 }} className='w-full sm:w-72 flex-shrink-0'>
           <div className={`rounded-2xl overflow-hidden shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-100 to-indigo-50'}`}>
-            <img className='w-full h-80 object-cover object-top' src={docInfo.image} alt={docInfo.name} />
+            <img className='w-full aspect-[3/4] object-cover object-center' src={docInfo.image} alt={docInfo.name} />
           </div>
         </motion.div>
 

@@ -25,6 +25,14 @@ const submitReview = async (req, res) => {
             userImage: appointment.userData?.image || '',
         });
 
+        // Update doctor's average rating
+        const allReviews = await reviewModel.find({ docId: appointment.docId });
+        const avgRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
+        await doctorModel.findByIdAndUpdate(appointment.docId, {
+            rating: parseFloat(avgRating.toFixed(1)),
+            reviewCount: allReviews.length
+        });
+
         res.json({ success: true, message: "Review submitted", review });
     } catch (error) {
         console.log(error);

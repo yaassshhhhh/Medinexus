@@ -570,8 +570,8 @@ const VideoConsult = () => {
                             transition={{ delay: i * 0.05 }}
                             className="border border-indigo-100 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
                         >
-                            <div className="relative bg-indigo-50 overflow-hidden">
-                                <img className="w-full h-64 object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                            <div className="relative bg-indigo-50 overflow-hidden aspect-[3/4]">
+                                <img className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                                     src={doc.image} alt={doc.name} />
                                 <div className="absolute bottom-3 right-3 bg-green-500 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow-md">
                                     <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> Available
