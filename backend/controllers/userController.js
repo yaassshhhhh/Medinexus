@@ -228,22 +228,6 @@ const sendBookingOTP = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
-if (emailError.code === 'EAUTH') {
-    errorMessage += "Email authentication failed. Please contact support.";
-} else if (emailError.code === 'ECONNECTION') {
-    errorMessage += "Connection error. Please try again.";
-} else {
-    errorMessage += "Please check your email or try again.";
-}
-
-res.json({ success: false, message: errorMessage });
-        }
-
-    } catch (error) {
-    console.error("sendBookingOTP Error:", error);
-    res.json({ success: false, message: error.message });
-}
-};
 
 // API to book appointment
 const bookAppointment = async (req, res) => {
