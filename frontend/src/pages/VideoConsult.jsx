@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
     Video, Mic, MicOff, VideoOff, PhoneOff,
     MessageSquare, X, Send, Monitor, MonitorOff,
-    Loader2, ChevronRight
+    Loader2, ChevronRight, Shield, Clock, Star,
+    CheckCircle, Users, Zap, Lock, ArrowRight,
+    Play, Calendar, IndianRupee
 } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -459,6 +461,46 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
     )
 }
 
+// ─── Feature Badge ────────────────────────────────────────────────────────────
+const FeatureBadge = ({ icon: Icon, label }) => (
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
+        style={{ background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.25)', color: '#a5b4fc' }}>
+        <Icon size={12} />
+        {label}
+    </div>
+)
+
+// ─── Stat Card ────────────────────────────────────────────────────────────────
+const StatCard = ({ icon: Icon, value, label, color }) => (
+    <div className="flex flex-col items-center gap-1 px-6 py-4 rounded-2xl"
+        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-1"
+            style={{ background: `${color}18` }}>
+            <Icon size={18} style={{ color }} />
+        </div>
+        <span className="text-xl font-bold text-white">{value}</span>
+        <span className="text-xs text-gray-400">{label}</span>
+    </div>
+)
+
+// ─── How It Works Step ────────────────────────────────────────────────────────
+const HowItWorksStep = ({ num, title, desc, delay }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ delay }}
+        className="flex flex-col items-center text-center gap-3"
+    >
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-bold text-white relative"
+            style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 8px 24px rgba(99,102,241,0.35)' }}>
+            {num}
+        </div>
+        <div>
+            <p className="font-semibold text-white text-sm">{title}</p>
+            <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">{desc}</p>
+        </div>
+    </motion.div>
+)
+
 // ─── Patient: Doctor Selection Page ──────────────────────────────────────────
 const VideoConsult = () => {
     const { doctors, backendUrl, token, userData } = useContext(AppContext)
@@ -533,69 +575,328 @@ const VideoConsult = () => {
     }
 
     return (
-        <div className="pt-10 min-h-screen">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                <div className="text-center mb-10">
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-indigo-600 bg-clip-text text-transparent mb-3">
-                        Instant Video Consultation
-                    </h1>
-                    <p className="text-gray-500">Connect with top specialists from the comfort of your home.</p>
-                    <div className="flex items-center justify-center gap-6 mt-4 text-sm text-gray-500 flex-wrap">
-                        <span className="flex items-center gap-1.5"><Video size={14} className="text-primary" /> HD Video</span>
-                        <span className="flex items-center gap-1.5"><Monitor size={14} className="text-primary" /> Screen Share</span>
-                        <span className="flex items-center gap-1.5"><MessageSquare size={14} className="text-primary" /> In-call Chat</span>
+        <div className="min-h-screen" style={{ background: '#0a0f1e' }}>
+
+            {/* ── Hero Section ── */}
+            <div className="relative overflow-hidden">
+                {/* Background glow blobs */}
+                <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none"
+                    style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+                <div className="absolute top-20 right-1/4 w-80 h-80 rounded-full pointer-events-none"
+                    style={{ background: 'radial-gradient(circle, rgba(14,165,233,0.1) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-16 pb-12">
+                    <div className="grid lg:grid-cols-2 gap-12 items-center">
+
+                        {/* Left: Text content */}
+                        <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+                            {/* Badge */}
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6"
+                                style={{ background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', color: '#a5b4fc' }}>
+                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                                VIDEO CONSULTATION
+                            </div>
+
+                            <h1 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-4">
+                                Consult a Doctor<br />
+                                From <span style={{ background: 'linear-gradient(135deg, #6366f1, #00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Anywhere</span>
+                            </h1>
+                            <p className="text-gray-400 text-base leading-relaxed mb-8 max-w-md">
+                                Connect with experienced doctors through secure video consultation from the comfort of your home.
+                            </p>
+
+                            {/* Feature pills */}
+                            <div className="flex flex-wrap gap-2 mb-8">
+                                <FeatureBadge icon={Lock} label="Secure & Private" />
+                                <FeatureBadge icon={Shield} label="Verified Doctors" />
+                                <FeatureBadge icon={Video} label="HD Video Call" />
+                                <FeatureBadge icon={Calendar} label="Easy Booking" />
+                            </div>
+
+                            {/* CTA Buttons */}
+                            <div className="flex flex-wrap gap-3">
+                                <button
+                                    onClick={() => document.getElementById('doctors-section')?.scrollIntoView({ behavior: 'smooth' })}
+                                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                                    style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 4px 20px rgba(99,102,241,0.4)' }}
+                                >
+                                    <Video size={16} />
+                                    Book Video Consultation
+                                    <ArrowRight size={14} />
+                                </button>
+                                <button
+                                    onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5"
+                                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.85)' }}
+                                >
+                                    <Play size={14} />
+                                    How It Works
+                                </button>
+                            </div>
+                        </motion.div>
+
+                        {/* Right: Mock video call card */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6, delay: 0.15 }}
+                            className="relative hidden lg:block"
+                        >
+                            <div className="relative rounded-3xl overflow-hidden"
+                                style={{ background: 'linear-gradient(135deg, #1a1f35, #0f1628)', border: '1px solid rgba(99,102,241,0.2)', boxShadow: '0 32px 80px rgba(0,0,0,0.5)' }}>
+                                {/* Fake video area */}
+                                <div className="relative h-72 overflow-hidden"
+                                    style={{ background: 'linear-gradient(135deg, #1e2340 0%, #141929 100%)' }}>
+                                    {/* Doctor silhouette placeholder */}
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-32 h-32 rounded-full flex items-center justify-center"
+                                            style={{ background: 'rgba(99,102,241,0.15)', border: '2px solid rgba(99,102,241,0.3)' }}>
+                                            <Users size={48} style={{ color: 'rgba(99,102,241,0.6)' }} />
+                                        </div>
+                                    </div>
+                                    {/* Glow overlay */}
+                                    <div className="absolute inset-0"
+                                        style={{ background: 'radial-gradient(ellipse at 50% 80%, rgba(99,102,241,0.12) 0%, transparent 70%)' }} />
+                                    {/* PIP local video */}
+                                    <div className="absolute top-3 right-3 w-20 h-14 rounded-xl overflow-hidden"
+                                        style={{ background: '#1a2035', border: '1.5px solid rgba(255,255,255,0.15)' }}>
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <Video size={16} style={{ color: 'rgba(255,255,255,0.3)' }} />
+                                        </div>
+                                    </div>
+                                    {/* Status bar */}
+                                    <div className="absolute top-3 left-3 flex items-center gap-2 px-3 py-1.5 rounded-full"
+                                        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)' }}>
+                                        <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                                        <span className="text-white text-xs font-mono">00:04:32</span>
+                                    </div>
+                                </div>
+                                {/* Controls bar */}
+                                <div className="flex items-center justify-center gap-3 px-6 py-4"
+                                    style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                                    {[
+                                        { icon: Mic, active: true, color: '#6b7280' },
+                                        { icon: Video, active: true, color: '#6b7280' },
+                                        { icon: MessageSquare, active: false, color: '#6b7280' },
+                                        { icon: PhoneOff, active: false, color: '#ef4444', bg: '#ef4444' },
+                                    ].map(({ icon: Icon, color, bg }, i) => (
+                                        <div key={i}
+                                            className="w-10 h-10 rounded-full flex items-center justify-center"
+                                            style={{ background: bg ? `${bg}22` : 'rgba(255,255,255,0.08)', border: `1px solid ${bg ? bg + '44' : 'rgba(255,255,255,0.1)'}` }}>
+                                            <Icon size={16} style={{ color: bg || color }} />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            {/* Floating badge */}
+                            <div className="absolute -bottom-4 -left-4 px-4 py-2.5 rounded-2xl flex items-center gap-2"
+                                style={{ background: '#0d1b2e', border: '1px solid rgba(99,102,241,0.3)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+                                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                                    style={{ background: 'rgba(34,197,94,0.15)' }}>
+                                    <CheckCircle size={16} style={{ color: '#22c55e' }} />
+                                </div>
+                                <div>
+                                    <p className="text-white text-xs font-semibold">Doctor Connected</p>
+                                    <p className="text-gray-400 text-[10px]">Secure end-to-end encrypted</p>
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
                 </div>
+            </div>
 
-                {/* How it works */}
-                <div className="bg-indigo-50 rounded-2xl p-5 mb-8 max-w-2xl mx-auto">
-                    <p className="text-sm font-semibold text-indigo-800 mb-3">How it works</p>
-                    <div className="flex items-center gap-2 text-sm text-indigo-700 flex-wrap">
-                        {['Choose a doctor', 'Click Consult Now', 'Allow camera & mic', 'Doctor joins the room', 'Start your consultation'].map((step, i, arr) => (
+            {/* ── Stats Row ── */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+                >
+                    <StatCard icon={Users} value="500+" label="Verified Doctors" color="#6366f1" />
+                    <StatCard icon={Clock} value="15-20" label="Mins per Session" color="#00d4ff" />
+                    <StatCard icon={IndianRupee} value="₹400" label="Consultation Fee" color="#22c55e" />
+                    <StatCard icon={Star} value="4.9★" label="Patient Rating" color="#f59e0b" />
+                </motion.div>
+            </div>
+
+            {/* ── How It Works ── */}
+            <div id="how-it-works" className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35 }}
+                    className="rounded-3xl p-8"
+                    style={{ background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)' }}
+                >
+                    <div className="flex items-center gap-2 mb-8">
+                        <div className="w-1 h-5 rounded-full" style={{ background: 'linear-gradient(180deg, #6366f1, #00d4ff)' }} />
+                        <h2 className="text-lg font-bold text-white">How It Works</h2>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-6 items-start">
+                        {[
+                            { title: 'Choose Doctor', desc: 'Browse verified specialists' },
+                            { title: 'Click Consult', desc: 'Start instantly, no wait' },
+                            { title: 'Allow Access', desc: 'Camera & microphone' },
+                            { title: 'Doctor Joins', desc: 'Secure private room' },
+                            { title: 'Consultation', desc: 'Get expert advice' },
+                        ].map((step, i) => (
                             <React.Fragment key={i}>
-                                <span className="flex items-center gap-1.5">
-                                    <span className="w-5 h-5 bg-indigo-600 text-white rounded-full text-xs flex items-center justify-center font-bold">{i + 1}</span>
-                                    {step}
-                                </span>
-                                {i < arr.length - 1 && <ChevronRight size={14} className="text-indigo-400" />}
+                                <HowItWorksStep num={i + 1} title={step.title} desc={step.desc} delay={0.4 + i * 0.07} />
+                                {i < 4 && (
+                                    <div className="hidden sm:flex items-center justify-center mt-6">
+                                        <ChevronRight size={16} style={{ color: 'rgba(99,102,241,0.4)' }} />
+                                    </div>
+                                )}
                             </React.Fragment>
                         ))}
                     </div>
-                </div>
+                </motion.div>
+            </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-3 sm:px-0">
-                    {doctors.map((doc, i) => (
+            {/* ── What You Get ── */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-8 pb-8">
+                <div className="grid sm:grid-cols-3 gap-4">
+                    {[
+                        { icon: Clock, title: 'Available Today', desc: 'Book your slot at a time that suits you.', cta: 'View Slots', color: '#6366f1' },
+                        { icon: IndianRupee, title: 'Consultation Fee', desc: '₹400 for 15–20 mins with a specialist doctor.', cta: null, color: '#00d4ff' },
+                        { icon: Shield, title: 'You Will Get', desc: 'Prescription, advice, report sharing & follow-up support.', cta: null, color: '#22c55e' },
+                    ].map(({ icon: Icon, title, desc, cta, color }, i) => (
                         <motion.div key={i}
                             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.05 }}
-                            className="border border-indigo-100 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+                            transition={{ delay: 0.5 + i * 0.08 }}
+                            className="rounded-2xl p-5 flex items-start gap-4"
+                            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
                         >
-                            <div className="relative bg-indigo-50 overflow-hidden aspect-[3/4]">
-                                <img className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                    src={doc.image} alt={doc.name} />
-                                <div className="absolute bottom-3 right-3 bg-green-500 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow-md">
-                                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> Available
+                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+                                style={{ background: `${color}18` }}>
+                                <Icon size={22} style={{ color }} />
+                            </div>
+                            <div>
+                                <p className="font-semibold text-white text-sm mb-1">{title}</p>
+                                <p className="text-gray-400 text-xs leading-relaxed">{desc}</p>
+                                {cta && (
+                                    <button
+                                        onClick={() => document.getElementById('doctors-section')?.scrollIntoView({ behavior: 'smooth' })}
+                                        className="mt-2 flex items-center gap-1 text-xs font-semibold transition-all hover:gap-2"
+                                        style={{ color }}
+                                    >
+                                        {cta} <ArrowRight size={12} />
+                                    </button>
+                                )}
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+
+            {/* ── Doctors Grid ── */}
+            <div id="doctors-section" className="max-w-7xl mx-auto px-4 sm:px-8 pb-16">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.55 }}
+                    className="flex items-center justify-between mb-6"
+                >
+                    <div className="flex items-center gap-2">
+                        <div className="w-1 h-5 rounded-full" style={{ background: 'linear-gradient(180deg, #6366f1, #00d4ff)' }} />
+                        <h2 className="text-lg font-bold text-white">Available Doctors</h2>
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium"
+                            style={{ background: 'rgba(34,197,94,0.12)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.2)' }}>
+                            {doctors.length} Online
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                        <Zap size={12} style={{ color: '#f59e0b' }} />
+                        Instant connection
+                    </div>
+                </motion.div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {doctors.map((doc, i) => (
+                        <motion.div key={i}
+                            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 + i * 0.04 }}
+                            className="group rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                            style={{
+                                background: 'rgba(255,255,255,0.03)',
+                                border: '1px solid rgba(255,255,255,0.08)',
+                                boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.border = '1px solid rgba(99,102,241,0.35)'; e.currentTarget.style.boxShadow = '0 8px 40px rgba(99,102,241,0.15)' }}
+                            onMouseLeave={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.2)' }}
+                        >
+                            {/* Doctor image */}
+                            <div className="relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1f35, #0f1628)', aspectRatio: '4/3' }}>
+                                <img
+                                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                                    src={doc.image} alt={doc.name}
+                                />
+                                {/* Gradient overlay */}
+                                <div className="absolute inset-0"
+                                    style={{ background: 'linear-gradient(to top, rgba(10,15,30,0.7) 0%, transparent 50%)' }} />
+                                {/* Available badge */}
+                                <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+                                    style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80', backdropFilter: 'blur(8px)' }}>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                                    Available
+                                </div>
+                                {/* Fee badge */}
+                                <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold"
+                                    style={{ background: 'rgba(0,0,0,0.6)', color: '#a5b4fc', backdropFilter: 'blur(8px)' }}>
+                                    ₹{doc.fees || 400}
                                 </div>
                             </div>
+
+                            {/* Info */}
                             <div className="p-4">
-                                <p className="font-bold text-gray-900 group-hover:text-primary transition-colors">{doc.name}</p>
-                                <p className="text-sm text-gray-500 mb-1">{doc.speciality}</p>
-                                <p className="text-xs text-gray-400 mb-3">{doc.experience} experience</p>
+                                <p className="font-bold text-white text-sm group-hover:text-indigo-300 transition-colors">{doc.name}</p>
+                                <p className="text-xs mt-0.5 mb-0.5" style={{ color: '#a5b4fc' }}>{doc.speciality}</p>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="text-xs text-gray-500">{doc.experience} exp.</span>
+                                    <span className="flex items-center gap-0.5 text-xs" style={{ color: '#f59e0b' }}>
+                                        <Star size={10} fill="#f59e0b" /> 4.8
+                                    </span>
+                                </div>
                                 <button
                                     onClick={() => handleStartCall(doc)}
                                     disabled={loading}
-                                    className="w-full bg-primary text-white py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all font-semibold text-sm disabled:opacity-60"
+                                    className="w-full py-2.5 rounded-xl flex items-center justify-center gap-2 font-semibold text-sm text-white transition-all hover:opacity-90 disabled:opacity-50"
+                                    style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 4px 16px rgba(99,102,241,0.3)' }}
                                 >
                                     {loading && loadingDocId === doc._id
-                                        ? <><Loader2 className="animate-spin" size={16} /> Connecting...</>
-                                        : <><Video size={16} /> Consult Now</>
+                                        ? <><Loader2 className="animate-spin" size={15} /> Connecting...</>
+                                        : <><Video size={15} /> Consult Now</>
                                     }
                                 </button>
                             </div>
                         </motion.div>
                     ))}
                 </div>
-            </motion.div>
+            </div>
+
+            {/* ── Need Help Banner ── */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-8 pb-16">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                    className="rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+                    style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(14,165,233,0.08))', border: '1px solid rgba(99,102,241,0.2)' }}
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+                            style={{ background: 'rgba(99,102,241,0.2)' }}>
+                            <MessageSquare size={22} style={{ color: '#a5b4fc' }} />
+                        </div>
+                        <div>
+                            <p className="font-bold text-white">Need Help?</p>
+                            <p className="text-gray-400 text-sm">Our support team is always here to help you.</p>
+                        </div>
+                    </div>
+                    <button
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-all hover:-translate-y-0.5 whitespace-nowrap"
+                        style={{ background: 'rgba(99,102,241,0.25)', border: '1px solid rgba(99,102,241,0.4)' }}
+                    >
+                        Contact Support <ArrowRight size={14} />
+                    </button>
+                </motion.div>
+            </div>
         </div>
     )
 }

@@ -1,16 +1,21 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
-import { assets } from '../assets/assets'
 import RelatedDoctors from '../components/RelatedDoctors'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Info, Clock, Calendar, X, Video, MapPin, Star, BadgeCheck } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 
+/* ── colour tokens ── */
+const card   = 'bg-[#0f1629] border border-[#1e2d4a]'
+const inner  = 'bg-[#0d1b3e] border border-[#1e2d4a]'
+const tPri   = 'text-gray-100'
+const tSec   = 'text-gray-400'
+
 const Appointment = () => {
   const { docId } = useParams()
-  const { doctors, currencySymbol, backendUrl, token, getDoctorsData, darkMode } = useContext(AppContext)
+  const { doctors, currencySymbol, backendUrl, token, getDoctorsData } = useContext(AppContext)
   const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
   const navigate = useNavigate()
 
@@ -96,62 +101,61 @@ const Appointment = () => {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className='flex flex-col sm:flex-row gap-6'>
         {/* Photo */}
         <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.15 }} className='w-full sm:w-72 flex-shrink-0'>
-          <div className={`rounded-2xl overflow-hidden shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-100 to-indigo-50'}`}>
+          <div className='rounded-2xl overflow-hidden shadow-lg bg-[#0d1b3e] border border-[#1e2d4a]'>
             <img className='w-full aspect-[3/4] object-cover object-center' src={docInfo.image} alt={docInfo.name} />
           </div>
         </motion.div>
 
         {/* Info panel */}
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className={`flex-1 rounded-2xl border p-6 sm:p-8 shadow-sm ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-          {/* Name & verify */}
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className={`flex-1 rounded-2xl p-6 sm:p-8 ${card}`}>
           <div className='flex items-start justify-between gap-4 flex-wrap'>
             <div>
               <div className='flex items-center gap-2'>
-                <h1 className={`text-2xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>{docInfo.name}</h1>
-                <BadgeCheck size={22} className='text-primary flex-shrink-0' />
+                <h1 className={`text-2xl font-bold ${tPri}`}>{docInfo.name}</h1>
+                <BadgeCheck size={22} className='text-cyan-400 flex-shrink-0' />
               </div>
-              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{docInfo.degree} · {docInfo.speciality}</p>
+              <p className={`text-sm mt-1 ${tSec}`}>{docInfo.degree} · {docInfo.speciality}</p>
             </div>
-            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${darkMode ? 'bg-indigo-900/40 text-indigo-300' : 'bg-indigo-50 text-indigo-700'}`}>
+            <div className='flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'>
               <Clock size={12} /> {docInfo.experience}
             </div>
           </div>
 
           {/* Stats row */}
-          <div className={`grid grid-cols-3 gap-3 mt-5 p-4 rounded-xl ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+          <div className={`grid grid-cols-3 gap-3 mt-5 p-4 rounded-xl ${inner}`}>
             {[
-              { icon: <Star size={16} className='text-amber-500' />, label: 'Rating', value: '4.9' },
-              { icon: <Calendar size={16} className='text-primary' />, label: 'Experience', value: docInfo.experience },
-              { icon: <MapPin size={16} className='text-green-500' />, label: 'Consult Fee', value: `${currencySymbol}${docInfo.fees}` },
+              { icon: <Star size={16} className='text-amber-400' />, label: 'Rating', value: '4.9' },
+              { icon: <Calendar size={16} className='text-cyan-400' />, label: 'Experience', value: docInfo.experience },
+              { icon: <MapPin size={16} className='text-green-400' />, label: 'Consult Fee', value: `${currencySymbol}${docInfo.fees}` },
             ].map(({ icon, label, value }) => (
               <div key={label} className='text-center'>
                 <div className='flex justify-center mb-1'>{icon}</div>
-                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{label}</p>
-                <p className={`text-sm font-bold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>{value}</p>
+                <p className={`text-xs ${tSec}`}>{label}</p>
+                <p className={`text-sm font-bold ${tPri}`}>{value}</p>
               </div>
             ))}
           </div>
 
           {/* About */}
           <div className='mt-5'>
-            <p className={`flex items-center gap-1.5 text-sm font-semibold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-              <Info size={15} className='text-primary' /> About
+            <p className={`flex items-center gap-1.5 text-sm font-semibold mb-2 ${tPri}`}>
+              <Info size={15} className='text-cyan-400' /> About
             </p>
-            <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{docInfo.about}</p>
+            <p className={`text-sm leading-relaxed ${tSec}`}>{docInfo.about}</p>
           </div>
 
           {/* Address */}
-          <div className={`mt-4 flex items-start gap-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-            <MapPin size={15} className='text-primary mt-0.5 flex-shrink-0' />
+          <div className={`mt-4 flex items-start gap-2 text-sm ${tSec}`}>
+            <MapPin size={15} className='text-cyan-400 mt-0.5 flex-shrink-0' />
             <span>{docInfo.address?.line1}, {docInfo.address?.line2}</span>
           </div>
         </motion.div>
       </motion.div>
 
       {/* Booking section */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className={`mt-8 rounded-2xl border p-6 sm:p-8 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100 shadow-sm'}`}>
-        <h2 className={`flex items-center gap-2 text-lg font-bold mb-6 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-          <Calendar size={20} className='text-primary' /> Book an Appointment
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className={`mt-8 rounded-2xl p-6 sm:p-8 ${card}`}>
+        <h2 className={`flex items-center gap-2 text-lg font-bold mb-6 ${tPri}`}>
+          <Calendar size={20} className='text-cyan-400' /> Book an Appointment
         </h2>
 
         {docSlots.length > 0 ? (
@@ -165,8 +169,8 @@ const Appointment = () => {
                   onClick={() => { setSlotIndex(index); setSlotTime('') }}
                   className={`flex-shrink-0 flex flex-col items-center px-4 py-3.5 rounded-xl border transition-all min-w-[64px] ${
                     slotIndex === index
-                      ? 'bg-primary text-white border-primary shadow-lg shadow-indigo-200/50'
-                      : darkMode ? 'border-gray-600 text-gray-300 hover:border-primary/50 hover:bg-gray-700' : 'border-gray-200 text-gray-600 hover:border-primary/40 hover:bg-indigo-50/50'
+                      ? 'bg-cyan-500 text-black border-cyan-500 shadow-lg shadow-cyan-500/25'
+                      : 'border-[#1e2d4a] text-gray-400 hover:border-cyan-500/40 hover:bg-[#0d1b3e]'
                   }`}
                 >
                   <span className='text-[10px] font-bold uppercase tracking-wider'>{daysOfWeek[item[0].datetime.getDay()]}</span>
@@ -177,7 +181,7 @@ const Appointment = () => {
 
             {/* Time slots */}
             <div className='mt-5'>
-              <p className={`text-xs font-semibold uppercase tracking-wider mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Available Times</p>
+              <p className={`text-xs font-semibold uppercase tracking-wider mb-3 ${tSec}`}>Available Times</p>
               <div className='flex flex-wrap gap-2'>
                 <AnimatePresence mode='wait'>
                   {docSlots[slotIndex]?.map((item, index) => (
@@ -189,8 +193,8 @@ const Appointment = () => {
                       onClick={() => setSlotTime(item.time)}
                       className={`text-sm font-medium px-4 py-2 rounded-xl border transition-all ${
                         item.time === slotTime
-                          ? 'bg-primary text-white border-primary shadow-md'
-                          : darkMode ? 'text-gray-300 border-gray-600 hover:border-primary/60 hover:bg-gray-700' : 'text-gray-600 border-gray-200 hover:border-primary/50 hover:bg-indigo-50/50'
+                          ? 'bg-cyan-500 text-black border-cyan-500 shadow-md'
+                          : 'text-gray-400 border-[#1e2d4a] hover:border-cyan-500/40 hover:bg-[#0d1b3e]'
                       }`}
                     >
                       {item.time.toLowerCase()}
@@ -207,7 +211,7 @@ const Appointment = () => {
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className={`mt-4 flex items-center gap-2 text-sm font-medium px-4 py-3 rounded-xl ${darkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-50 text-green-700'}`}
+                  className='mt-4 flex items-center gap-2 text-sm font-medium px-4 py-3 rounded-xl bg-green-500/10 text-green-400 border border-green-500/20'
                 >
                   <Check size={16} />
                   {docSlots[slotIndex][0].datetime.toDateString()} at {slotTime}
@@ -220,7 +224,7 @@ const Appointment = () => {
               <button
                 onClick={initiateBooking}
                 disabled={isLoading}
-                className={`flex items-center gap-2 bg-primary text-white font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-indigo-300/40 hover:bg-indigo-600 hover:-translate-y-0.5 hover:shadow-indigo-400/50 transition-all text-sm ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-cyan-500/20 hover:-translate-y-0.5 transition-all text-sm ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
                 <Clock size={16} />
                 {isLoading ? 'Sending OTP...' : 'Book Appointment'}
@@ -228,16 +232,16 @@ const Appointment = () => {
 
               <label className={`flex items-center gap-2.5 cursor-pointer px-4 py-3.5 rounded-xl border transition-all text-sm font-semibold ${
                 isVideoConsult
-                  ? 'bg-indigo-50 border-primary text-primary'
-                  : darkMode ? 'border-gray-600 text-gray-300 hover:border-primary/50' : 'border-gray-200 text-gray-600 hover:border-primary/40'
+                  ? 'bg-indigo-500/10 border-indigo-500/40 text-indigo-400'
+                  : 'border-[#1e2d4a] text-gray-400 hover:border-cyan-500/40'
               }`}>
-                <input type='checkbox' checked={isVideoConsult} onChange={() => setIsVideoConsult(!isVideoConsult)} className='accent-primary w-4 h-4' />
+                <input type='checkbox' checked={isVideoConsult} onChange={() => setIsVideoConsult(!isVideoConsult)} className='accent-cyan-500 w-4 h-4' />
                 <Video size={15} /> Video Consult
               </label>
             </div>
           </>
         ) : (
-          <div className={`text-center py-12 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+          <div className={`text-center py-12 ${tSec}`}>
             <Calendar size={36} className='mx-auto mb-3 opacity-30' />
             <p>No available slots at the moment</p>
           </div>
@@ -256,22 +260,22 @@ const Appointment = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'
+            className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4'
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className={`rounded-2xl p-7 w-full max-w-sm relative shadow-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              className='rounded-2xl p-7 w-full max-w-sm relative shadow-2xl bg-[#0f1629] border border-[#1e2d4a]'
             >
-              <button onClick={() => setShowOtpModal(false)} className={`absolute top-4 right-4 p-1.5 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}>
+              <button onClick={() => setShowOtpModal(false)} className='absolute top-4 right-4 p-1.5 rounded-lg hover:bg-[#1e2d4a] text-gray-400 transition-colors'>
                 <X size={18} />
               </button>
-              <div className='w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4'>
-                <BadgeCheck size={24} className='text-primary' />
+              <div className='w-12 h-12 bg-cyan-500/10 border border-cyan-500/20 rounded-xl flex items-center justify-center mb-4'>
+                <BadgeCheck size={24} className='text-cyan-400' />
               </div>
-              <h3 className={`text-xl font-bold mb-1 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>Verify Booking</h3>
-              <p className={`text-sm mb-6 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              <h3 className={`text-xl font-bold mb-1 ${tPri}`}>Verify Booking</h3>
+              <p className={`text-sm mb-6 ${tSec}`}>
                 A 6-digit OTP was sent to your registered email. Enter it below to confirm.
               </p>
               <input
@@ -280,14 +284,12 @@ const Appointment = () => {
                 onChange={e => setOtp(e.target.value)}
                 placeholder='• • • • • •'
                 maxLength={6}
-                className={`w-full border-2 rounded-xl px-4 py-3.5 text-center text-2xl tracking-[0.5em] font-bold focus:outline-none transition-all mb-4 ${
-                  darkMode ? 'bg-gray-700 border-gray-600 text-gray-100 focus:border-primary' : 'bg-indigo-50/50 border-indigo-100 text-gray-800 focus:border-primary focus:bg-white'
-                }`}
+                className='w-full border-2 border-[#1e2d4a] focus:border-cyan-500 rounded-xl px-4 py-3.5 text-center text-2xl tracking-[0.5em] font-bold focus:outline-none transition-all mb-4 bg-[#0d1b3e] text-gray-100'
               />
               <button
                 onClick={confirmBooking}
                 disabled={isLoading}
-                className={`w-full bg-primary hover:bg-indigo-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-300/30 ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:-translate-y-0.5'}`}
+                className={`w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-cyan-500/20 ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:-translate-y-0.5'}`}
               >
                 {isLoading ? 'Verifying...' : 'Confirm Appointment'}
               </button>

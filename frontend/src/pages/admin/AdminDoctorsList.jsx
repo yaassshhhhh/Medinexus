@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AdminContext } from '../../context/AdminContext';
 import { motion } from 'framer-motion';
+import { Copy, Check, Users } from 'lucide-react';
 
 const AdminDoctorsList = () => {
   const { aToken, doctors, getAllDoctors } = useContext(AdminContext);
@@ -17,56 +18,113 @@ const AdminDoctorsList = () => {
   };
 
   return (
-    <div className='m-5 h-full overflow-y-scroll'>
-      <div className='flex items-center justify-between mb-6'>
-        <h1 className='text-2xl font-bold text-gray-800'>All Doctors</h1>
-        <div className='bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-2 text-sm text-indigo-700 font-medium'>
-          🔑 Default password: <span className='font-bold font-mono'>12345678</span>
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-7 flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-white">All Doctors</h1>
+          <p className="text-sm mt-1" style={{ color: '#8ba3c7' }}>{doctors.length} registered doctors</p>
+        </div>
+        <div
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm"
+          style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', color: '#fbbf24' }}
+        >
+          🔑 Default password: <span className="font-mono font-bold ml-1">12345678</span>
         </div>
       </div>
 
-      <div className='bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 text-sm text-blue-700'>
-        <p className='font-semibold mb-1'>Doctor Portal Access</p>
-        <p>Doctors log in at <span className='font-mono font-bold'>/doctor-portal</span> using their email + password <span className='font-mono font-bold'>12345678</span></p>
+      {/* Info banner */}
+      <div
+        className="rounded-xl px-5 py-3.5 mb-6 text-sm flex items-start gap-3"
+        style={{ background: 'rgba(0,212,255,0.07)', border: '1px solid rgba(0,212,255,0.2)', color: '#8ba3c7' }}
+      >
+        <span className="text-cyan-400 mt-0.5 flex-shrink-0">ℹ</span>
+        <p>
+          Doctors log in at <span className="font-mono font-bold text-cyan-400">/doctor-portal</span> using their email and the default password{' '}
+          <span className="font-mono font-bold text-cyan-400">12345678</span>
+        </p>
       </div>
 
-      <div className='flex flex-wrap gap-6 pt-2'>
+      {/* Doctor grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {doctors.map((item, index) => (
-          <motion.div whileHover={{ y: -6 }} key={index}
-            className='bg-white border border-gray-100 rounded-2xl overflow-hidden group hover:shadow-xl transition-all duration-300 w-full sm:w-72'>
-            <div className='bg-[#F2F3FF] overflow-hidden aspect-[3/4]'>
-              <img className='w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500'
-                src={item.image} alt={item.name} />
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+            className="rounded-2xl overflow-hidden group transition-all duration-300 hover:-translate-y-1"
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0,212,255,0.3)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,212,255,0.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none' }}
+          >
+            {/* Image */}
+            <div className="overflow-hidden aspect-[4/3]" style={{ background: 'rgba(0,212,255,0.05)' }}>
+              <img
+                className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                src={item.image}
+                alt={item.name}
+              />
             </div>
-            <div className='p-5'>
-              <p className='text-gray-900 text-lg font-bold group-hover:text-primary transition-colors'>{item.name}</p>
-              <p className='text-gray-500 text-sm font-medium'>{item.speciality}</p>
-              <p className='text-gray-400 text-xs mt-0.5'>{item.degree} · {item.experience}</p>
 
-              {/* Email */}
-              <div className='mt-3 flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-100'>
-                <span className='text-xs text-gray-600 truncate flex-1 font-mono'>{item.email}</span>
-                <button onClick={() => copyEmail(item.email, item._id)}
-                  className='text-xs text-indigo-600 font-bold hover:text-indigo-800 flex-shrink-0'>
-                  {copied === item._id ? '✓' : 'Copy'}
+            {/* Info */}
+            <div className="p-4">
+              <p className="text-white font-bold text-base group-hover:text-cyan-400 transition-colors">{item.name}</p>
+              <p className="text-sm font-medium mt-0.5" style={{ color: '#00d4ff' }}>{item.speciality}</p>
+              <p className="text-xs mt-0.5" style={{ color: '#8ba3c7' }}>{item.degree} · {item.experience}</p>
+
+              {/* Availability */}
+              <div className="flex items-center gap-2 mt-3">
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{
+                    background: item.available ? '#4ade80' : '#6b7280',
+                    boxShadow: item.available ? '0 0 6px #4ade80' : 'none',
+                  }}
+                />
+                <p className="text-xs font-medium" style={{ color: item.available ? '#4ade80' : '#8ba3c7' }}>
+                  {item.available ? 'Available' : 'Not Available'}
+                </p>
+              </div>
+
+              {/* Email copy */}
+              <div
+                className="mt-3 flex items-center gap-2 rounded-lg px-3 py-2"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+              >
+                <span className="text-xs truncate flex-1 font-mono" style={{ color: '#8ba3c7' }}>{item.email}</span>
+                <button
+                  onClick={() => copyEmail(item.email, item._id)}
+                  className="flex-shrink-0 transition-colors"
+                  style={{ color: copied === item._id ? '#4ade80' : '#00d4ff' }}
+                  title="Copy email"
+                >
+                  {copied === item._id ? <Check size={13} /> : <Copy size={13} />}
                 </button>
               </div>
 
-              {/* Default password badge */}
-              <div className='mt-2 flex items-center gap-2 bg-yellow-50 rounded-lg px-3 py-1.5 border border-yellow-100'>
-                <span className='text-xs text-yellow-700'>🔑</span>
-                <span className='text-xs font-mono font-bold text-yellow-800'>12345678</span>
-              </div>
-
-              <div className='flex items-center gap-2 mt-3'>
-                <span className={`w-2 h-2 rounded-full ${item.available ? 'bg-green-500' : 'bg-gray-300'}`} />
-                <p className='text-sm font-medium text-gray-600'>{item.available ? 'Available' : 'Not Available'}</p>
+              {/* Password badge */}
+              <div
+                className="mt-2 flex items-center gap-2 rounded-lg px-3 py-1.5"
+                style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }}
+              >
+                <span className="text-xs">🔑</span>
+                <span className="text-xs font-mono font-bold" style={{ color: '#fbbf24' }}>12345678</span>
               </div>
             </div>
           </motion.div>
         ))}
+
         {doctors.length === 0 && (
-          <p className='text-gray-400 py-10'>No doctors found. Add doctors using the "Add Doctor" section.</p>
+          <div className="col-span-full flex flex-col items-center justify-center py-20 gap-4">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
+              <Users size={32} style={{ color: '#8ba3c7' }} />
+            </div>
+            <p className="text-sm font-medium" style={{ color: '#8ba3c7' }}>No doctors found. Add doctors using the "Add Doctor" section.</p>
+          </div>
         )}
       </div>
     </div>

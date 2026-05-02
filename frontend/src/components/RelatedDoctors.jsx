@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 
 const RelatedDoctors = ({ speciality, docId }) => {
-  const { doctors, darkMode } = useContext(AppContext)
+  const { doctors } = useContext(AppContext)
   const navigate = useNavigate()
   const [relDoc, setRelDocs] = useState([])
 
@@ -21,14 +21,14 @@ const RelatedDoctors = ({ speciality, docId }) => {
     <section>
       <div className='flex items-end justify-between mb-6'>
         <div>
-          <span className={`inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-2 ${darkMode ? 'bg-indigo-900/50 text-indigo-300' : 'bg-indigo-50 text-indigo-600'}`}>
+          <span className='inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'>
             Same Specialty
           </span>
-          <h2 className={`text-2xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>Related Doctors</h2>
+          <h2 className='text-2xl font-bold text-gray-100'>Related Doctors</h2>
         </div>
         <button
           onClick={() => { navigate('/doctors'); scrollTo(0, 0) }}
-          className={`flex items-center gap-1.5 text-sm font-semibold group transition-colors ${darkMode ? 'text-indigo-400 hover:text-indigo-300' : 'text-primary hover:text-indigo-700'}`}
+          className='flex items-center gap-1.5 text-sm font-semibold group transition-colors text-cyan-400 hover:text-cyan-300'
         >
           View all <ArrowRight size={14} className='group-hover:translate-x-0.5 transition-transform' />
         </button>
@@ -43,22 +43,34 @@ const RelatedDoctors = ({ speciality, docId }) => {
             viewport={{ once: true }}
             transition={{ delay: index * 0.07 }}
             onClick={() => { navigate(`/appointment/${item._id}`); scrollTo(0, 0) }}
-            className={`rounded-2xl overflow-hidden cursor-pointer group border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg ${
-              darkMode ? 'bg-gray-800 border-gray-700 hover:border-primary/40' : 'bg-white border-gray-100 hover:border-primary/20 hover:shadow-indigo-100/60'
-            }`}
+            className='relative rounded-2xl overflow-hidden cursor-pointer group border border-[#1e2d4a] bg-[#0f1629]
+              transition-all duration-300
+              hover:-translate-y-2
+              hover:border-cyan-500/40
+              hover:shadow-[0_0_24px_rgba(6,182,212,0.12)]'
           >
-            <div className={`relative overflow-hidden aspect-[3/4] ${darkMode ? 'bg-gray-700' : 'bg-gradient-to-b from-indigo-50 to-indigo-100/30'}`}>
-              <img className='w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500' src={item.image} alt={item.name} />
-              <div className='absolute top-2 left-2 flex items-center gap-1 bg-white/90 backdrop-blur-sm text-green-600 text-[10px] font-bold px-2 py-0.5 rounded-full'>
-                <span className='w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse' /> Available
+            {/* Glow overlay */}
+            <div className='absolute inset-0 bg-gradient-to-b from-cyan-500/0 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10' />
+
+            <div className='relative overflow-hidden aspect-[3/4] bg-[#0d1b3e]'>
+              <img
+                className='w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500'
+                src={item.image}
+                alt={item.name}
+              />
+              <div className='absolute top-2 left-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-green-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-500/30'>
+                <span className='w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse' /> Available
               </div>
             </div>
-            <div className='p-3'>
-              <p className={`font-bold text-sm group-hover:text-primary transition-colors truncate ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>{item.name}</p>
-              <p className={`text-xs mt-0.5 truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.speciality}</p>
-              <div className={`mt-2.5 pt-2.5 border-t flex items-center justify-between ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${darkMode ? 'bg-indigo-900/40 text-indigo-400' : 'bg-indigo-50 text-indigo-600'}`}>Book</span>
-                <ArrowRight size={12} className={`${darkMode ? 'text-gray-500' : 'text-gray-400'} group-hover:text-primary transition-colors`} />
+
+            <div className='p-3 relative z-20'>
+              <p className='font-bold text-sm text-gray-100 group-hover:text-cyan-400 transition-colors duration-300 truncate'>{item.name}</p>
+              <p className='text-xs mt-0.5 text-gray-500 truncate'>{item.speciality}</p>
+              <div className='mt-2.5 pt-2.5 border-t border-[#1e2d4a] flex items-center justify-between'>
+                <span className='text-[10px] font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 group-hover:bg-cyan-500/20 transition-colors'>
+                  Book
+                </span>
+                <ArrowRight size={12} className='text-gray-600 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all duration-300' />
               </div>
             </div>
           </motion.div>

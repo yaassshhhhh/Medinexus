@@ -15,6 +15,7 @@ import reviewRouter from './routes/reviewRoute.js';
 import newsletterRouter from './routes/newsletterRoute.js';
 import prescriptionRouter from './routes/prescriptionRoute.js';
 import medicalRecordRouter from './routes/medicalRecordRoute.js';
+import contactRouter from './routes/contactRoute.js';
 import nodemailer from 'nodemailer';
 import appointmentModel from './models/appointmentModel.js';
 
@@ -47,7 +48,7 @@ const corsOptions = {
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'token']
+    allowedHeaders: ['Content-Type', 'Authorization', 'token', 'aToken', 'atoken']
 }
 
 const io = new Server(httpServer, {
@@ -76,6 +77,7 @@ app.use('/api/reviews', reviewRouter)
 app.use('/api/newsletter', newsletterRouter)
 app.use('/api/prescription', prescriptionRouter)
 app.use('/api/medical-record', medicalRecordRouter)
+app.use('/api/contact', contactRouter)
 
 import callModel from './models/callModel.js'
 
@@ -121,7 +123,7 @@ const sendReminderEmails = async () => {
                         from: process.env.ADMIN_EMAIL,
                         to: email,
                         subject: `Reminder: Appointment with Dr. ${appt.docData?.name} tomorrow`,
-                        text: `Hi ${appt.userData?.name},\n\nThis is a reminder that you have an appointment with Dr. ${appt.docData?.name} (${appt.docData?.speciality}) on ${appt.slotDate.split('_').join('/')} at ${appt.slotTime}.\n\n${appt.isVideoConsult ? `Join your video call here: ${process.env.FRONTEND_URL || 'http://localhost:5173'}/video-consult?roomId=${appt.roomId}` : `Location: ${appt.docData?.address?.line1 || ''}`}\n\nThanks,\nRogveda Team`
+                        text: `Hi ${appt.userData?.name},\n\nThis is a reminder that you have an appointment with Dr. ${appt.docData?.name} (${appt.docData?.speciality}) on ${appt.slotDate.split('_').join('/')} at ${appt.slotTime}.\n\n${appt.isVideoConsult ? `Join your video call here: ${process.env.FRONTEND_URL || 'http://localhost:5173'}/video-consult?roomId=${appt.roomId}` : `Location: ${appt.docData?.address?.line1 || ''}`}\n\nThanks,\nMedinexus AI Team`
                     });
                     await appointmentModel.findByIdAndUpdate(appt._id, { reminderSent: true });
                     console.log(`Reminder sent to ${email}`);
@@ -231,7 +233,7 @@ app.get('/api/test-email', async (req, res) => {
         const info = await transporter.sendMail({
             from: process.env.ADMIN_EMAIL,
             to: testEmail,
-            subject: 'Rogveda - Email Test',
+            subject: 'Medinexus AI - Email Test',
             text: 'If you receive this email, your email configuration is working correctly!'
         });
 

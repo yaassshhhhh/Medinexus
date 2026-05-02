@@ -1,251 +1,243 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Shield, Star, Clock } from 'lucide-react'
-import { assets } from '../assets/assets'
+import { useNavigate } from 'react-router-dom'
+import { specialityData } from '../assets/assets'
+import { AppContext } from '../context/AppContext'
 
-const Doctor3D = () => (
-  <svg viewBox="0 0 380 420" xmlns="http://www.w3.org/2000/svg" className="w-full max-h-[400px] drop-shadow-2xl" aria-label="Doctor appointment illustration">
-    <defs>
-      <filter id="s1" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="8" stdDeviation="10" floodColor="#312e81" floodOpacity="0.25"/>
-      </filter>
-      <filter id="s2" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#312e81" floodOpacity="0.2"/>
-      </filter>
-      <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#ffffff"/>
-        <stop offset="100%" stopColor="#e0e7ff"/>
-      </linearGradient>
-      <linearGradient id="coatGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#f8faff"/>
-        <stop offset="100%" stopColor="#dde4ff"/>
-      </linearGradient>
-      <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#fcd9b6"/>
-        <stop offset="100%" stopColor="#f5b98a"/>
-      </linearGradient>
-      <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#ffffff"/>
-        <stop offset="100%" stopColor="#f0f4ff"/>
-      </linearGradient>
-      <linearGradient id="btnGrad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stopColor="#6366f1"/>
-        <stop offset="100%" stopColor="#8b5cf6"/>
-      </linearGradient>
-    </defs>
-
-    {/* Floor shadow */}
-    <ellipse cx="190" cy="408" rx="120" ry="12" fill="rgba(0,0,0,0.15)"/>
-
-    {/* ── Floating appointment card (top-right) ── */}
-    <g filter="url(#s2)" transform="translate(240,55) rotate(6)">
-      <rect width="120" height="90" rx="16" fill="url(#cardGrad)"/>
-      <rect width="120" height="26" rx="16" fill="#6366f1"/>
-      <rect y="16" width="120" height="10" fill="#6366f1"/>
-      <text x="60" y="17" textAnchor="middle" fill="white" fontSize="9" fontWeight="700" fontFamily="sans-serif">APPOINTMENT</text>
-      <circle cx="18" cy="50" r="10" fill="#e0e7ff"/>
-      <text x="18" y="54" textAnchor="middle" fill="#6366f1" fontSize="10" fontWeight="bold" fontFamily="sans-serif">📅</text>
-      <rect x="34" y="44" width="72" height="5" rx="2.5" fill="#c7d2fe"/>
-      <rect x="34" y="54" width="50" height="5" rx="2.5" fill="#e0e7ff"/>
-      <rect x="14" y="68" width="92" height="14" rx="7" fill="url(#btnGrad)"/>
-      <text x="60" y="78" textAnchor="middle" fill="white" fontSize="8" fontWeight="700" fontFamily="sans-serif">Confirm Booking</text>
-    </g>
-
-    {/* ── Floating stats pill (left) ── */}
-    <g filter="url(#s2)" transform="translate(10,160)">
-      <rect width="100" height="44" rx="22" fill="white"/>
-      <circle cx="22" cy="22" r="14" fill="#dcfce7"/>
-      <text x="22" y="27" textAnchor="middle" fontSize="14" fontFamily="sans-serif">✅</text>
-      <text x="44" y="18" fill="#374151" fontSize="9" fontWeight="700" fontFamily="sans-serif">Verified</text>
-      <text x="44" y="30" fill="#6b7280" fontSize="8" fontFamily="sans-serif">Doctor</text>
-    </g>
-
-    {/* ── Floating rating pill (right) ── */}
-    <g filter="url(#s2)" transform="translate(255,200)">
-      <rect width="90" height="38" rx="19" fill="white"/>
-      <text x="14" y="24" fontSize="16" fontFamily="sans-serif">⭐</text>
-      <text x="36" y="18" fill="#374151" fontSize="10" fontWeight="700" fontFamily="sans-serif">4.9</text>
-      <text x="36" y="30" fill="#6b7280" fontSize="8" fontFamily="sans-serif">Rating</text>
-    </g>
-
-    {/* ── Doctor body ── */}
-    {/* Lab coat / torso */}
-    <g filter="url(#s1)">
-      {/* Coat body */}
-      <path d="M110,230 Q90,240 80,320 Q78,380 80,405 L300,405 Q302,380 300,320 Q290,240 270,230 L240,220 Q215,260 190,260 Q165,260 140,220 Z"
-        fill="url(#coatGrad)" stroke="#c7d2fe" strokeWidth="1.5"/>
-      {/* Coat lapels */}
-      <path d="M190,260 L165,230 L155,270 Z" fill="#e0e7ff"/>
-      <path d="M190,260 L215,230 L225,270 Z" fill="#e0e7ff"/>
-      {/* Shirt / scrubs underneath */}
-      <path d="M165,230 L155,270 L190,280 L225,270 L215,230 Q200,250 190,250 Q180,250 165,230 Z" fill="#a5b4fc"/>
-      {/* Stethoscope */}
-      <path d="M155,270 Q145,300 150,320 Q155,340 170,340 Q185,340 185,325" fill="none" stroke="#374151" strokeWidth="4" strokeLinecap="round"/>
-      <circle cx="185" cy="322" r="8" fill="#374151"/>
-      <circle cx="185" cy="322" r="5" fill="#6366f1"/>
-      {/* Pocket */}
-      <rect x="200" y="280" width="35" height="28" rx="4" fill="white" opacity="0.6" stroke="#c7d2fe" strokeWidth="1"/>
-      <rect x="208" y="275" width="4" height="12" rx="2" fill="#ef4444"/>
-      <rect x="215" y="273" width="4" height="14" rx="2" fill="#3b82f6"/>
-      <rect x="222" y="276" width="4" height="11" rx="2" fill="#10b981"/>
-    </g>
-
-    {/* Neck */}
-    <rect x="175" y="185" width="30" height="40" rx="12" fill="url(#skinGrad)"/>
-
-    {/* Head */}
-    <g filter="url(#s1)">
-      <ellipse cx="190" cy="155" rx="52" ry="58" fill="url(#skinGrad)"/>
-      {/* Hair */}
-      <path d="M138,145 Q140,90 190,88 Q240,90 242,145 Q230,110 190,108 Q150,110 138,145 Z" fill="#3b2314"/>
-      {/* Ears */}
-      <ellipse cx="138" cy="158" rx="8" ry="11" fill="#f5b98a"/>
-      <ellipse cx="242" cy="158" rx="8" ry="11" fill="#f5b98a"/>
-      {/* Eyes */}
-      <ellipse cx="172" cy="155" rx="9" ry="10" fill="white"/>
-      <ellipse cx="208" cy="155" rx="9" ry="10" fill="white"/>
-      <circle cx="174" cy="157" r="5" fill="#3b2314"/>
-      <circle cx="210" cy="157" r="5" fill="#3b2314"/>
-      <circle cx="176" cy="155" r="2" fill="white"/>
-      <circle cx="212" cy="155" r="2" fill="white"/>
-      {/* Eyebrows */}
-      <path d="M163,143 Q172,138 181,143" fill="none" stroke="#3b2314" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M199,143 Q208,138 217,143" fill="none" stroke="#3b2314" strokeWidth="2.5" strokeLinecap="round"/>
-      {/* Smile */}
-      <path d="M176,172 Q190,184 204,172" fill="none" stroke="#c0714a" strokeWidth="2.5" strokeLinecap="round"/>
-      {/* Nose */}
-      <path d="M187,160 Q185,170 190,172 Q195,170 193,160" fill="none" stroke="#c0714a" strokeWidth="1.5" strokeLinecap="round"/>
-    </g>
-
-    {/* Arms */}
-    {/* Left arm */}
-    <path d="M110,240 Q75,270 70,320 Q68,340 80,345 L95,345 Q100,320 108,295 Z" fill="url(#coatGrad)" stroke="#c7d2fe" strokeWidth="1.5"/>
-    <ellipse cx="75" cy="348" rx="16" ry="10" fill="url(#skinGrad)"/>
-    {/* Right arm - holding clipboard */}
-    <path d="M270,240 Q305,270 310,310 Q312,330 300,335 L285,335 Q280,310 272,285 Z" fill="url(#coatGrad)" stroke="#c7d2fe" strokeWidth="1.5"/>
-    {/* Clipboard */}
-    <g filter="url(#s2)" transform="translate(285,290)">
-      <rect width="60" height="78" rx="6" fill="#f8faff" stroke="#c7d2fe" strokeWidth="1.5"/>
-      <rect x="20" y="-6" width="20" height="12" rx="4" fill="#6366f1"/>
-      <rect x="8" y="14" width="44" height="4" rx="2" fill="#e0e7ff"/>
-      <rect x="8" y="24" width="36" height="4" rx="2" fill="#e0e7ff"/>
-      <rect x="8" y="34" width="40" height="4" rx="2" fill="#e0e7ff"/>
-      <rect x="8" y="44" width="28" height="4" rx="2" fill="#e0e7ff"/>
-      <rect x="8" y="58" width="44" height="12" rx="6" fill="url(#btnGrad)"/>
-      <text x="30" y="67" textAnchor="middle" fill="white" fontSize="7" fontWeight="700" fontFamily="sans-serif">Book Now</text>
-    </g>
-    <ellipse cx="308" cy="338" rx="14" ry="9" fill="url(#skinGrad)"/>
-
-    {/* Legs / lower coat */}
-    <path d="M140,390 L145,405 L175,405 L178,390 Z" fill="#dde4ff"/>
-    <path d="M240,390 L235,405 L205,405 L202,390 Z" fill="#dde4ff"/>
-  </svg>
+// Floating stat badge
+const StatBadge = ({ icon, value, label, className }) => (
+  <div className={`flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-4 py-3 ${className}`}>
+    <div className='w-10 h-10 rounded-xl bg-teal-400/20 flex items-center justify-center text-teal-300 text-xl'>
+      {icon}
+    </div>
+    <div>
+      <p className='text-white font-bold text-lg leading-none'>{value}</p>
+      <p className='text-slate-400 text-xs mt-0.5'>{label}</p>
+    </div>
+  </div>
 )
 
-const stats = [
-  { icon: <Shield size={16} />, label: '500+ Doctors', color: 'text-indigo-500' },
-  { icon: <Star size={16} />, label: '4.9 Rating', color: 'text-amber-500' },
-  { icon: <Clock size={16} />, label: '24/7 Support', color: 'text-emerald-500' },
-]
+// Glowing ring doctor illustration
+const DoctorHero = () => (
+  <div className='relative flex items-center justify-center w-full h-full'>
+    {/* Outer glow ring */}
+    <div className='absolute w-72 h-72 md:w-80 md:h-80 rounded-full border-2 border-teal-400/30 animate-pulse' />
+    <div className='absolute w-56 h-56 md:w-64 md:h-64 rounded-full border border-teal-400/20' />
+    {/* Inner glowing circle */}
+    <div className='absolute w-48 h-48 md:w-56 md:h-56 rounded-full bg-gradient-to-b from-teal-400/20 to-blue-600/10 blur-xl' />
+    {/* Doctor SVG */}
+    <svg viewBox='0 0 300 360' xmlns='http://www.w3.org/2000/svg' className='relative z-10 w-56 md:w-64 drop-shadow-2xl' aria-label='Doctor illustration'>
+      <defs>
+        <linearGradient id='coat' x1='0' y1='0' x2='0' y2='1'>
+          <stop offset='0%' stopColor='#e8f0fe' />
+          <stop offset='100%' stopColor='#c7d2fe' />
+        </linearGradient>
+        <linearGradient id='skin' x1='0' y1='0' x2='0' y2='1'>
+          <stop offset='0%' stopColor='#fcd9b6' />
+          <stop offset='100%' stopColor='#f5b98a' />
+        </linearGradient>
+        <linearGradient id='scrub' x1='0' y1='0' x2='1' y2='1'>
+          <stop offset='0%' stopColor='#14b8a6' />
+          <stop offset='100%' stopColor='#0891b2' />
+        </linearGradient>
+      </defs>
+      {/* Shadow */}
+      <ellipse cx='150' cy='352' rx='80' ry='8' fill='rgba(0,0,0,0.3)' />
+      {/* Coat body */}
+      <path d='M75,200 Q60,215 55,290 Q53,330 55,350 L245,350 Q247,330 245,290 Q240,215 225,200 L200,190 Q175,225 150,225 Q125,225 100,190 Z' fill='url(#coat)' />
+      {/* Scrubs */}
+      <path d='M100,190 L90,230 L150,245 L210,230 L200,190 Q180,210 150,210 Q120,210 100,190 Z' fill='url(#scrub)' />
+      {/* Stethoscope */}
+      <path d='M110,235 Q98,265 102,285 Q106,305 120,305 Q134,305 134,292' fill='none' stroke='#1e293b' strokeWidth='3.5' strokeLinecap='round' />
+      <circle cx='134' cy='289' r='7' fill='#1e293b' />
+      <circle cx='134' cy='289' r='4' fill='#14b8a6' />
+      {/* Pocket */}
+      <rect x='165' y='240' width='30' height='24' rx='4' fill='white' opacity='0.5' stroke='#a5b4fc' strokeWidth='1' />
+      <rect x='172' y='236' width='3' height='10' rx='1.5' fill='#ef4444' />
+      <rect x='178' y='234' width='3' height='12' rx='1.5' fill='#3b82f6' />
+      <rect x='184' y='237' width='3' height='9' rx='1.5' fill='#10b981' />
+      {/* Neck */}
+      <rect x='138' y='158' width='24' height='34' rx='10' fill='url(#skin)' />
+      {/* Head */}
+      <ellipse cx='150' cy='128' rx='44' ry='48' fill='url(#skin)' />
+      {/* Hair */}
+      <path d='M106,118 Q108,76 150,74 Q192,76 194,118 Q182,88 150,86 Q118,88 106,118 Z' fill='#2d1a0e' />
+      {/* Ears */}
+      <ellipse cx='106' cy='130' rx='7' ry='9' fill='#f5b98a' />
+      <ellipse cx='194' cy='130' rx='7' ry='9' fill='#f5b98a' />
+      {/* Eyes */}
+      <ellipse cx='136' cy='128' rx='8' ry='9' fill='white' />
+      <ellipse cx='164' cy='128' rx='8' ry='9' fill='white' />
+      <circle cx='138' cy='130' r='4.5' fill='#2d1a0e' />
+      <circle cx='166' cy='130' r='4.5' fill='#2d1a0e' />
+      <circle cx='139.5' cy='128.5' r='1.5' fill='white' />
+      <circle cx='167.5' cy='128.5' r='1.5' fill='white' />
+      {/* Eyebrows */}
+      <path d='M128,116 Q136,111 144,116' fill='none' stroke='#2d1a0e' strokeWidth='2' strokeLinecap='round' />
+      <path d='M156,116 Q164,111 172,116' fill='none' stroke='#2d1a0e' strokeWidth='2' strokeLinecap='round' />
+      {/* Smile */}
+      <path d='M138,144 Q150,154 162,144' fill='none' stroke='#c0714a' strokeWidth='2' strokeLinecap='round' />
+      {/* Nose */}
+      <path d='M147,133 Q145,141 150,143 Q155,141 153,133' fill='none' stroke='#c0714a' strokeWidth='1.5' strokeLinecap='round' />
+      {/* Left arm */}
+      <path d='M75,210 Q48,238 44,278 Q42,298 54,302 L68,302 Q72,278 80,255 Z' fill='url(#coat)' stroke='#c7d2fe' strokeWidth='1' />
+      <ellipse cx='48' cy='305' rx='13' ry='8' fill='url(#skin)' />
+      {/* Right arm */}
+      <path d='M225,210 Q252,238 256,270 Q258,290 246,294 L232,294 Q228,270 220,248 Z' fill='url(#coat)' stroke='#c7d2fe' strokeWidth='1' />
+      <ellipse cx='252' cy='297' rx='12' ry='8' fill='url(#skin)' />
+    </svg>
+    {/* ECG line decoration */}
+    <svg className='absolute bottom-4 left-0 right-0 w-full opacity-30' viewBox='0 0 300 40' xmlns='http://www.w3.org/2000/svg'>
+      <polyline points='0,20 40,20 55,5 65,35 75,5 85,20 120,20 135,20 150,20 165,20 180,20 220,20 235,8 245,32 255,8 265,20 300,20' fill='none' stroke='#14b8a6' strokeWidth='2' />
+    </svg>
+  </div>
+)
 
 const Header = () => {
-  return (
-    <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#4F6EF7] via-[#5B6CF5] to-[#7C3AED] px-6 md:px-12 lg:px-16 min-h-[420px] flex items-center'>
+  const navigate = useNavigate()
+  const { darkMode } = useContext(AppContext)
+  const [dept, setDept] = useState('')
+  const [doctor, setDoctor] = useState('')
+  const [date, setDate] = useState('')
 
-      {/* Background decorations */}
-      <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-        <div className='absolute -top-20 -right-20 w-80 h-80 bg-white/10 rounded-full blur-3xl' />
-        <div className='absolute -bottom-10 -left-10 w-60 h-60 bg-violet-400/20 rounded-full blur-2xl' />
-        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-300/10 rounded-full blur-3xl' />
-        {/* Grid pattern */}
-        <svg className='absolute inset-0 w-full h-full opacity-[0.04]' xmlns='http://www.w3.org/2000/svg'>
+  const handleBook = () => {
+    if (dept) {
+      navigate(`/doctors/${dept}`)
+      scrollTo(0, 0)
+    } else {
+      navigate('/doctors')
+      scrollTo(0, 0)
+    }
+  }
+
+  return (
+    <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a1628] via-[#0d1f3c] to-[#0a1628] min-h-[480px]'>
+
+      {/* Background grid */}
+      <div className='absolute inset-0 pointer-events-none opacity-[0.06]'>
+        <svg className='w-full h-full' xmlns='http://www.w3.org/2000/svg'>
           <defs>
-            <pattern id='grid' width='40' height='40' patternUnits='userSpaceOnUse'>
-              <path d='M 40 0 L 0 0 0 40' fill='none' stroke='white' strokeWidth='1'/>
+            <pattern id='hgrid' width='50' height='50' patternUnits='userSpaceOnUse'>
+              <path d='M 50 0 L 0 0 0 50' fill='none' stroke='#38bdf8' strokeWidth='0.8' />
             </pattern>
           </defs>
-          <rect width='100%' height='100%' fill='url(#grid)' />
+          <rect width='100%' height='100%' fill='url(#hgrid)' />
         </svg>
       </div>
 
-      {/* Left content */}
-      <div className='relative z-10 flex-1 py-12 md:py-16'>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className='inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold px-4 py-2 rounded-full mb-6'
-        >
-          <span className='w-2 h-2 bg-green-400 rounded-full animate-pulse' />
-          Trusted by 50,000+ patients
-        </motion.div>
+      {/* Glow blobs */}
+      <div className='absolute top-0 right-1/3 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none' />
+      <div className='absolute bottom-0 left-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none' />
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className='text-3xl md:text-4xl lg:text-5xl text-white font-bold leading-tight max-w-lg'
-        >
-          Book Appointments<br />
-          <span className='text-indigo-200'>With Trusted Doctors</span>
-        </motion.h1>
+      <div className='relative z-10 flex flex-col md:flex-row items-center px-6 md:px-12 lg:px-16 py-10 gap-8'>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.35, duration: 0.6 }}
-          className='text-indigo-100 text-sm md:text-base mt-4 max-w-md leading-relaxed'
-        >
-          Browse our network of verified specialists, pick a time that works for you, and get care — in-person or via video.
-        </motion.p>
+        {/* ── LEFT CONTENT ── */}
+        <div className='flex-1 max-w-xl'>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className='text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white'
+          >
+            Your Health,<br />
+            <span className='text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-300'>
+              Our Priority
+            </span>
+          </motion.h1>
 
-        {/* Stats row */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-          className='flex items-center gap-5 mt-6 flex-wrap'
-        >
-          {stats.map(({ icon, label, color }) => (
-            <div key={label} className='flex items-center gap-1.5 text-white/90 text-sm font-medium'>
-              <span className={color}>{icon}</span>
-              {label}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25, duration: 0.6 }}
+            className='text-slate-400 text-sm md:text-base mt-4 max-w-md leading-relaxed'
+          >
+            Book an appointment with experienced doctors and get the best healthcare for you and your family.
+          </motion.p>
+
+          {/* Trust badges */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            className='flex flex-wrap items-center gap-5 mt-6'
+          >
+            {[
+              { icon: '🩺', text: 'Verified Doctors' },
+              { icon: '📅', text: 'Easy Appointments' },
+              { icon: '🔒', text: 'Secure & Private' },
+            ].map(({ icon, text }) => (
+              <span key={text} className='flex items-center gap-1.5 text-slate-300 text-xs font-medium'>
+                <span>{icon}</span> {text}
+              </span>
+            ))}
+          </motion.div>
+
+          {/* ── Booking Form ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55, duration: 0.5 }}
+            className='mt-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5'
+          >
+            <p className='text-teal-400 font-semibold text-sm mb-4'>Book an Appointment</p>
+            <div className='flex flex-col sm:flex-row gap-3'>
+              {/* Department */}
+              <div className='flex-1 relative'>
+                <span className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm'>⊞</span>
+                <select
+                  value={dept}
+                  onChange={e => setDept(e.target.value)}
+                  className='w-full bg-white/[0.08] border border-white/10 text-slate-300 text-xs rounded-xl pl-8 pr-3 py-3 appearance-none focus:outline-none focus:border-teal-500/50 cursor-pointer'
+                >
+                  <option value=''>Select Department</option>
+                  {specialityData.map(s => (
+                    <option key={s.speciality} value={s.speciality}>{s.speciality}</option>
+                  ))}
+                </select>
+              </div>
+              {/* Date */}
+              <div className='flex-1 relative'>
+                <span className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm'>📅</span>
+                <input
+                  type='date'
+                  value={date}
+                  onChange={e => setDate(e.target.value)}
+                  className='w-full bg-white/[0.08] border border-white/10 text-slate-300 text-xs rounded-xl pl-8 pr-3 py-3 focus:outline-none focus:border-teal-500/50 cursor-pointer'
+                />
+              </div>
+              {/* Book button */}
+              <button
+                onClick={handleBook}
+                className='flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg shadow-teal-500/25 hover:shadow-teal-400/40 hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap'
+              >
+                Book Now →
+              </button>
             </div>
-          ))}
-        </motion.div>
+          </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.65, type: 'spring', stiffness: 200 }}
-          className='flex items-center gap-3 mt-8 flex-wrap'
-        >
-          <a
-            href='#speciality'
-            className='flex items-center gap-2 bg-white text-primary px-7 py-3 rounded-xl text-sm font-bold shadow-lg shadow-black/20 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200'
+        {/* ── RIGHT: Doctor + Stats ── */}
+        <div className='hidden md:flex md:w-[42%] lg:w-[40%] relative flex-col items-center'>
+          {/* Stat badges */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className='absolute top-0 right-0 flex flex-col gap-3 z-20'
           >
-            Book Appointment
-            <img className='w-3' src={assets.arrow_icon} alt='' />
-          </a>
-          <a
-            href='/video-consult'
-            className='flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-white/25 transition-all duration-200'
-          >
-            Video Consult
-          </a>
-        </motion.div>
-      </div>
+            <StatBadge icon='👥' value='10,000+' label='Happy Patients' />
+            <StatBadge icon='😊' value='50+' label='Specialized Doctors' />
+          </motion.div>
 
-      {/* Right 3D Illustration */}
-      <div className='hidden md:block md:w-[42%] lg:w-[38%] relative self-end'>
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-          className='w-full flex justify-center items-end'
-        >
-          <Doctor3D />
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className='w-full flex justify-center items-end pt-4'
+          >
+            <DoctorHero />
+          </motion.div>
+        </div>
       </div>
     </div>
   )

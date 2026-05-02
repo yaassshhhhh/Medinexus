@@ -10,19 +10,39 @@ class EmailService {
     getTransporter() {
         if (!this.transporter) {
             try {
-                this.transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    host: 'smtp.gmail.com',
-                    port: 587,
-                    secure: false, // Use TLS
-                    auth: {
-                        user: process.env.ADMIN_EMAIL,
-                        pass: process.env.ADMIN_PASSWORD // Gmail App Password
-                    },
-                    tls: {
-                        rejectUnauthorized: false
-                    }
-                });
+                if (process.env.ADMIN_EMAIL === 'your_email@gmail.com' || !process.env.ADMIN_EMAIL) {
+                    console.log('⚠️  Using mock email transporter (No valid credentials provided in .env)');
+                    this.transporter = {
+                        sendMail: async (mailOptions) => {
+                            console.log('\n=============================================');
+                            console.log('📧 MOCK EMAIL SENT (Development Mode)');
+                            console.log(`To: ${mailOptions.to}`);
+                            console.log(`Subject: ${mailOptions.subject}`);
+                            
+                            // Try to extract OTP from HTML if present
+                            const otpMatch = mailOptions.html && mailOptions.html.match(/<div class="otp-box">(\d+)<\/div>/);
+                            if (otpMatch) {
+                                console.log(`🔑 EXTRACTED OTP: ${otpMatch[1]}`);
+                            }
+                            console.log('=============================================\n');
+                            return { messageId: 'mock-id-' + Date.now() };
+                        }
+                    };
+                } else {
+                    this.transporter = nodemailer.createTransport({
+                        service: 'gmail',
+                        host: 'smtp.gmail.com',
+                        port: 587,
+                        secure: false, // Use TLS
+                        auth: {
+                            user: process.env.ADMIN_EMAIL,
+                            pass: process.env.ADMIN_PASSWORD // Gmail App Password
+                        },
+                        tls: {
+                            rejectUnauthorized: false
+                        }
+                    });
+                }
                 console.log('✅ Email transporter created successfully');
             } catch (error) {
                 console.error('❌ Failed to create email transporter:', error);

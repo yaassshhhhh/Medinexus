@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import nodemailer from "nodemailer";
-import razorpay from "razorpay";
+import Razorpay from "razorpay";
 import userModel from "../models/userModel.js";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
@@ -12,6 +12,20 @@ import otpModel from "../models/otpModel.js";
 // Utility for Nodemailer transport with better error handling
 const getTransporter = () => {
     try {
+        if (process.env.ADMIN_EMAIL === 'your_email@gmail.com' || !process.env.ADMIN_EMAIL) {
+            console.log('⚠️  Using mock email transporter in userController');
+            return {
+                sendMail: async (mailOptions) => {
+                    console.log('\n=============================================');
+                    console.log('📧 MOCK EMAIL SENT (Development Mode)');
+                    console.log(`To: ${mailOptions.to}`);
+                    console.log(`Subject: ${mailOptions.subject}`);
+                    console.log('=============================================\n');
+                    return { messageId: 'mock-id-' + Date.now() };
+                }
+            };
+        }
+
         // Check if using SendGrid
         if (process.env.SENDGRID_API_KEY) {
             return nodemailer.createTransport({
@@ -195,8 +209,8 @@ const sendBookingOTP = async (req, res) => {
         const mailOptions = {
             from: process.env.ADMIN_EMAIL,
             to: userData.email,
-            subject: 'Rogveda - Appointment Booking OTP',
-            text: `Your OTP for booking an appointment with Rogveda is ${otp}. It is valid for 10 minutes.`
+            subject: 'Medinexus AI - Appointment Booking OTP',
+            text: `Your OTP for booking an appointment with Medinexus AI is ${otp}. It is valid for 10 minutes.`
         };
 
         try {
@@ -295,8 +309,8 @@ const bookAppointment = async (req, res) => {
                 const mailOptions = {
                     from: process.env.ADMIN_EMAIL,
                     to: process.env.ADMIN_EMAIL, // Acting as Doctor Email for development
-                    subject: `Rogveda - Video Consult Scheduled with ${userData.name}`,
-                    text: `Hello Dr. ${docData.name},\n\nYou have a scheduled Video Consultation with ${userData.name} on ${slotDate.split('_').join('/')} at ${slotTime}.\n\nPlease click the link below to join the meeting at the scheduled time:\nhttps://doctor-appointment-system-s54z.vercel.app/video-consult?roomId=${roomId}&doctorView=true\n\nThanks,\nRogveda Team`
+                    subject: `Medinexus AI - Video Consult Scheduled with ${userData.name}`,
+                    text: `Hello Dr. ${docData.name},\n\nYou have a scheduled Video Consultation with ${userData.name} on ${slotDate.split('_').join('/')} at ${slotTime}.\n\nPlease click the link below to join the meeting at the scheduled time:\nhttps://doctor-appointment-system-s54z.vercel.app/video-consult?roomId=${roomId}&doctorView=true\n\nThanks,\nMedinexus AI Team`
                 };
                 transporter.sendMail(mailOptions, (err) => {
                     if (err) console.error("Doctor Email Notice Failed: ", err);
@@ -356,10 +370,21 @@ const cancelAppointment = async (req, res) => {
 };
 
 // Gateway Initialization
-const razorpayInstance = new razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_DUMMY_KEY',
-    key_secret: process.env.RAZORPAY_KEY_SECRET || 'DUMMY_SECRET'
-});
+let razorpayInstance;
+
+const getRazorpayInstance = () => {
+    if (!razorpayInstance) {
+        if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+            console.error('❌ Razorpay keys missing in environment variables');
+            return null;
+        }
+        razorpayInstance = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET
+        });
+    }
+    return razorpayInstance;
+};
 
 // API to make payment of appointment using Razorpay
 const paymentRazorpay = async (req, res) => {
@@ -371,50 +396,90 @@ const paymentRazorpay = async (req, res) => {
             return res.json({ success: false, message: 'Appointment Cancelled or not found' });
         }
 
-        const options = {
-            amount: appointmentData.amount * 100, // Amount in smaller unit (for USD it's cents, for INR it's paise)
-            currency: process.env.CURRENCY || 'INR',
-            receipt: appointmentId
-        };
-
-        // Error handling fallback for missing keys during development
-        if (process.env.RAZORPAY_KEY_ID === undefined) {
-            console.log("Mocking Razorpay successful order generation due to missing keys.");
-            return res.json({ success: true, order: { id: "order_mock_123", amount: options.amount } });
+        if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+            console.error('❌ Razorpay keys missing in environment variables');
+            return res.json({ success: false, message: 'Payment gateway not configured. Please contact support.' });
         }
 
-        const order = await razorpayInstance.orders.create(options);
-        res.json({ success: true, order });
+        // Validate amount
+        const amount = Number(appointmentData.amount);
+        if (isNaN(amount) || amount <= 0) {
+            console.error('❌ Invalid appointment amount:', appointmentData.amount);
+            return res.json({ success: false, message: 'Invalid appointment amount' });
+        }
+
+        const options = {
+            amount: Math.round(amount * 100), // Ensure it's an integer
+            currency: 'INR',
+            receipt: appointmentId.toString()
+        };
+
+        console.log('Creating Razorpay order for appointment:', appointmentId, 'Amount:', options.amount);
+        
+        const rzp = getRazorpayInstance();
+        if (!rzp) {
+            return res.json({ success: false, message: 'Payment gateway not configured correctly.' });
+        }
+
+        try {
+            const order = await rzp.orders.create(options);
+            console.log('✅ Razorpay order created:', order.id);
+            res.json({ success: true, order });
+        } catch (razorpayError) {
+            console.error('❌ Razorpay SDK Error Full Object:', JSON.stringify(razorpayError, null, 2));
+            const errorMsg = razorpayError.error?.description || razorpayError.description || razorpayError.message || 'Order creation failed';
+            res.json({ 
+                success: false, 
+                message: 'Razorpay Error: ' + errorMsg
+            });
+        }
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        console.error('❌ Payment Controller Error:', error);
+        res.json({ success: false, message: 'Payment failed: ' + (error.message || 'Internal Server Error') });
     }
 }
 
 // API to verify payment
 const verifyRazorpay = async (req, res) => {
     try {
-        const { razorpay_order_id } = req.body;
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, appointmentId } = req.body;
 
-        // Development Mock
-        if (razorpay_order_id === "order_mock_123") {
-            const { appointmentId } = req.body; // In mock, we pass appointmentId directly
-            await appointmentModel.findByIdAndUpdate(appointmentId, { payment: true });
-            return res.json({ success: true, message: "Payment Successful" });
+        // If signature provided — verify it (most secure)
+        if (razorpay_signature && razorpay_payment_id) {
+            const crypto = await import('crypto');
+            const body = razorpay_order_id + '|' + razorpay_payment_id;
+            const expectedSignature = crypto.default
+                .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+                .update(body)
+                .digest('hex');
+
+            if (expectedSignature !== razorpay_signature) {
+                return res.json({ success: false, message: 'Payment verification failed: Invalid signature' });
+            }
+
+            // Signature valid — mark as paid
+            const rzp = getRazorpayInstance();
+            if (!rzp) return res.json({ success: false, message: 'Payment gateway error.' });
+
+            const orderInfo = await rzp.orders.fetch(razorpay_order_id);
+            await appointmentModel.findByIdAndUpdate(orderInfo.receipt, { payment: true });
+            return res.json({ success: true, message: 'Payment Successful' });
         }
 
-        // Production verification
-        const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
+        // Fallback: fetch order status from Razorpay
+        const rzp = getRazorpayInstance();
+        if (!rzp) return res.json({ success: false, message: 'Payment gateway error.' });
 
+        const orderInfo = await rzp.orders.fetch(razorpay_order_id);
         if (orderInfo.status === 'paid') {
-            await appointmentModel.findByIdAndUpdate(orderInfo.receipt, { payment: true });
-            res.json({ success: true, message: "Payment Successful" });
+            await appointmentModel.findByIdAndUpdate(orderInfo.receipt || appointmentId, { payment: true });
+            res.json({ success: true, message: 'Payment Successful' });
         } else {
-            res.json({ success: false, message: 'Payment Failed' });
+            res.json({ success: false, message: 'Payment Failed or Pending' });
         }
     } catch (error) {
-        console.log(error);
+        console.error('❌ Razorpay verification error:', error.message);
         res.json({ success: false, message: error.message });
     }
 }
@@ -444,7 +509,7 @@ const forgotPassword = async (req, res) => {
         await transporter.sendMail({
             from: process.env.ADMIN_EMAIL,
             to: email,
-            subject: 'Password Reset OTP - Rogveda',
+            subject: 'Password Reset OTP - Medinexus AI',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #5f57ff;">Password Reset Request</h2>

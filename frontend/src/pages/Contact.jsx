@@ -1,138 +1,436 @@
 import React, { useContext, useState } from 'react'
-import { assets } from '../assets/assets'
-import { motion } from 'framer-motion'
-import { MapPin, Phone, Mail, Briefcase, ArrowRight, Send, CheckCircle } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  Phone, Mail, MapPin, Clock, Send, CheckCircle,
+  Navigation, MessageCircle, Shield, ChevronDown
+} from 'lucide-react'
 import { AppContext } from '../context/AppContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+
+const SUBJECTS = [
+  'General Inquiry',
+  'Appointment Support',
+  'Technical Issue',
+  'Billing & Payments',
+  'Doctor Partnership',
+  'Emergency Assistance',
+  'Other',
+]
 
 const Contact = () => {
-  const { darkMode } = useContext(AppContext)
-  const [sent, setSent] = useState(false)
-  const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const { backendUrl } = useContext(AppContext)
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setSent(true)
-    setTimeout(() => setSent(false), 4000)
-    setForm({ name: '', email: '', message: '' })
+  const [form, setForm] = useState({
+    name: '', email: '', phone: '', subject: '', message: ''
+  })
+  const [loading, setLoading] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [subjectOpen, setSubjectOpen] = useState(false)
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+
+  const handleSubject = (val) => {
+    setForm({ ...form, subject: val })
+    setSubjectOpen(false)
   }
 
-  const inputCls = `w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary ${
-    darkMode ? 'bg-gray-700/60 border-gray-600 text-gray-100 placeholder-gray-500' : 'bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-400 hover:border-gray-300'
-  }`
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!form.name || !form.email || !form.message) {
+      toast.error('Please fill in all required fields.')
+      return
+    }
+    setLoading(true)
+    try {
+      const { data } = await axios.post(`${backendUrl}/api/contact/send`, form)
+      if (data.success) {
+        setSent(true)
+        setForm({ name: '', email: '', phone: '', subject: '', message: '' })
+      } else {
+        toast.error(data.message || 'Failed to send message.')
+      }
+    } catch (err) {
+      toast.error('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Shared input style
+  const inputCls =
+    'w-full bg-[#0d1b2e] border border-[#1e3a5f] text-white placeholder-gray-500 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 transition-all'
 
   return (
-    <div className='pb-20'>
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className='text-center pt-12 pb-8'>
-        <span className={`inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 ${darkMode ? 'bg-indigo-900/50 text-indigo-300' : 'bg-indigo-50 text-indigo-600'}`}>
-          Get In Touch
-        </span>
-        <h1 className={`text-4xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-          Contact <span className='gradient-text'>Us</span>
-        </h1>
-        <p className={`mt-3 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>We'd love to hear from you. Reach out anytime.</p>
-      </motion.div>
+    <div className='min-h-screen' style={{ background: '#0a0f1e', color: 'white' }}>
 
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 items-start'>
-        {/* Left — image + info cards */}
-        <div className='space-y-5'>
+      {/* ── Hero Section ─────────────────────────────────────────── */}
+      <div className='relative overflow-hidden pt-12 pb-10 px-4 sm:px-0'>
+        {/* Background grid dots */}
+        <div className='absolute inset-0 opacity-10'
+          style={{
+            backgroundImage: 'radial-gradient(circle, #00d4ff 1px, transparent 1px)',
+            backgroundSize: '40px 40px'
+          }} />
+
+        <div className='relative flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 max-w-5xl mx-auto'>
+          {/* Left text */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            {/* Badge */}
+            <div className='inline-flex items-center gap-2 border border-cyan-500/40 rounded-full px-4 py-1.5 mb-5 bg-cyan-500/10'>
+              <Navigation size={12} className='text-cyan-400' />
+              <span className='text-cyan-400 text-xs font-semibold tracking-widest uppercase'>Get In Touch</span>
+            </div>
+
+            <h1 className='text-4xl sm:text-5xl font-bold leading-tight'>
+              Contact <span className='text-cyan-400'>Us</span>
+            </h1>
+            <p className='mt-3 text-gray-400 text-sm max-w-xs leading-relaxed'>
+              We'd love to hear from you. Reach out to us for appointments, support, or any general inquiries.
+            </p>
+          </motion.div>
+
+          {/* Right — 24/7 headset graphic */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className='relative overflow-hidden rounded-2xl shadow-xl group h-56'
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className='hidden lg:flex items-center justify-center relative'
           >
-            <img className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-700' src={assets.contact_image} alt='Contact' />
-            <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-6'>
-              <div className='text-white'>
-                <h3 className='text-xl font-bold'>Visit Our Office</h3>
-                <p className='text-sm text-white/80 mt-1'>Experience world-class healthcare coordination.</p>
-              </div>
+            {/* Outer glow rings */}
+            <div className='absolute w-52 h-52 rounded-full border border-cyan-500/20 animate-ping' style={{ animationDuration: '3s' }} />
+            <div className='absolute w-44 h-44 rounded-full border border-cyan-500/30' />
+            <div className='absolute w-36 h-36 rounded-full border border-cyan-400/40' />
+
+            {/* Center circle */}
+            <div className='relative w-32 h-32 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border-2 border-cyan-400/60 flex flex-col items-center justify-center shadow-[0_0_40px_rgba(0,212,255,0.3)]'>
+              {/* Headset SVG */}
+              <svg width='48' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <path d='M8 28V24C8 15.163 15.163 8 24 8C32.837 8 40 15.163 40 24V28' stroke='#00d4ff' strokeWidth='2.5' strokeLinecap='round' />
+                <rect x='6' y='28' width='6' height='10' rx='3' fill='#00d4ff' opacity='0.8' />
+                <rect x='36' y='28' width='6' height='10' rx='3' fill='#00d4ff' opacity='0.8' />
+                <path d='M42 36C42 39.314 39.314 42 36 42H28' stroke='#00d4ff' strokeWidth='2.5' strokeLinecap='round' />
+                <circle cx='26' cy='42' r='2' fill='#00d4ff' />
+              </svg>
+              <span className='text-cyan-400 font-bold text-lg mt-1'>24/7</span>
+            </div>
+
+            {/* ECG line */}
+            <svg className='absolute bottom-0 left-1/2 -translate-x-1/2 w-64 opacity-40' height='30' viewBox='0 0 256 30'>
+              <polyline
+                points='0,15 40,15 50,5 60,25 70,5 80,25 90,15 130,15 140,2 150,28 160,15 256,15'
+                fill='none' stroke='#00d4ff' strokeWidth='1.5'
+              />
+            </svg>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* ── Main Content ─────────────────────────────────────────── */}
+      <div className='max-w-5xl mx-auto px-4 sm:px-0 pb-16'>
+        <div className='grid grid-cols-1 lg:grid-cols-5 gap-6'>
+
+          {/* ── Left: Get In Touch cards ─────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className='lg:col-span-2 space-y-4'
+          >
+            <div className='rounded-2xl border border-[#1e3a5f] bg-[#0d1b2e] p-5'>
+              <h3 className='text-cyan-400 font-semibold text-base mb-4'>Get In Touch</h3>
+
+              {/* Phone */}
+              <ContactCard
+                icon={<Phone size={18} className='text-cyan-400' />}
+                title='Phone'
+                lines={['+91 98765 43210', '+91 91234 56789']}
+              />
+              {/* Email */}
+              <ContactCard
+                icon={<Mail size={18} className='text-cyan-400' />}
+                title='Email'
+                lines={['support@medinexus.ai', 'info@medinexus.ai']}
+              />
+              {/* Address */}
+              <ContactCard
+                icon={<MapPin size={18} className='text-cyan-400' />}
+                title='Address'
+                lines={['42, Connaught Place,', 'New Delhi - 110001, India']}
+              />
+              {/* Hours */}
+              <ContactCard
+                icon={<Clock size={18} className='text-cyan-400' />}
+                title='Working Hours'
+                lines={['Mon - Sun: 24 Hours', 'Emergency Services Always Available']}
+                last
+              />
             </div>
           </motion.div>
 
-          {/* Info card */}
+          {/* ── Right: Contact Form ──────────────────────────────── */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className={`rounded-2xl border p-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100 shadow-sm'}`}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className='lg:col-span-3'
           >
-            <h3 className={`font-bold text-base mb-4 flex items-center gap-2 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
-              <span className={`p-2 rounded-lg ${darkMode ? 'bg-gray-700 text-indigo-400' : 'bg-indigo-50 text-indigo-600'}`}><MapPin size={16} /></span>
-              Our Office
-            </h3>
-            <div className={`space-y-3 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              <p className='flex items-center gap-3'><MapPin size={15} className='text-primary flex-shrink-0' /> 42, Connaught Place, New Delhi - 110001, India</p>
-              <p className='flex items-center gap-3 hover:text-primary transition-colors cursor-pointer'><Phone size={15} className='text-primary flex-shrink-0' /> +91-11-4567-8900</p>
-              <p className='flex items-center gap-3 hover:text-primary transition-colors cursor-pointer'><Mail size={15} className='text-primary flex-shrink-0' /> contact@rogveda.com</p>
-            </div>
-          </motion.div>
+            <div className='rounded-2xl border border-[#1e3a5f] bg-[#0d1b2e] p-6'>
+              <h3 className='text-white font-semibold text-base mb-5'>Send Us a Message</h3>
 
-          {/* Careers card */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className={`rounded-2xl border p-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gradient-to-br from-indigo-50 to-white border-indigo-100'}`}
-          >
-            <h3 className={`font-bold text-base mb-2 flex items-center gap-2 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
-              <span className={`p-2 rounded-lg ${darkMode ? 'bg-gray-700 text-indigo-400' : 'bg-indigo-100 text-indigo-700'}`}><Briefcase size={16} /></span>
-              Careers at Rogveda
-            </h3>
-            <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Join our mission to revolutionize healthcare accessibility through AI.</p>
-            <button className={`flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl border transition-all group hover:bg-primary hover:text-white hover:border-primary ${
-              darkMode ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'
-            }`}>
-              Explore Openings <ArrowRight size={14} className='group-hover:translate-x-1 transition-transform' />
-            </button>
+              <AnimatePresence mode='wait'>
+                {sent ? (
+                  <motion.div
+                    key='success'
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    className='flex flex-col items-center justify-center py-16 gap-4'
+                  >
+                    <div className='w-20 h-20 rounded-full bg-cyan-500/10 border border-cyan-400/40 flex items-center justify-center shadow-[0_0_30px_rgba(0,212,255,0.2)]'>
+                      <CheckCircle size={36} className='text-cyan-400' />
+                    </div>
+                    <p className='text-white font-bold text-xl'>Message Sent!</p>
+                    <p className='text-gray-400 text-sm text-center max-w-xs'>
+                      We've received your message and will get back to you within 24 hours. Check your inbox for a confirmation.
+                    </p>
+                    <button
+                      onClick={() => setSent(false)}
+                      className='mt-2 text-cyan-400 text-sm border border-cyan-400/40 px-5 py-2 rounded-lg hover:bg-cyan-400/10 transition-all'
+                    >
+                      Send Another Message
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.form
+                    key='form'
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onSubmit={handleSubmit}
+                    className='space-y-4'
+                  >
+                    {/* Name + Email row */}
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                      <div className='relative'>
+                        <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-500'>
+                          <svg width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><circle cx='12' cy='8' r='4'/><path d='M4 20c0-4 3.6-7 8-7s8 3 8 7'/></svg>
+                        </span>
+                        <input
+                          className={`${inputCls} pl-9`}
+                          type='text'
+                          name='name'
+                          placeholder='Your Name'
+                          value={form.name}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                      <div className='relative'>
+                        <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-500'>
+                          <Mail size={15} />
+                        </span>
+                        <input
+                          className={`${inputCls} pl-9`}
+                          type='email'
+                          name='email'
+                          placeholder='Your Email'
+                          value={form.email}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Phone */}
+                    <div className='relative'>
+                      <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-500'>
+                        <Phone size={15} />
+                      </span>
+                      <input
+                        className={`${inputCls} pl-9`}
+                        type='tel'
+                        name='phone'
+                        placeholder='Your Phone Number'
+                        value={form.phone}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    {/* Subject dropdown */}
+                    <div className='relative'>
+                      <button
+                        type='button'
+                        onClick={() => setSubjectOpen(!subjectOpen)}
+                        className={`${inputCls} flex items-center justify-between text-left ${form.subject ? 'text-white' : 'text-gray-500'}`}
+                      >
+                        <span className='flex items-center gap-2'>
+                          <svg width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' className='text-gray-500'><rect x='3' y='5' width='18' height='14' rx='2'/><path d='M3 10h18'/></svg>
+                          {form.subject || 'Select Subject'}
+                        </span>
+                        <ChevronDown size={15} className={`transition-transform ${subjectOpen ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      <AnimatePresence>
+                        {subjectOpen && (
+                          <motion.ul
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            className='absolute z-50 w-full mt-1 bg-[#0d1b2e] border border-[#1e3a5f] rounded-lg overflow-hidden shadow-xl'
+                          >
+                            {SUBJECTS.map((s) => (
+                              <li
+                                key={s}
+                                onClick={() => handleSubject(s)}
+                                className='px-4 py-2.5 text-sm text-gray-300 hover:bg-cyan-500/10 hover:text-cyan-400 cursor-pointer transition-colors'
+                              >
+                                {s}
+                              </li>
+                            ))}
+                          </motion.ul>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Message */}
+                    <div className='relative'>
+                      <span className='absolute left-3 top-3.5 text-gray-500'>
+                        <svg width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><path d='M11 4H4a2 2 0 0 0-2 2v14l4-4h14a2 2 0 0 0 2-2v-5'/><path d='M18 2l4 4-8 8H10v-4l8-8z'/></svg>
+                      </span>
+                      <textarea
+                        className={`${inputCls} pl-9 resize-none`}
+                        name='message'
+                        rows={4}
+                        placeholder='Your Message'
+                        value={form.message}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    {/* Submit */}
+                    <button
+                      type='submit'
+                      disabled={loading}
+                      className='w-full flex items-center justify-center gap-2 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-60 disabled:cursor-not-allowed text-black font-semibold py-3.5 rounded-lg transition-all shadow-[0_0_20px_rgba(0,212,255,0.3)] hover:shadow-[0_0_30px_rgba(0,212,255,0.5)] text-sm'
+                    >
+                      {loading ? (
+                        <>
+                          <svg className='animate-spin w-4 h-4' viewBox='0 0 24 24' fill='none'>
+                            <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                            <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8z' />
+                          </svg>
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send size={15} />
+                          Send Message
+                        </>
+                      )}
+                    </button>
+                  </motion.form>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
         </div>
 
-        {/* Right — contact form */}
+        {/* ── Map + Visit Office row ───────────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className={`rounded-2xl border p-7 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100 shadow-sm'}`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className='mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6'
         >
-          <h3 className={`text-xl font-bold mb-1 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>Send a Message</h3>
-          <p className={`text-sm mb-6 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>We'll get back to you within 24 hours.</p>
+          {/* Map embed */}
+          <div className='lg:col-span-2 rounded-2xl overflow-hidden border border-[#1e3a5f] h-56 relative'>
+            <iframe
+              title='Connaught Place Map'
+              src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.9!2d77.2195!3d28.6315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd37b741d057%3A0xcdee88e47393c3f1!2sConnaught%20Place%2C%20New%20Delhi%2C%20Delhi%20110001!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin'
+              width='100%'
+              height='100%'
+              style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) saturate(0.8)' }}
+              allowFullScreen=''
+              loading='lazy'
+              referrerPolicy='no-referrer-when-downgrade'
+            />
+          </div>
 
-          {sent ? (
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className='flex flex-col items-center justify-center py-12 gap-3'>
-              <div className='w-16 h-16 bg-green-100 rounded-full flex items-center justify-center'>
-                <CheckCircle size={32} className='text-green-600' />
-              </div>
-              <p className={`font-bold text-lg ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Message Sent!</p>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>We'll be in touch soon.</p>
-            </motion.div>
-          ) : (
-            <form onSubmit={handleSubmit} className='space-y-4'>
-              <div>
-                <label className={`text-xs font-semibold uppercase tracking-wider mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Your Name</label>
-                <input className={inputCls} type='text' placeholder='John Doe' value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
-              </div>
-              <div>
-                <label className={`text-xs font-semibold uppercase tracking-wider mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Email Address</label>
-                <input className={inputCls} type='email' placeholder='you@example.com' value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
-              </div>
-              <div>
-                <label className={`text-xs font-semibold uppercase tracking-wider mb-1.5 block ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Message</label>
-                <textarea className={`${inputCls} resize-none`} rows={5} placeholder='How can we help you?' value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required />
-              </div>
-              <button type='submit' className='w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-indigo-600 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-300/30 hover:shadow-indigo-400/40 hover:-translate-y-0.5 transition-all text-sm group'>
-                <Send size={15} /> Send Message
-                <ArrowRight size={14} className='group-hover:translate-x-0.5 transition-transform' />
-              </button>
-            </form>
-          )}
+          {/* Visit Our Office card */}
+          <div className='rounded-2xl border border-[#1e3a5f] bg-[#0d1b2e] p-6 flex flex-col justify-between'>
+            <div>
+              <h4 className='text-cyan-400 font-semibold text-base mb-2'>Visit Our Office</h4>
+              <p className='text-gray-400 text-sm leading-relaxed'>
+                We're conveniently located in the heart of Connaught Place.
+              </p>
+            </div>
+            <a
+              href='https://maps.google.com/?q=Connaught+Place,+New+Delhi'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='mt-4 inline-flex items-center gap-2 text-cyan-400 text-sm border border-cyan-400/40 px-4 py-2 rounded-lg hover:bg-cyan-400/10 transition-all w-fit'
+            >
+              <Navigation size={13} />
+              Get Directions
+            </a>
+          </div>
+        </motion.div>
+
+        {/* ── Bottom CTA banner ────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35 }}
+          className='mt-6 rounded-2xl border border-[#1e3a5f] bg-[#0d1b2e] px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4'
+        >
+          {/* Left */}
+          <div className='flex items-center gap-4'>
+            <div className='w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center flex-shrink-0'>
+              <Shield size={22} className='text-cyan-400' />
+            </div>
+            <div>
+              <p className='text-white font-semibold text-sm'>Need Immediate Assistance?</p>
+              <p className='text-gray-400 text-xs mt-0.5'>Our support team is available 24/7 to help you.</p>
+            </div>
+          </div>
+
+          {/* Center */}
+          <div className='flex items-center gap-3'>
+            <div className='w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center flex-shrink-0'>
+              <Phone size={16} className='text-cyan-400' />
+            </div>
+            <div>
+              <p className='text-gray-400 text-xs'>Call Us Now</p>
+              <p className='text-white font-semibold text-sm'>+91 98765 43210</p>
+            </div>
+          </div>
+
+          {/* Right */}
+          <button className='flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-5 py-2.5 rounded-lg transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)] text-sm flex-shrink-0'>
+            <MessageCircle size={15} />
+            Chat With Us
+          </button>
         </motion.div>
       </div>
     </div>
   )
 }
+
+/* ── Helper component ─────────────────────────────────────────────── */
+const ContactCard = ({ icon, title, lines, last }) => (
+  <div className={`flex items-start gap-3 py-3.5 ${!last ? 'border-b border-[#1e3a5f]' : ''}`}>
+    <div className='w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center flex-shrink-0 mt-0.5'>
+      {icon}
+    </div>
+    <div>
+      <p className='text-white text-sm font-medium'>{title}</p>
+      {lines.map((l, i) => (
+        <p key={i} className='text-gray-400 text-xs mt-0.5'>{l}</p>
+      ))}
+    </div>
+  </div>
+)
 
 export default Contact

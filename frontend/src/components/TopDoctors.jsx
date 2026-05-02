@@ -19,19 +19,19 @@ const TopDoctors = () => {
         className='flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8'
       >
         <div>
-          <span className={`inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 ${darkMode ? 'bg-indigo-900/50 text-indigo-300' : 'bg-indigo-50 text-indigo-600'}`}>
+          <span className='inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'>
             Top Rated
           </span>
-          <h2 className={`text-3xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+          <h2 className='text-3xl font-bold text-gray-100'>
             Top Doctors to Book
           </h2>
-          <p className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+          <p className='mt-2 text-sm text-gray-500'>
             Verified specialists ready to help you today.
           </p>
         </div>
         <button
           onClick={() => { navigate('/doctors'); scrollTo(0, 0) }}
-          className={`flex items-center gap-2 text-sm font-semibold transition-colors group flex-shrink-0 ${darkMode ? 'text-indigo-400 hover:text-indigo-300' : 'text-primary hover:text-indigo-700'}`}
+          className='flex items-center gap-2 text-sm font-semibold transition-colors group flex-shrink-0 text-cyan-400 hover:text-cyan-300'
         >
           View all doctors
           <ArrowRight size={16} className='group-hover:translate-x-1 transition-transform' />
@@ -48,12 +48,17 @@ const TopDoctors = () => {
             viewport={{ once: true }}
             transition={{ delay: index * 0.05, duration: 0.4 }}
             onClick={() => { navigate(`/appointment/${item._id}`); scrollTo(0, 0) }}
-            className={`rounded-2xl overflow-hidden cursor-pointer card-hover border group ${
-              darkMode ? 'bg-gray-800 border-gray-700/60' : 'bg-white border-gray-100'
-            }`}
+            className='relative rounded-2xl overflow-hidden cursor-pointer border border-[#1e2d4a] bg-[#0f1629] group
+              transition-all duration-300
+              hover:-translate-y-2
+              hover:border-cyan-500/40
+              hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]'
           >
+            {/* Glow overlay on hover */}
+            <div className='absolute inset-0 bg-gradient-to-b from-cyan-500/0 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10' />
+
             {/* Image */}
-            <div className='relative overflow-hidden bg-gradient-to-b from-gray-100 to-gray-50'>
+            <div className='relative overflow-hidden bg-[#0d1b3e]'>
               {item.image ? (
                 <img
                   className='w-full h-48 object-cover object-top group-hover:scale-105 transition-transform duration-500'
@@ -66,34 +71,34 @@ const TopDoctors = () => {
                   <span className='text-white text-5xl font-bold'>{item.name?.charAt(0) || 'D'}</span>
                 </div>
               )}
-              <div className='absolute top-2.5 left-2.5 flex items-center gap-1 bg-white/90 backdrop-blur-sm text-green-600 text-[10px] font-bold px-2 py-1 rounded-full shadow-sm'>
-                <span className='w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse' />
+              <div className='absolute top-2.5 left-2.5 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-green-400 text-[10px] font-bold px-2 py-1 rounded-full border border-green-500/30'>
+                <span className='w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse' />
                 Available
               </div>
             </div>
 
             {/* Info */}
-            <div className='p-3.5'>
-              <p className={`font-bold text-sm leading-tight group-hover:text-primary transition-colors ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+            <div className='p-3.5 relative z-20'>
+              <p className='font-bold text-sm leading-tight text-gray-100 group-hover:text-cyan-400 transition-colors duration-300'>
                 {item.name}
               </p>
-              <p className={`text-xs mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              <p className='text-xs mt-0.5 text-gray-500'>
                 {item.speciality}
               </p>
-              
+
               {/* Rating */}
               <div className='flex items-center gap-1 mt-2'>
-                <span className='text-yellow-500 text-xs'>⭐</span>
-                <span className={`text-xs font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <span className='text-yellow-400 text-xs'>⭐</span>
+                <span className='text-xs font-semibold text-gray-300'>
                   {item.rating || 4.5}
                 </span>
               </div>
-              
-              <div className={`mt-3 pt-3 border-t flex items-center justify-between ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${darkMode ? 'bg-indigo-900/50 text-indigo-300' : 'bg-indigo-50 text-indigo-600'}`}>
+
+              <div className='mt-3 pt-3 border-t border-[#1e2d4a] flex items-center justify-between'>
+                <span className='text-[10px] font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 group-hover:bg-cyan-500/20 transition-colors'>
                   Book Now
                 </span>
-                <ArrowRight size={13} className={`${darkMode ? 'text-gray-500' : 'text-gray-400'} group-hover:text-primary group-hover:translate-x-0.5 transition-all`} />
+                <ArrowRight size={13} className='text-gray-600 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all duration-300' />
               </div>
             </div>
           </motion.div>

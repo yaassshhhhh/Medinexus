@@ -1,4 +1,4 @@
-# 🏥 Rogveda
+# 🏥 Medinexus AI
 
 A comprehensive healthcare platform with AI-powered medical assistance, online appointment booking, video consultations, prescription management, and integrated payment system.
 

@@ -45,30 +45,26 @@ const App = () => {
   const { darkMode } = useContext(AppContext)
 
   return (
-    <div className={`${darkMode ? 'text-gray-100 bg-gray-950' : 'text-gray-900'} transition-colors duration-300`}>
-      <div className='mx-4 sm:mx-[8%]'>
+    <div style={{ background: '#0a0f1e', minHeight: '100vh', color: 'white' }}>
       <Navbar />
-      </div>
-      <div className='mx-4 sm:mx-[8%]'>
       <Routes>
-        <Route path='/' element={<Home />} />
+        <Route path='/' element={<div className='mx-4 sm:mx-[8%]'><Home /></div>} />
         <Route path='/doctors' element={<Doctors />} />
         <Route path="/doctors/:speciality" element={<Doctors />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/forgot-password' element={<ForgotPassword />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/contact' element={<Contact />} />
-        <Route path='/my-profile' element={<MyProfile />} />
-        <Route path='/my-appointment' element={<MyAppointment />} />
-        <Route path='/appointment/:docId' element={<Appointment />} />
+        <Route path='/login' element={<div className='mx-4 sm:mx-[8%]'><Login /></div>} />
+        <Route path='/forgot-password' element={<div className='mx-4 sm:mx-[8%]'><ForgotPassword /></div>} />
+        <Route path='/about' element={<div className='mx-4 sm:mx-[8%]'><About /></div>} />
+        <Route path='/contact' element={<div className='mx-4 sm:mx-[8%]'><Contact /></div>} />
+        <Route path='/my-profile' element={<div className='mx-4 sm:mx-[8%]'><MyProfile /></div>} />
+        <Route path='/my-appointment' element={<div className='mx-4 sm:mx-[8%]'><MyAppointment /></div>} />
+        <Route path='/appointment/:docId' element={<div className='mx-4 sm:mx-[8%]'><Appointment /></div>} />
         <Route path='/video-consult' element={<VideoConsult />} />
-        <Route path='/doctor-portal' element={<DoctorPortal />} />
+        <Route path='/doctor-portal' element={<div className='mx-4 sm:mx-[8%]'><DoctorPortal /></div>} />
         <Route path='/admin/*' element={<AdminRoutes />} />
       </Routes>
       <Footer />
       <Chatbot />
-      <ToastContainer theme={darkMode ? 'dark' : 'light'} />
-      </div>
+      <ToastContainer theme='dark' />
     </div>
   )
 }

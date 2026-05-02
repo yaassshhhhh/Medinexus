@@ -18,7 +18,7 @@ OTP emails are not being sent due to Gmail authentication issues.
 6. Click **"App passwords"**
 7. Select:
    - **App:** Mail
-   - **Device:** Other (Custom name) → Type "Rogveda Backend"
+   - **Device:** Other (Custom name) → Type "Medinexus AI Backend"
 8. Click **"Generate"**
 9. **Copy the 16-character password** (e.g., `abcd efgh ijkl mnop`)
    - Remove spaces: `abcdefghijklmnop`
@@ -35,7 +35,7 @@ ADMIN_PASSWORD=your_new_16_char_app_password_here
 ### **Step 3: Update Render Environment Variables**
 
 1. Go to **Render.com** dashboard
-2. Open **medinexus-ai** (or rogveda-backend) service
+2. Open **medinexus-ai** (or medinexus-ai-backend) service
 3. Go to **Environment** tab
 4. Update **ADMIN_PASSWORD** with new App Password
 5. Click **"Save Changes"**
@@ -78,7 +78,7 @@ I've updated the code to print OTP in console logs when email fails.
 **Step 2: Get API Key**
 1. Go to **Settings** → **API Keys**
 2. Click **"Create API Key"**
-3. Name: "Rogveda Backend"
+3. Name: "Medinexus AI Backend"
 4. Permissions: **Full Access**
 5. Copy the API key
 
