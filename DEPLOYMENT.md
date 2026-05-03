@@ -61,7 +61,7 @@ your-frontend.vercel.app/doctor-portal → Doctor portal (same Vercel deployment
 
 | Key | Value |
 |-----|-------|
-| `VITE_BACKEND_URL` | Your Render backend URL |
+| `VITE_BACKEND_URL` | `https://medinexus-backend-k427.onrender.com` |
 | `VITE_RAZORPAY_KEY_ID` | `rzp_test_SkrWttzP0SczbB` |
 
 6. Deploy → Copy the frontend URL
