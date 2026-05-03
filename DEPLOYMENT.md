@@ -76,8 +76,8 @@ After deploy, your URLs will be:
 ## Step 3 — Update Backend with Frontend URL
 
 Go back to Render → Environment Variables → Update:
-- `FRONTEND_URL` = your Vercel frontend URL
-- `ADMIN_URL` = same Vercel frontend URL (admin is embedded)
+- `FRONTEND_URL` = `https://medinexus-eight.vercel.app`
+- `ADMIN_URL` = `https://medinexus-eight.vercel.app`
 
 Then **Redeploy** the backend.
 
