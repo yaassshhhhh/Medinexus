@@ -30,13 +30,13 @@ class EmailService {
                     };
                 } else {
                     this.transporter = nodemailer.createTransport({
-                        service: 'gmail',
                         host: 'smtp.gmail.com',
                         port: 587,
-                        secure: false, // Use TLS
+                        secure: false,
+                        family: 4, // Force IPv4 — Render free tier blocks IPv6
                         auth: {
                             user: process.env.ADMIN_EMAIL,
-                            pass: process.env.ADMIN_PASSWORD // Gmail App Password
+                            pass: process.env.ADMIN_PASSWORD
                         },
                         tls: {
                             rejectUnauthorized: false

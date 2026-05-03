@@ -93,10 +93,10 @@ const getTransporter = () => nodemailer.createTransport(
             pass: process.env.SENDGRID_API_KEY
         }
     } : {
-        service: 'gmail',
         host: 'smtp.gmail.com',
         port: 587,
         secure: false,
+        family: 4, // Force IPv4 — Render free tier blocks IPv6
         auth: { user: process.env.ADMIN_EMAIL, pass: process.env.ADMIN_PASSWORD },
         tls: { rejectUnauthorized: false }
     }

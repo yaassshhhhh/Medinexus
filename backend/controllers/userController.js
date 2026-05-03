@@ -39,18 +39,18 @@ const getTransporter = () => {
             });
         }
 
-        // Default Gmail configuration
+        // Default Gmail configuration — force IPv4 for Render compatibility
         return nodemailer.createTransport({
-            service: 'gmail',
             host: 'smtp.gmail.com',
             port: 587,
-            secure: false, // Use TLS
+            secure: false,
+            family: 4, // Force IPv4 — Render free tier blocks IPv6
             auth: {
                 user: process.env.ADMIN_EMAIL,
                 pass: process.env.ADMIN_PASSWORD
             },
             tls: {
-                rejectUnauthorized: false // Allow self-signed certificates
+                rejectUnauthorized: false
             }
         });
     } catch (error) {
