@@ -2,8 +2,20 @@
 
 ## Architecture
 - **Backend** → [Render.com](https://render.com) (free tier)
-- **Frontend** → [Vercel](https://vercel.com)
-- **Admin Panel** → [Vercel](https://vercel.com) (separate project)
+- **Frontend** → [Vercel](https://vercel.com) — includes User App + Admin Panel + Doctor Portal
+
+> ℹ️ The `/admin` folder in the repo is a legacy standalone app — **do NOT deploy it**.
+> Admin panel is already embedded in the frontend at `/admin/*` routes.
+
+---
+
+## What gets deployed where
+
+```
+your-frontend.vercel.app/              → User facing app
+your-frontend.vercel.app/admin         → Admin panel (same Vercel deployment)
+your-frontend.vercel.app/doctor-portal → Doctor portal (same Vercel deployment)
+```
 
 ---
 
@@ -39,10 +51,12 @@
 
 ## Step 2 — Deploy Frontend on Vercel
 
+> This single deployment covers the **User App + Admin Panel + Doctor Portal**
+
 1. Go to [vercel.com](https://vercel.com) → New Project
 2. Import GitHub repo
 3. Set **Root Directory**: `Medinexus-Ai-/frontend`
-4. **Framework**: Vite
+4. **Framework**: Vite (auto-detected)
 5. Add environment variables:
 
 | Key | Value |
@@ -52,28 +66,18 @@
 
 6. Deploy → Copy the frontend URL
 
----
-
-## Step 3 — Deploy Admin Panel on Vercel
-
-1. New Project on Vercel → same repo
-2. Set **Root Directory**: `Medinexus-Ai-/admin`
-3. **Framework**: Vite
-4. Add environment variables:
-
-| Key | Value |
-|-----|-------|
-| `VITE_BACKEND_URL` | Your Render backend URL |
-
-5. Deploy → Copy the admin URL
+After deploy, your URLs will be:
+- `https://your-app.vercel.app/` — User app
+- `https://your-app.vercel.app/admin` — Admin panel
+- `https://your-app.vercel.app/doctor-portal` — Doctor portal
 
 ---
 
-## Step 4 — Update Backend URLs
+## Step 3 — Update Backend with Frontend URL
 
 Go back to Render → Environment Variables → Update:
 - `FRONTEND_URL` = your Vercel frontend URL
-- `ADMIN_URL` = your Vercel admin URL
+- `ADMIN_URL` = same Vercel frontend URL (admin is embedded)
 
 Then **Redeploy** the backend.
 
