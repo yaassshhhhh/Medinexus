@@ -12,6 +12,12 @@ const submitReview = async (req, res) => {
         if (appointment.userId !== userId) return res.json({ success: false, message: "Unauthorized" });
         if (!appointment.isCompleted) return res.json({ success: false, message: "Can only review completed appointments" });
 
+        // Validate rating range
+        const numRating = Number(rating);
+        if (!numRating || numRating < 1 || numRating > 5) {
+            return res.json({ success: false, message: "Rating must be between 1 and 5" });
+        }
+
         const existing = await reviewModel.findOne({ appointmentId });
         if (existing) return res.json({ success: false, message: "Already reviewed this appointment" });
 
@@ -19,7 +25,7 @@ const submitReview = async (req, res) => {
             appointmentId,
             userId,
             docId: appointment.docId,
-            rating,
+            rating: numRating,
             comment,
             userName: appointment.userData?.name || 'Patient',
             userImage: appointment.userData?.image || '',

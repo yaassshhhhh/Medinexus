@@ -1,12 +1,20 @@
-import React, { useContext, useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useContext, useState, useRef } from 'react'
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { specialityData } from '../assets/assets'
+import { specialityData, assets } from '../assets/assets'
 import { AppContext } from '../context/AppContext'
+import FloatingParticles from './FloatingParticles'
+import doc1 from '../assets/doc1.png'
+import doc2 from '../assets/doc2.png'
+import doc3 from '../assets/doc3.png'
 
 // Floating stat badge
 const StatBadge = ({ icon, value, label, className }) => (
-  <div className={`flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-4 py-3 ${className}`}>
+  <motion.div
+    whileHover={{ scale: 1.06, y: -3 }}
+    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    className={`flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-4 py-3 ${className}`}
+  >
     <div className='w-10 h-10 rounded-xl bg-teal-400/20 flex items-center justify-center text-teal-300 text-xl'>
       {icon}
     </div>
@@ -14,81 +22,161 @@ const StatBadge = ({ icon, value, label, className }) => (
       <p className='text-white font-bold text-lg leading-none'>{value}</p>
       <p className='text-slate-400 text-xs mt-0.5'>{label}</p>
     </div>
-  </div>
+  </motion.div>
 )
 
-// Glowing ring doctor illustration
+// Three Real Doctors Hero
+const DoctorCard = ({ img, name, specialty, delay, position }) => {
+  const isCenter = position === 'center'
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay, ease: 'easeOut' }}
+      className={`relative flex flex-col items-center ${isCenter ? 'z-20' : 'z-10'}`}
+    >
+      {/* Glow ring behind center doctor */}
+      {isCenter && (
+        <motion.div
+          animate={{ scale: [1, 1.08, 1], opacity: [0.4, 0.65, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          className='absolute inset-0 rounded-full pointer-events-none'
+          style={{
+            background: 'radial-gradient(circle, rgba(20,184,166,0.35) 0%, rgba(99,102,241,0.15) 55%, transparent 75%)',
+            top: '-10%', left: '-10%', right: '-10%', bottom: '-10%',
+          }}
+        />
+      )}
+
+      {/* Doctor image container */}
+      <motion.div
+        animate={{ y: [0, isCenter ? -10 : -6, 0] }}
+        transition={{ duration: isCenter ? 3.5 : 4.2, repeat: Infinity, ease: 'easeInOut', delay: delay * 0.5 }}
+        className={`relative overflow-hidden ${
+          isCenter
+            ? 'w-44 h-52 rounded-3xl border-2 border-teal-400/50 shadow-2xl shadow-teal-500/30'
+            : 'w-32 h-40 rounded-2xl border border-teal-500/25 shadow-xl shadow-teal-500/15'
+        }`}
+        style={{
+          background: 'linear-gradient(180deg, rgba(13,31,60,0.3) 0%, rgba(13,31,60,0.8) 100%)',
+        }}
+      >
+        <img
+          src={img}
+          alt={name}
+          className='w-full h-full object-cover object-top'
+          style={{ filter: isCenter ? 'none' : 'brightness(0.85)' }}
+        />
+        {/* Bottom gradient overlay */}
+        <div className='absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#0a1628] to-transparent' />
+
+        {/* Verified badge for center */}
+        {isCenter && (
+          <div className='absolute top-2 right-2 bg-teal-500/90 backdrop-blur-sm rounded-full px-2 py-0.5 flex items-center gap-1'>
+            <span className='text-[9px] text-white font-bold'>✓ Verified</span>
+          </div>
+        )}
+      </motion.div>
+
+      {/* Name & specialty label */}
+      <div className={`mt-2 text-center ${isCenter ? '' : 'opacity-80'}`}>
+        <p className={`font-semibold text-white leading-tight ${isCenter ? 'text-sm' : 'text-xs'}`}>{name}</p>
+        <p className={`text-teal-400 ${isCenter ? 'text-xs' : 'text-[10px]'} mt-0.5`}>{specialty}</p>
+      </div>
+    </motion.div>
+  )
+}
+
 const DoctorHero = () => (
-  <div className='relative flex items-center justify-center w-full h-full'>
-    {/* Outer glow ring */}
-    <div className='absolute w-72 h-72 md:w-80 md:h-80 rounded-full border-2 border-teal-400/30 animate-pulse' />
-    <div className='absolute w-56 h-56 md:w-64 md:h-64 rounded-full border border-teal-400/20' />
-    {/* Inner glowing circle */}
-    <div className='absolute w-48 h-48 md:w-56 md:h-56 rounded-full bg-gradient-to-b from-teal-400/20 to-blue-600/10 blur-xl' />
-    {/* Doctor SVG */}
-    <svg viewBox='0 0 300 360' xmlns='http://www.w3.org/2000/svg' className='relative z-10 w-56 md:w-64 drop-shadow-2xl' aria-label='Doctor illustration'>
-      <defs>
-        <linearGradient id='coat' x1='0' y1='0' x2='0' y2='1'>
-          <stop offset='0%' stopColor='#e8f0fe' />
-          <stop offset='100%' stopColor='#c7d2fe' />
-        </linearGradient>
-        <linearGradient id='skin' x1='0' y1='0' x2='0' y2='1'>
-          <stop offset='0%' stopColor='#fcd9b6' />
-          <stop offset='100%' stopColor='#f5b98a' />
-        </linearGradient>
-        <linearGradient id='scrub' x1='0' y1='0' x2='1' y2='1'>
-          <stop offset='0%' stopColor='#14b8a6' />
-          <stop offset='100%' stopColor='#0891b2' />
-        </linearGradient>
-      </defs>
-      {/* Shadow */}
-      <ellipse cx='150' cy='352' rx='80' ry='8' fill='rgba(0,0,0,0.3)' />
-      {/* Coat body */}
-      <path d='M75,200 Q60,215 55,290 Q53,330 55,350 L245,350 Q247,330 245,290 Q240,215 225,200 L200,190 Q175,225 150,225 Q125,225 100,190 Z' fill='url(#coat)' />
-      {/* Scrubs */}
-      <path d='M100,190 L90,230 L150,245 L210,230 L200,190 Q180,210 150,210 Q120,210 100,190 Z' fill='url(#scrub)' />
-      {/* Stethoscope */}
-      <path d='M110,235 Q98,265 102,285 Q106,305 120,305 Q134,305 134,292' fill='none' stroke='#1e293b' strokeWidth='3.5' strokeLinecap='round' />
-      <circle cx='134' cy='289' r='7' fill='#1e293b' />
-      <circle cx='134' cy='289' r='4' fill='#14b8a6' />
-      {/* Pocket */}
-      <rect x='165' y='240' width='30' height='24' rx='4' fill='white' opacity='0.5' stroke='#a5b4fc' strokeWidth='1' />
-      <rect x='172' y='236' width='3' height='10' rx='1.5' fill='#ef4444' />
-      <rect x='178' y='234' width='3' height='12' rx='1.5' fill='#3b82f6' />
-      <rect x='184' y='237' width='3' height='9' rx='1.5' fill='#10b981' />
-      {/* Neck */}
-      <rect x='138' y='158' width='24' height='34' rx='10' fill='url(#skin)' />
-      {/* Head */}
-      <ellipse cx='150' cy='128' rx='44' ry='48' fill='url(#skin)' />
-      {/* Hair */}
-      <path d='M106,118 Q108,76 150,74 Q192,76 194,118 Q182,88 150,86 Q118,88 106,118 Z' fill='#2d1a0e' />
-      {/* Ears */}
-      <ellipse cx='106' cy='130' rx='7' ry='9' fill='#f5b98a' />
-      <ellipse cx='194' cy='130' rx='7' ry='9' fill='#f5b98a' />
-      {/* Eyes */}
-      <ellipse cx='136' cy='128' rx='8' ry='9' fill='white' />
-      <ellipse cx='164' cy='128' rx='8' ry='9' fill='white' />
-      <circle cx='138' cy='130' r='4.5' fill='#2d1a0e' />
-      <circle cx='166' cy='130' r='4.5' fill='#2d1a0e' />
-      <circle cx='139.5' cy='128.5' r='1.5' fill='white' />
-      <circle cx='167.5' cy='128.5' r='1.5' fill='white' />
-      {/* Eyebrows */}
-      <path d='M128,116 Q136,111 144,116' fill='none' stroke='#2d1a0e' strokeWidth='2' strokeLinecap='round' />
-      <path d='M156,116 Q164,111 172,116' fill='none' stroke='#2d1a0e' strokeWidth='2' strokeLinecap='round' />
-      {/* Smile */}
-      <path d='M138,144 Q150,154 162,144' fill='none' stroke='#c0714a' strokeWidth='2' strokeLinecap='round' />
-      {/* Nose */}
-      <path d='M147,133 Q145,141 150,143 Q155,141 153,133' fill='none' stroke='#c0714a' strokeWidth='1.5' strokeLinecap='round' />
-      {/* Left arm */}
-      <path d='M75,210 Q48,238 44,278 Q42,298 54,302 L68,302 Q72,278 80,255 Z' fill='url(#coat)' stroke='#c7d2fe' strokeWidth='1' />
-      <ellipse cx='48' cy='305' rx='13' ry='8' fill='url(#skin)' />
-      {/* Right arm */}
-      <path d='M225,210 Q252,238 256,270 Q258,290 246,294 L232,294 Q228,270 220,248 Z' fill='url(#coat)' stroke='#c7d2fe' strokeWidth='1' />
-      <ellipse cx='252' cy='297' rx='12' ry='8' fill='url(#skin)' />
-    </svg>
-    {/* ECG line decoration */}
-    <svg className='absolute bottom-4 left-0 right-0 w-full opacity-30' viewBox='0 0 300 40' xmlns='http://www.w3.org/2000/svg'>
-      <polyline points='0,20 40,20 55,5 65,35 75,5 85,20 120,20 135,20 150,20 165,20 180,20 220,20 235,8 245,32 255,8 265,20 300,20' fill='none' stroke='#14b8a6' strokeWidth='2' />
+  <div className='relative flex items-end justify-center w-full h-full min-h-[360px] pb-4'>
+
+  {/* Background glow */}
+    <motion.div
+      animate={{ scale: [1, 1.12, 1], opacity: [0.08, 0.16, 0.08] }}
+      transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+      className='absolute inset-0 pointer-events-none'
+      style={{ background: 'radial-gradient(ellipse at center bottom, rgba(20,184,166,0.2) 0%, transparent 70%)' }}
+    />
+
+    {/* Rotating dashed ring (decorative) */}
+    <motion.div
+      animate={{ rotate: 360 }}
+      transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+      className='absolute w-[320px] h-[320px] rounded-full pointer-events-none'
+      style={{ border: '1px dashed rgba(20,184,166,0.18)', bottom: '5%', left: '50%', transform: 'translateX(-50%)' }}
+    />
+
+    {/* Three doctors layout */}
+    <div className='relative flex items-end justify-center gap-3 w-full px-2'>
+
+      {/* Left doctor */}
+      <DoctorCard
+        img={doc1}
+        name='Dr. Sarah Lee'
+        specialty='Cardiologist'
+        delay={0.3}
+        position='left'
+      />
+
+      {/* Center doctor — taller, highlighted */}
+      <DoctorCard
+        img={doc2}
+        name='Dr. Arjun Mehta'
+        specialty='General Physician'
+        delay={0.1}
+        position='center'
+      />
+
+      {/* Right doctor */}
+      <DoctorCard
+        img={doc3}
+        name='Dr. Priya Nair'
+        specialty='Neurologist'
+        delay={0.5}
+        position='right'
+      />
+    </div>
+
+    {/* Heartbeat card (top-left) */}
+    <motion.div
+      animate={{ y: [0, -8, 0], opacity: [0.9, 1, 0.9] }}
+      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+      className='absolute top-4 left-0 z-30 px-3 py-2 rounded-xl flex items-center gap-2'
+      style={{ background: 'rgba(10,22,40,0.92)', border: '1px solid rgba(239,68,68,0.45)', backdropFilter: 'blur(10px)', boxShadow: '0 4px 20px rgba(239,68,68,0.15)' }}
+    >
+      <svg viewBox='0 0 44 22' className='w-11 h-5'>
+        <motion.polyline
+          points='0,11 7,11 10,3 13,19 16,3 19,11 30,11 33,5 36,17 39,5 44,11'
+          fill='none' stroke='#ef4444' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'
+          initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+          transition={{ duration: 1.4, repeat: Infinity, repeatType: 'loop', repeatDelay: 0.6, ease: 'easeInOut' }}
+        />
+      </svg>
+      <span className='text-xs font-bold text-red-400'>72 BPM</span>
+    </motion.div>
+
+    {/* AI chip badge (top-right) */}
+    <motion.div
+      animate={{ y: [0, -10, 0], rotate: [0, 3, -3, 0] }}
+      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
+      className='absolute top-2 right-0 z-30 px-3 py-2 rounded-xl flex items-center gap-1.5'
+      style={{ background: 'rgba(10,22,40,0.92)', border: '1px solid rgba(99,102,241,0.5)', backdropFilter: 'blur(10px)', boxShadow: '0 4px 20px rgba(99,102,241,0.2)' }}
+    >
+      <span className='text-base'>🤖</span>
+      <div>
+        <p className='text-[9px] text-slate-400 leading-none'>AI Powered</p>
+        <p className='text-xs font-bold text-indigo-400 leading-none'>MediNexus</p>
+      </div>
+    </motion.div>
+
+    {/* ECG bottom line */}
+    <svg className='absolute bottom-0 left-0 right-0 w-full opacity-20' viewBox='0 0 300 24' xmlns='http://www.w3.org/2000/svg'>
+      <motion.polyline
+        points='0,12 28,12 38,3 46,21 54,3 62,12 100,12 110,12 130,12 150,12 170,12 190,12 200,5 208,19 216,5 224,12 300,12'
+        fill='none' stroke='#14b8a6' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'
+        initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 2.2, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop', repeatDelay: 0.6 }}
+      />
     </svg>
   </div>
 )
@@ -111,7 +199,10 @@ const Header = () => {
   }
 
   return (
-    <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a1628] via-[#0d1f3c] to-[#0a1628] min-h-[480px]'>
+    <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a1628] via-[#0d1f3c] to-[#0a1628] min-h-[480px] mt-8'>
+
+      {/* Floating particles */}
+      <FloatingParticles count={35} color='#00d4ff' opacity={0.25} speed={0.3} />
 
       {/* Background grid */}
       <div className='absolute inset-0 pointer-events-none opacity-[0.06]'>
@@ -125,9 +216,20 @@ const Header = () => {
         </svg>
       </div>
 
-      {/* Glow blobs */}
-      <div className='absolute top-0 right-1/3 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none' />
-      <div className='absolute bottom-0 left-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none' />
+      {/* Animated glow blobs */}
+      <motion.div
+        animate={{ scale: [1, 1.15, 1], opacity: [0.1, 0.18, 0.1] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        className='absolute top-0 right-1/3 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none'
+      />
+      <motion.div
+        animate={{ scale: [1, 1.2, 1], opacity: [0.08, 0.15, 0.08] }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+        className='absolute bottom-0 left-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none'
+      />
+
+      {/* Scan line */}
+      <div className='scan-line' />
 
       <div className='relative z-10 flex flex-col md:flex-row items-center px-6 md:px-12 lg:px-16 py-10 gap-8'>
 
@@ -140,7 +242,7 @@ const Header = () => {
             className='text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white'
           >
             Your Health,<br />
-            <span className='text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-300'>
+            <span className='gradient-text-animated'>
               Our Priority
             </span>
           </motion.h1>
@@ -165,10 +267,16 @@ const Header = () => {
               { icon: '🩺', text: 'Verified Doctors' },
               { icon: '📅', text: 'Easy Appointments' },
               { icon: '🔒', text: 'Secure & Private' },
-            ].map(({ icon, text }) => (
-              <span key={text} className='flex items-center gap-1.5 text-slate-300 text-xs font-medium'>
+            ].map(({ icon, text }, i) => (
+              <motion.span
+                key={text}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.45 + i * 0.1, duration: 0.4 }}
+                className='flex items-center gap-1.5 text-slate-300 text-xs font-medium'
+              >
                 <span>{icon}</span> {text}
-              </span>
+              </motion.span>
             ))}
           </motion.div>
 
@@ -206,12 +314,15 @@ const Header = () => {
                 />
               </div>
               {/* Book button */}
-              <button
+              <motion.button
                 onClick={handleBook}
-                className='flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg shadow-teal-500/25 hover:shadow-teal-400/40 hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap'
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                className='ripple-btn flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg shadow-teal-500/25 hover:shadow-teal-400/40 transition-all duration-200 whitespace-nowrap glow-pulse'
               >
                 Book Now →
-              </button>
+              </motion.button>
             </div>
           </motion.div>
         </div>
@@ -233,7 +344,7 @@ const Header = () => {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className='w-full flex justify-center items-end pt-4'
+            className='w-full flex justify-center items-end pt-4 float'
           >
             <DoctorHero />
           </motion.div>

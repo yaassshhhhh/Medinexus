@@ -337,47 +337,6 @@ const Contact = () => {
           </motion.div>
         </div>
 
-        {/* ── Map + Visit Office row ───────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.25 }}
-          className='mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6'
-        >
-          {/* Map embed */}
-          <div className='lg:col-span-2 rounded-2xl overflow-hidden border border-[#1e3a5f] h-56 relative'>
-            <iframe
-              title='Connaught Place Map'
-              src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.9!2d77.2195!3d28.6315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd37b741d057%3A0xcdee88e47393c3f1!2sConnaught%20Place%2C%20New%20Delhi%2C%20Delhi%20110001!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin'
-              width='100%'
-              height='100%'
-              style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) saturate(0.8)' }}
-              allowFullScreen=''
-              loading='lazy'
-              referrerPolicy='no-referrer-when-downgrade'
-            />
-          </div>
-
-          {/* Visit Our Office card */}
-          <div className='rounded-2xl border border-[#1e3a5f] bg-[#0d1b2e] p-6 flex flex-col justify-between'>
-            <div>
-              <h4 className='text-cyan-400 font-semibold text-base mb-2'>Visit Our Office</h4>
-              <p className='text-gray-400 text-sm leading-relaxed'>
-                We're conveniently located in the heart of Connaught Place.
-              </p>
-            </div>
-            <a
-              href='https://maps.google.com/?q=Connaught+Place,+New+Delhi'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='mt-4 inline-flex items-center gap-2 text-cyan-400 text-sm border border-cyan-400/40 px-4 py-2 rounded-lg hover:bg-cyan-400/10 transition-all w-fit'
-            >
-              <Navigation size={13} />
-              Get Directions
-            </a>
-          </div>
-        </motion.div>
-
         {/* ── Bottom CTA banner ────────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -408,10 +367,15 @@ const Contact = () => {
           </div>
 
           {/* Right */}
-          <button className='flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-5 py-2.5 rounded-lg transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)] text-sm flex-shrink-0'>
+          <a
+            href='https://chat.whatsapp.com/GyDo1Tad9uZ3aXHYCXtZHG?mode=gi_t'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-5 py-2.5 rounded-lg transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)] text-sm flex-shrink-0'
+          >
             <MessageCircle size={15} />
             Chat With Us
-          </button>
+          </a>
         </motion.div>
       </div>
     </div>

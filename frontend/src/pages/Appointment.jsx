@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
 import RelatedDoctors from '../components/RelatedDoctors'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, Info, Clock, Calendar, X, Video, MapPin, Star, BadgeCheck } from 'lucide-react'
+import { Check, Info, Clock, Calendar, X, Video, MapPin, Star, BadgeCheck, RefreshCw } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 
@@ -27,6 +27,8 @@ const Appointment = () => {
   const [otp, setOtp] = useState('')
   const [isVideoConsult, setIsVideoConsult] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [otpCountdown, setOtpCountdown] = useState(0)
+  const countdownRef = useRef(null)
 
   useEffect(() => {
     const info = doctors.find(doc => doc._id === docId)
@@ -62,6 +64,19 @@ const Appointment = () => {
     setDocSlots(allSlots)
   }, [docInfo])
 
+  const startCountdown = () => {
+    setOtpCountdown(120)
+    clearInterval(countdownRef.current)
+    countdownRef.current = setInterval(() => {
+      setOtpCountdown(prev => {
+        if (prev <= 1) { clearInterval(countdownRef.current); return 0 }
+        return prev - 1
+      })
+    }, 1000)
+  }
+
+  useEffect(() => () => clearInterval(countdownRef.current), [])
+
   const initiateBooking = async () => {
     if (!token) { toast.warn('Login to book appointment'); return navigate('/login') }
     if (!slotTime) { toast.warn('Please select a time slot first'); return }
@@ -71,7 +86,7 @@ const Appointment = () => {
       const date = docSlots[slotIndex][0].datetime
       const slotDate = `${date.getDate()}_${date.getMonth() + 1}_${date.getFullYear()}`
       const { data } = await axios.post(backendUrl + '/api/user/send-booking-otp', { docId, slotDate, slotTime }, { headers: { token } })
-      if (data.success) { toast.success(data.message); setShowOtpModal(true) }
+      if (data.success) { toast.success(data.message); setShowOtpModal(true); startCountdown() }
       else toast.error(data.message || 'Failed to send OTP')
     } catch (error) {
       toast.error(error.response?.data?.message || error.message)
@@ -93,7 +108,21 @@ const Appointment = () => {
     } finally { setIsLoading(false) }
   }
 
-  if (!docInfo) return null
+  if (!docInfo) return (
+    <div className='pb-20 animate-pulse'>
+      <div className='flex flex-col sm:flex-row gap-6'>
+        <div className='w-full sm:w-72 flex-shrink-0 rounded-2xl h-80 bg-[#0f1629] border border-[#1e2d4a]' />
+        <div className='flex-1 rounded-2xl p-8 bg-[#0f1629] border border-[#1e2d4a] space-y-4'>
+          <div className='h-6 rounded-lg w-1/2 bg-[#1e2d4a]' />
+          <div className='h-4 rounded-lg w-1/3 bg-[#1e2d4a]' />
+          <div className='grid grid-cols-3 gap-3 mt-4'>
+            {[1,2,3].map(i => <div key={i} className='h-16 rounded-xl bg-[#1e2d4a]' />)}
+          </div>
+          <div className='h-20 rounded-xl bg-[#1e2d4a]' />
+        </div>
+      </div>
+    </div>
+  )
 
   return (
     <div className='pb-20'>
@@ -281,11 +310,44 @@ const Appointment = () => {
               <input
                 type='text'
                 value={otp}
-                onChange={e => setOtp(e.target.value)}
+                onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder='• • • • • •'
                 maxLength={6}
                 className='w-full border-2 border-[#1e2d4a] focus:border-cyan-500 rounded-xl px-4 py-3.5 text-center text-2xl tracking-[0.5em] font-bold focus:outline-none transition-all mb-4 bg-[#0d1b3e] text-gray-100'
               />
+
+              {/* Countdown + resend */}
+              <div className='flex items-center justify-between mb-4 text-sm'>
+                {otpCountdown > 0 ? (
+                  <span className={tSec}>
+                    OTP expires in{' '}
+                    <span className={`font-bold ${otpCountdown <= 30 ? 'text-red-400' : 'text-cyan-400'}`}>
+                      {Math.floor(otpCountdown / 60)}:{String(otpCountdown % 60).padStart(2, '0')}
+                    </span>
+                  </span>
+                ) : (
+                  <span className='text-red-400 text-xs font-medium'>OTP expired</span>
+                )}
+                <button
+                  type='button'
+                  disabled={otpCountdown > 90 || isLoading}
+                  onClick={async () => {
+                    if (isLoading) return
+                    setIsLoading(true)
+                    try {
+                      const date = docSlots[slotIndex][0].datetime
+                      const slotDate = `${date.getDate()}_${date.getMonth() + 1}_${date.getFullYear()}`
+                      const { data } = await axios.post(backendUrl + '/api/user/send-booking-otp', { docId, slotDate, slotTime }, { headers: { token } })
+                      if (data.success) { toast.success('OTP resent!'); startCountdown() }
+                      else toast.error(data.message)
+                    } catch (err) { toast.error(err.message) }
+                    finally { setIsLoading(false) }
+                  }}
+                  className='flex items-center gap-1 text-cyan-400 hover:text-cyan-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs font-semibold'
+                >
+                  <RefreshCw size={12} /> Resend OTP
+                </button>
+              </div>
               <button
                 onClick={confirmBooking}
                 disabled={isLoading}

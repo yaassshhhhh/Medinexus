@@ -1,5 +1,7 @@
-import React, { useContext } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { Route, Routes, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import SplashScreen from './components/SplashScreen'
 import Home from './pages/Home'
 import Doctors from './pages/Doctors'
 import Login from './pages/Login'
@@ -24,6 +26,20 @@ import AdminAllAppointments from './pages/admin/AdminAllAppointments'
 import AdminDoctorsList from './pages/admin/AdminDoctorsList'
 import AdminAddDoctor from './pages/admin/AdminAddDoctor'
 import AdminLayout from './components/AdminLayout'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import AdminAnalytics from './pages/admin/AdminAnalytics'
+
+const pageVariants = {
+  initial: { opacity: 0, y: 18 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] } },
+  exit:    { opacity: 0, y: -10, transition: { duration: 0.26, ease: 'easeIn' } },
+}
+
+const AnimatedPage = ({ children }) => (
+  <motion.div variants={pageVariants} initial='initial' animate='animate' exit='exit'>
+    {children}
+  </motion.div>
+)
 
 const AdminRoutes = () => {
   const { aToken } = useContext(AdminContext)
@@ -31,11 +47,12 @@ const AdminRoutes = () => {
   return (
     <AdminLayout>
       <Routes>
-        <Route path='dashboard' element={<AdminDashboard />} />
+        <Route path='dashboard'    element={<AdminDashboard />} />
         <Route path='appointments' element={<AdminAllAppointments />} />
-        <Route path='add-doctor' element={<AdminAddDoctor />} />
-        <Route path='doctors' element={<AdminDoctorsList />} />
-        <Route path='*' element={<AdminDashboard />} />
+        <Route path='add-doctor'   element={<AdminAddDoctor />} />
+        <Route path='doctors'      element={<AdminDoctorsList />} />
+        <Route path='analytics'    element={<AdminAnalytics />} />
+        <Route path='*'            element={<AdminDashboard />} />
       </Routes>
     </AdminLayout>
   )
@@ -43,29 +60,44 @@ const AdminRoutes = () => {
 
 const App = () => {
   const { darkMode } = useContext(AppContext)
+  const location = useLocation()
+  const [splashDone, setSplashDone] = useState(false)
 
   return (
+    <>
+      <AnimatePresence>
+        {!splashDone && (
+          <SplashScreen onComplete={() => setSplashDone(true)} />
+        )}
+      </AnimatePresence>
+
+      {splashDone && (
     <div style={{ background: '#0a0f1e', minHeight: '100vh', color: 'white' }}>
       <Navbar />
-      <Routes>
-        <Route path='/' element={<div className='mx-4 sm:mx-[8%]'><Home /></div>} />
-        <Route path='/doctors' element={<Doctors />} />
-        <Route path="/doctors/:speciality" element={<Doctors />} />
-        <Route path='/login' element={<div className='mx-4 sm:mx-[8%]'><Login /></div>} />
-        <Route path='/forgot-password' element={<div className='mx-4 sm:mx-[8%]'><ForgotPassword /></div>} />
-        <Route path='/about' element={<div className='mx-4 sm:mx-[8%]'><About /></div>} />
-        <Route path='/contact' element={<div className='mx-4 sm:mx-[8%]'><Contact /></div>} />
-        <Route path='/my-profile' element={<div className='mx-4 sm:mx-[8%]'><MyProfile /></div>} />
-        <Route path='/my-appointment' element={<div className='mx-4 sm:mx-[8%]'><MyAppointment /></div>} />
-        <Route path='/appointment/:docId' element={<div className='mx-4 sm:mx-[8%]'><Appointment /></div>} />
-        <Route path='/video-consult' element={<VideoConsult />} />
-        <Route path='/doctor-portal' element={<div className='mx-4 sm:mx-[8%]'><DoctorPortal /></div>} />
-        <Route path='/admin/*' element={<AdminRoutes />} />
-      </Routes>
+      <AnimatePresence mode='wait'>
+        <Routes location={location} key={location.pathname}>
+          <Route path='/' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Home /></div></AnimatedPage>} />
+          <Route path='/doctors' element={<AnimatedPage><Doctors /></AnimatedPage>} />
+          <Route path="/doctors/:speciality" element={<AnimatedPage><Doctors /></AnimatedPage>} />
+          <Route path='/login' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Login /></div></AnimatedPage>} />
+          <Route path='/forgot-password' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><ForgotPassword /></div></AnimatedPage>} />
+          <Route path='/about' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><About /></div></AnimatedPage>} />
+          <Route path='/contact' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Contact /></div></AnimatedPage>} />
+          <Route path='/my-profile' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><MyProfile /></div></AnimatedPage>} />
+          <Route path='/my-appointment' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><MyAppointment /></div></AnimatedPage>} />
+          <Route path='/appointment/:docId' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Appointment /></div></AnimatedPage>} />
+          <Route path='/video-consult' element={<AnimatedPage><VideoConsult /></AnimatedPage>} />
+          <Route path='/doctor-portal' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><DoctorPortal /></div></AnimatedPage>} />
+          <Route path='/privacy-policy' element={<AnimatedPage><PrivacyPolicy /></AnimatedPage>} />
+          <Route path='/admin/*' element={<AdminRoutes />} />
+        </Routes>
+      </AnimatePresence>
       <Footer />
       <Chatbot />
       <ToastContainer theme='dark' />
     </div>
+      )}
+    </>
   )
 }
 

@@ -5,6 +5,18 @@ import { motion } from 'framer-motion';
 import { assets } from '../../assets/assets';
 import { Upload, UserPlus } from 'lucide-react';
 
+// ── Defined OUTSIDE component so it never re-creates on re-render ─────────────
+const inputCls = `w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition-all
+  focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500`;
+const inputStyle = { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' };
+
+const Field = ({ label, children }) => (
+  <div className="flex flex-col gap-1.5">
+    <label className="text-sm font-semibold text-slate-300">{label}</label>
+    {children}
+  </div>
+);
+
 const AdminAddDoctor = () => {
   const [docImg, setDocImg] = useState(null);
   const [name, setName] = useState('');
@@ -39,24 +51,14 @@ const AdminAddDoctor = () => {
 
     const success = await addDoctor(formData);
     if (success) {
-      getDoctorsData();
+      // Refresh frontend doctors list so new doctor appears immediately
+      await getDoctorsData();
       setDocImg(null); setName(''); setEmail(''); setPassword('');
       setExperience('1 Year'); setFees(''); setAbout('');
       setSpeciality('General physician'); setDegree('');
       setAddress1(''); setAddress2('');
     }
   };
-
-  const inputCls = `w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition-all
-    focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500`
-  const inputStyle = { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' };
-
-  const Field = ({ label, children }) => (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-slate-300">{label}</label>
-      {children}
-    </div>
-  );
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6">

@@ -1,6 +1,6 @@
 import prescriptionModel from '../models/prescriptionModel.js';
 import appointmentModel from '../models/appointmentModel.js';
-import nodemailer from 'nodemailer';
+import emailService from '../utils/emailService.js';
 
 // Create prescription
 const createPrescription = async (req, res) => {
@@ -11,6 +11,11 @@ const createPrescription = async (req, res) => {
         const appointment = await appointmentModel.findById(appointmentId);
         if (!appointment) {
             return res.json({ success: false, message: 'Appointment not found' });
+        }
+
+        // Verify the requesting doctor owns this appointment
+        if (appointment.docId !== docId) {
+            return res.json({ success: false, message: 'Unauthorized: This appointment does not belong to you' });
         }
 
         const prescription = new prescriptionModel({
@@ -28,15 +33,7 @@ const createPrescription = async (req, res) => {
 
         await prescription.save();
 
-        // Send email to patient
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.ADMIN_EMAIL,
-                pass: process.env.ADMIN_PASSWORD
-            }
-        });
-
+        // Build email HTML
         const emailHTML = `
             <h2>Your Prescription from Dr. ${appointment.docData.name}</h2>
             <p><strong>Diagnosis:</strong> ${diagnosis}</p>
@@ -58,7 +55,8 @@ const createPrescription = async (req, res) => {
             ${followUpDate ? `<p><strong>Follow-up Date:</strong> ${followUpDate}</p>` : ''}
         `;
 
-        await transporter.sendMail({
+        // Send email to patient via centralized email service
+        await emailService.sendEmail({
             from: process.env.ADMIN_EMAIL,
             to: appointment.userData.email,
             subject: 'Your Medical Prescription - Medinexus AI',

@@ -89,7 +89,16 @@ const MyProfile = () => {
                     <span className="text-xs font-bold">Change</span>
                   </div>
                 </div>
-                <input onChange={(e) => { setImage(e.target.files[0]); setRemoveImage(false) }} type="file" id="image" hidden />
+                <input onChange={(e) => {
+                  const file = e.target.files[0]
+                  if (!file) return
+                  if (file.size > 2 * 1024 * 1024) {
+                    toast.error('Image must be under 2MB')
+                    return
+                  }
+                  setImage(file)
+                  setRemoveImage(false)
+                }} type="file" id="image" hidden accept="image/*" />
               </label>
             ) : (
               <img

@@ -12,6 +12,16 @@ const rescheduleAppointment = async (req, res) => {
         if (appointment.cancelled || appointment.isCompleted)
             return res.json({ success: false, message: "Cannot reschedule this appointment" });
 
+        // Validate new slot date is in the future
+        if (newSlotDate) {
+            const [d, m, y] = newSlotDate.split('_').map(Number);
+            const slotDateTime = new Date(y, m - 1, d);
+            slotDateTime.setHours(23, 59, 59, 999);
+            if (slotDateTime < new Date()) {
+                return res.json({ success: false, message: "Cannot reschedule to a past date" });
+            }
+        }
+
         const doctor = await doctorModel.findById(appointment.docId);
         if (!doctor) return res.json({ success: false, message: "Doctor not found" });
 

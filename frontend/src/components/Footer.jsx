@@ -20,7 +20,7 @@ const Footer = () => {
     Company: [
       { label: 'About Us', to: '/about' },
       { label: 'Contact', to: '/contact' },
-      { label: 'Privacy Policy', to: '/' },
+      { label: 'Privacy Policy', to: '/privacy-policy' },
       { label: 'Admin Panel', to: '/admin/dashboard' },
     ],
   }
@@ -117,8 +117,16 @@ const Footer = () => {
           © 2025 <span className="font-semibold" style={{ color: '#00d4ff' }}>MediCare+</span> — All Rights Reserved.
         </p>
         <div className="flex items-center gap-4 text-xs" style={{ color: '#4a5568' }}>
-          {['Privacy', 'Terms', 'Cookies'].map(item => (
-            <span key={item} className="cursor-pointer transition-colors hover:text-white">{item}</span>
+          {[
+            { label: 'Privacy', to: '/privacy-policy' },
+            { label: 'Terms', to: '/privacy-policy' },
+            { label: 'Cookies', to: '/privacy-policy' },
+          ].map(item => (
+            <Link key={item.label} to={item.to} onClick={() => scrollTo(0, 0)}
+              className="cursor-pointer transition-colors hover:text-white"
+              style={{ color: '#4a5568' }}>
+              {item.label}
+            </Link>
           ))}
         </div>
       </div>

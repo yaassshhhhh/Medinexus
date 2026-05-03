@@ -1,20 +1,18 @@
-import React, { useContext } from 'react'
-import { assets } from '../assets/assets'
+import React, { useContext, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import Lottie from 'lottie-react'
 import {
   ShieldCheck, CalendarCheck, Lock, Clock, Cpu, Wallet,
-  Users, Award, Star, Headphones, Target, Linkedin
+  Users, Award, Star, Target, Linkedin, Twitter, Mail,
+  Stethoscope, Code2, Settings, HeartPulse
 } from 'lucide-react'
 import { AppContext } from '../context/AppContext'
+import doc4 from '../assets/doc4.png'
+import doc5 from '../assets/doc5.png'
+import doc7 from '../assets/doc7.png'
+import doc9 from '../assets/doc9.png'
 
 /* ─── Data ─────────────────────────────────────────────── */
-const stats = [
-  { value: '50K+',  label: 'Patients Served',   icon: <Users size={22} /> },
-  { value: '150+',  label: 'Verified Doctors',   icon: <Award size={22} /> },
-  { value: '4.9/5', label: 'Average Rating',     icon: <Star  size={22} /> },
-  { value: '24/7',  label: 'Support',            icon: <Headphones size={22} /> },
-]
-
 const whyUs = [
   {
     icon: <ShieldCheck size={22} />,
@@ -58,30 +56,66 @@ const leadership = [
   {
     name: 'Dr. Rajeev Mehta',
     role: 'Chief Executive Officer',
-    roleColor: 'text-cyan-400',
-    bio: 'Healthcare leader with 15+ years of experience.',
-    img: null,
+    dept: 'Leadership',
+    bio: 'Healthcare visionary with 15+ years driving patient-first innovation across India\'s top hospital networks.',
+    img: doc4,
+    gradient: 'from-cyan-500 to-blue-600',
+    glow: 'rgba(6,182,212,0.25)',
+    border: 'rgba(6,182,212,0.35)',
+    tag: 'CEO',
+    tagColor: '#00d4ff',
+    icon: HeartPulse,
+    stats: [{ label: 'Experience', value: '15+ yrs' }, { label: 'Hospitals', value: '20+' }],
+    linkedin: '#',
+    twitter: '#',
   },
   {
     name: 'Dr. Anjali Sharma',
     role: 'Chief Medical Officer',
-    roleColor: 'text-cyan-400',
-    bio: 'Expert in patient care and medical operations.',
-    img: null,
+    dept: 'Medical',
+    bio: 'Board-certified physician specializing in preventive care and digital health transformation.',
+    img: doc5,
+    gradient: 'from-violet-500 to-purple-600',
+    glow: 'rgba(139,92,246,0.25)',
+    border: 'rgba(139,92,246,0.35)',
+    tag: 'CMO',
+    tagColor: '#a78bfa',
+    icon: Stethoscope,
+    stats: [{ label: 'Patients', value: '10K+' }, { label: 'Research', value: '30+ papers' }],
+    linkedin: '#',
+    twitter: '#',
   },
   {
     name: 'Vikram Malhotra',
-    role: 'CTO',
-    roleColor: 'text-orange-400',
-    bio: 'Tech enthusiast driving innovation in healthcare.',
-    img: null,
+    role: 'Chief Technology Officer',
+    dept: 'Technology',
+    bio: 'Full-stack architect and AI enthusiast building the future of healthcare technology at scale.',
+    img: doc7,
+    gradient: 'from-orange-500 to-amber-500',
+    glow: 'rgba(249,115,22,0.25)',
+    border: 'rgba(249,115,22,0.35)',
+    tag: 'CTO',
+    tagColor: '#fb923c',
+    icon: Code2,
+    stats: [{ label: 'Products', value: '12+' }, { label: 'Engineers', value: '50+' }],
+    linkedin: '#',
+    twitter: '#',
   },
   {
     name: 'Neha Verma',
     role: 'Head of Operations',
-    roleColor: 'text-orange-400',
-    bio: 'Ensures seamless experience for patients and doctors.',
-    img: null,
+    dept: 'Operations',
+    bio: 'Operations strategist ensuring seamless care delivery for thousands of patients every day.',
+    img: doc9,
+    gradient: 'from-emerald-500 to-teal-500',
+    glow: 'rgba(16,185,129,0.25)',
+    border: 'rgba(16,185,129,0.35)',
+    tag: 'COO',
+    tagColor: '#34d399',
+    icon: Settings,
+    stats: [{ label: 'Cities', value: '25+' }, { label: 'Uptime', value: '99.9%' }],
+    linkedin: '#',
+    twitter: '#',
   },
 ]
 
@@ -96,6 +130,14 @@ const fadeUp = (delay = 0) => ({
 /* ─── Component ─────────────────────────────────────────── */
 const About = () => {
   const { darkMode } = useContext(AppContext)
+  const [doctorAnim, setDoctorAnim] = useState(null)
+
+  useEffect(() => {
+    fetch('https://assets10.lottiefiles.com/packages/lf20_5njp3vgg.json')
+      .then(r => r.json())
+      .then(setDoctorAnim)
+      .catch(() => setDoctorAnim(null))
+  }, [])
 
   /* colour tokens – always dark-navy on this page to match design */
   const bg       = 'bg-[#0a0f1e]'
@@ -133,38 +175,72 @@ const About = () => {
           </p>
         </div>
 
-        {/* Hero image */}
+        {/* Hero Lottie animation */}
         <motion.div
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.2 }}
           className='relative z-10 w-full md:w-2/5 flex justify-center'
         >
-          <img
-            src={assets.about_image}
-            alt='About MediNexus AI'
-            className='w-full max-w-sm rounded-2xl shadow-2xl object-cover'
-          />
-          {/* floating badge */}
-          <div className={`absolute -bottom-4 -left-4 px-4 py-3 rounded-xl shadow-xl border ${cardBg} ${border}`}>
-            <p className={`text-xl font-bold ${textPri}`}>10+</p>
-            <p className={`text-xs ${textSec}`}>Years of Excellence</p>
+          <div className='w-full max-w-xs h-52 md:h-60 flex items-center justify-center'>
+            {doctorAnim
+              ? <Lottie animationData={doctorAnim} loop autoplay style={{ width: '100%', height: '100%' }} />
+              : <div className='w-full h-full rounded-2xl bg-blue-900/20 animate-pulse' />
+            }
           </div>
-        </motion.div>
-      </motion.div>
+          {/* floating badges */}
+          {/* Bottom-left: Years of Excellence */}
+          <motion.div
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+            className={`absolute -bottom-4 -left-4 px-4 py-3 rounded-xl shadow-xl border ${cardBg} ${border} flex items-center gap-2`}
+          >
+            <Award size={18} className='text-cyan-400' />
+            <div>
+              <p className={`text-xl font-bold ${textPri}`}>10+</p>
+              <p className={`text-xs ${textSec}`}>Years of Excellence</p>
+            </div>
+          </motion.div>
 
-      {/* ── Stats bar ────────────────────────────────────── */}
-      <motion.div
-        {...fadeUp(0.1)}
-        className={`grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 p-6 rounded-2xl border ${cardBg} ${border}`}
-      >
-        {stats.map(({ value, label, icon }) => (
-          <div key={label} className='text-center'>
-            <div className='flex justify-center mb-2 text-cyan-400'>{icon}</div>
-            <p className={`text-2xl font-bold ${textPri}`}>{value}</p>
-            <p className={`text-xs font-medium mt-0.5 ${textSec}`}>{label}</p>
-          </div>
-        ))}
+          {/* Top-right: Verified Doctors */}
+          <motion.div
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
+            className={`absolute -top-4 -right-4 px-4 py-3 rounded-xl shadow-xl border ${cardBg} ${border} flex items-center gap-2`}
+          >
+            <ShieldCheck size={18} className='text-emerald-400' />
+            <div>
+              <p className={`text-xl font-bold ${textPri}`}>150+</p>
+              <p className={`text-xs ${textSec}`}>Verified Doctors</p>
+            </div>
+          </motion.div>
+
+          {/* Bottom-right: Patients Served */}
+          <motion.div
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
+            className={`absolute -bottom-4 -right-4 px-4 py-3 rounded-xl shadow-xl border ${cardBg} ${border} flex items-center gap-2`}
+          >
+            <Users size={18} className='text-violet-400' />
+            <div>
+              <p className={`text-xl font-bold ${textPri}`}>50K+</p>
+              <p className={`text-xs ${textSec}`}>Patients Served</p>
+            </div>
+          </motion.div>
+
+          {/* Mid-left: Rating */}
+          <motion.div
+            animate={{ y: [0, -4, 0] }}
+            transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+            className={`absolute top-1/2 -translate-y-1/2 -left-6 px-4 py-3 rounded-xl shadow-xl border ${cardBg} ${border} flex items-center gap-2`}
+          >
+            <Star size={18} className='text-yellow-400' />
+            <div>
+              <p className={`text-xl font-bold ${textPri}`}>4.9★</p>
+              <p className={`text-xs ${textSec}`}>Avg Rating</p>
+            </div>
+          </motion.div>
+        </motion.div>
       </motion.div>
 
       {/* ── Our Story + Our Mission ───────────────────────── */}
@@ -175,12 +251,11 @@ const About = () => {
         {/* Story – left */}
         <div className='flex flex-col sm:flex-row gap-6 flex-1 p-7'>
           {/* building image placeholder */}
-          <div className='w-full sm:w-40 h-40 sm:h-auto rounded-xl overflow-hidden flex-shrink-0 bg-[#0d1b3e] flex items-center justify-center'>
-            <img
-              src={assets.about_image}
-              alt='Our Story'
-              className='w-full h-full object-cover opacity-80'
-            />
+          <div className='w-full sm:w-40 h-40 sm:h-auto rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-blue-900/40 to-indigo-900/40 flex items-center justify-center'>
+            {doctorAnim
+              ? <Lottie animationData={doctorAnim} loop autoplay style={{ width: 120, height: 120 }} />
+              : <div className='w-16 h-16 rounded-full bg-blue-900/30 animate-pulse' />
+            }
           </div>
           <div>
             <h2 className={`text-xl font-bold mb-3 ${textPri}`}>
@@ -218,77 +293,226 @@ const About = () => {
 
       {/* ── Why Choose Us ────────────────────────────────── */}
       <div className='mb-16'>
-        <motion.div {...fadeUp(0.1)} className='text-center mb-10'>
-          <p className={`text-sm ${textSec} mb-1`}>— Why</p>
-          <h2 className={`text-3xl font-bold ${textPri}`}>
-            Why <span className='gradient-text'>Choose Us</span>
-          </h2>
-          {/* decorative line */}
-          <div className='flex items-center justify-center gap-2 mt-3'>
-            <div className='h-px w-16 bg-gradient-to-r from-transparent to-cyan-500' />
-            <div className='w-2 h-2 rounded-full bg-cyan-400' />
-            <div className='h-px w-16 bg-gradient-to-l from-transparent to-cyan-500' />
+
+        {/* Section header */}
+        <motion.div {...fadeUp(0.1)} className='mb-12'>
+          <div className='flex items-center gap-3 mb-4'>
+            <div className='h-px flex-1 bg-gradient-to-r from-transparent to-[#1e2d4a]' />
+            <span className='text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20 bg-cyan-500/5'>
+              Why MediNexus
+            </span>
+            <div className='h-px flex-1 bg-gradient-to-l from-transparent to-[#1e2d4a]' />
           </div>
+          <h2 className={`text-3xl md:text-4xl font-extrabold text-center ${textPri}`}>
+            The Standard of Care{' '}
+            <span className='gradient-text'>You Deserve</span>
+          </h2>
+          <p className={`text-center text-sm mt-3 max-w-xl mx-auto ${textSec}`}>
+            We combine cutting-edge technology with compassionate healthcare to deliver
+            an experience that puts you first — every step of the way.
+          </p>
         </motion.div>
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'>
+        {/* Cards grid — alternating accent style */}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-[#1e2d4a] rounded-2xl overflow-hidden border border-[#1e2d4a]'>
           {whyUs.map((item, i) => (
             <motion.div
               key={i}
-              {...fadeUp(i * 0.08)}
-              className={`group rounded-2xl p-6 border cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-blue-900/20 ${cardBg} ${border} hover:border-blue-500/30`}
+              {...fadeUp(i * 0.07)}
+              className={`group relative flex flex-col gap-4 p-7 ${cardBg} transition-all duration-300 hover:bg-[#111d38] cursor-default overflow-hidden`}
             >
-              <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center text-white mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
-                {item.icon}
+              {/* top accent bar */}
+              <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+
+              {/* number + icon row */}
+              <div className='flex items-center justify-between'>
+                <span className='text-4xl font-black text-white/5 select-none leading-none'>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
+                  {item.icon}
+                </div>
               </div>
-              <h3 className={`text-base font-bold mb-1.5 ${textPri}`}>{item.title}</h3>
-              <p className={`text-sm leading-relaxed ${textSec}`}>{item.text}</p>
+
+              {/* text */}
+              <div>
+                <h3 className={`text-base font-bold mb-1.5 ${textPri} group-hover:text-cyan-300 transition-colors duration-200`}>
+                  {item.title}
+                </h3>
+                <p className={`text-sm leading-relaxed ${textSec}`}>{item.text}</p>
+              </div>
+
+              {/* bottom arrow indicator */}
+              <div className='mt-auto pt-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
+                <div className={`h-px w-6 bg-gradient-to-r ${item.color}`} />
+                <span className='text-xs text-cyan-400 font-medium'>Learn more</span>
+              </div>
             </motion.div>
           ))}
         </div>
+
+        {/* Bottom trust strip */}
+        <motion.div
+          {...fadeUp(0.3)}
+          className={`mt-6 flex flex-wrap items-center justify-center gap-6 px-6 py-4 rounded-2xl border ${border} ${cardBg}`}
+        >
+          {[
+            { label: 'ISO Certified', dot: 'bg-emerald-400' },
+            { label: 'HIPAA Compliant', dot: 'bg-blue-400' },
+            { label: '256-bit Encryption', dot: 'bg-violet-400' },
+            { label: '99.9% Uptime SLA', dot: 'bg-amber-400' },
+          ].map(({ label, dot }) => (
+            <div key={label} className='flex items-center gap-2'>
+              <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+              <span className={`text-xs font-medium ${textSec}`}>{label}</span>
+            </div>
+          ))}
+        </motion.div>
       </div>
 
       {/* ── Our Leadership ───────────────────────────────── */}
-      <div>
-        <motion.div {...fadeUp(0.1)} className='text-center mb-10'>
-          <h2 className={`text-3xl font-bold ${textPri}`}>
+      <div className='mb-4'>
+        {/* Section header */}
+        <motion.div {...fadeUp(0.1)} className='text-center mb-14'>
+          <span className='inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'>
+            <Users size={12} /> The Team Behind MediNexus
+          </span>
+          <h2 className={`text-3xl md:text-4xl font-extrabold ${textPri}`}>
             Our <span className='gradient-text'>Leadership</span>
           </h2>
+          <p className={`text-sm mt-3 max-w-md mx-auto ${textSec}`}>
+            Visionaries and experts united by one mission — making quality healthcare accessible to all.
+          </p>
         </motion.div>
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5'>
-          {leadership.map((person, i) => (
-            <motion.div
-              key={i}
-              {...fadeUp(i * 0.1)}
-              className={`group rounded-2xl p-6 border text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-blue-900/20 ${cardBg} ${border} hover:border-blue-500/30`}
-            >
-              {/* Avatar */}
-              <div className='w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg'>
-                {person.img
-                  ? <img src={person.img} alt={person.name} className='w-full h-full object-cover' />
-                  : <span className='text-2xl font-bold text-white'>
-                      {person.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
-                    </span>
-                }
-              </div>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
+          {leadership.map((person, i) => {
+            const Icon = person.icon
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ y: -10 }}
+                className='group relative rounded-3xl overflow-hidden cursor-default'
+                style={{
+                  background: 'linear-gradient(160deg, #0d1b35 0%, #0a1220 100%)',
+                  border: `1px solid ${person.border}`,
+                  boxShadow: `0 4px 24px ${person.glow}`,
+                  transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.boxShadow = `0 16px 48px ${person.glow}`
+                  e.currentTarget.style.borderColor = person.tagColor
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.boxShadow = `0 4px 24px ${person.glow}`
+                  e.currentTarget.style.borderColor = person.border
+                }}
+              >
+                {/* Top gradient bar */}
+                <div className={`h-1 w-full bg-gradient-to-r ${person.gradient}`} />
 
-              <h3 className={`text-base font-bold ${textPri}`}>{person.name}</h3>
-              <p className={`text-xs font-semibold mt-0.5 mb-2 ${person.roleColor}`}>{person.role}</p>
-              <p className={`text-xs leading-relaxed ${textSec}`}>{person.bio}</p>
+                {/* Image area */}
+                <div className='relative overflow-hidden' style={{ height: '220px' }}>
+                  {/* Background glow */}
+                  <div className='absolute inset-0'
+                    style={{ background: `radial-gradient(ellipse at center bottom, ${person.glow} 0%, transparent 70%)` }} />
 
-              {/* LinkedIn icon */}
-              <div className='mt-4 flex justify-center'>
-                <button
-                  aria-label={`${person.name} LinkedIn`}
-                  className='w-8 h-8 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 flex items-center justify-center transition-colors'
-                >
-                  <Linkedin size={14} className='text-blue-400' />
-                </button>
-              </div>
-            </motion.div>
-          ))}
+                  <img
+                    src={person.img}
+                    alt={person.name}
+                    className='w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105'
+                  />
+
+                  {/* Role tag badge — top right */}
+                  <div className='absolute top-3 right-3 px-2.5 py-1 rounded-full text-[11px] font-black tracking-wider'
+                    style={{
+                      background: 'rgba(0,0,0,0.65)',
+                      backdropFilter: 'blur(8px)',
+                      border: `1px solid ${person.tagColor}50`,
+                      color: person.tagColor,
+                    }}>
+                    {person.tag}
+                  </div>
+
+                  {/* Dept badge — top left */}
+                  <div className='absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold'
+                    style={{
+                      background: 'rgba(0,0,0,0.65)',
+                      backdropFilter: 'blur(8px)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: 'rgba(255,255,255,0.7)',
+                    }}>
+                    <Icon size={10} style={{ color: person.tagColor }} />
+                    {person.dept}
+                  </div>
+
+                  {/* Bottom gradient overlay */}
+                  <div className='absolute bottom-0 left-0 right-0 h-20'
+                    style={{ background: 'linear-gradient(to top, #0a1220 0%, transparent 100%)' }} />
+                </div>
+
+                {/* Content */}
+                <div className='px-5 pb-5 pt-3'>
+                  <h3 className='text-base font-bold text-white leading-tight'>{person.name}</h3>
+                  <p className='text-xs font-semibold mt-0.5 mb-3' style={{ color: person.tagColor }}>{person.role}</p>
+
+                  <p className='text-xs leading-relaxed text-gray-400 mb-4'>{person.bio}</p>
+
+                  {/* Stats row */}
+                  <div className='flex gap-2 mb-4'>
+                    {person.stats.map((s, si) => (
+                      <div key={si} className='flex-1 rounded-xl px-2.5 py-2 text-center'
+                        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                        <p className='text-sm font-bold text-white'>{s.value}</p>
+                        <p className='text-[10px] text-gray-500 mt-0.5'>{s.label}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Social links */}
+                  <div className='flex items-center gap-2'>
+                    <a href={person.linkedin} target='_blank' rel='noopener noreferrer'
+                      className='flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-80'
+                      style={{ background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.25)', color: '#60a5fa' }}>
+                      <Linkedin size={12} /> LinkedIn
+                    </a>
+                    <a href={person.twitter} target='_blank' rel='noopener noreferrer'
+                      className='flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-80'
+                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}>
+                      <Twitter size={12} /> Twitter
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
+
+        {/* Bottom join team CTA */}
+        <motion.div
+          {...fadeUp(0.3)}
+          className='mt-10 rounded-2xl px-8 py-7 flex flex-col sm:flex-row items-center justify-between gap-5'
+          style={{
+            background: 'linear-gradient(135deg, #0d1b35 0%, #0f2040 100%)',
+            border: '1px solid rgba(0,212,255,0.15)',
+          }}
+        >
+          <div>
+            <p className='text-white font-bold text-lg'>Want to join our team?</p>
+            <p className='text-gray-400 text-sm mt-1'>We're always looking for passionate people to help us transform healthcare.</p>
+          </div>
+          <a
+            href='mailto:careers@medinexus.ai'
+            className='flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-black transition-all hover:opacity-90 flex-shrink-0'
+            style={{ background: 'linear-gradient(135deg, #00d4ff, #0ea5e9)', boxShadow: '0 4px 20px rgba(0,212,255,0.3)' }}
+          >
+            <Mail size={15} /> View Open Roles
+          </a>
+        </motion.div>
       </div>
 
     </div>

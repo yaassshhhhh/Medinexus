@@ -7,6 +7,7 @@ import { Calendar, Video, CreditCard, X, Clock, MapPin, CheckCircle, ExternalLin
 import { useNavigate } from 'react-router-dom'
 import ReviewModal from '../components/ReviewModal'
 import RescheduleModal from '../components/RescheduleModal'
+import ConfirmDialog from '../components/ConfirmDialog'
 
 /* ── colour tokens ── */
 const bg      = 'bg-[#0f1629]'
@@ -22,12 +23,13 @@ const StatusBadge = ({ item }) => {
 }
 
 const MyAppointment = () => {
-  const { backendUrl, token, getDoctorsData } = useContext(AppContext)
+  const { backendUrl, token, getDoctorsData, userData } = useContext(AppContext)
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
   const [reviewAppt, setReviewAppt] = useState(null)
   const [rescheduleAppt, setRescheduleAppt] = useState(null)
   const [reviewed, setReviewed] = useState({})
+  const [cancelTarget, setCancelTarget] = useState(null)
   const navigate = useNavigate()
 
   const getUserAppointments = async () => {
@@ -59,26 +61,65 @@ const MyAppointment = () => {
     } catch (error) { toast.error(error.message) }
   }
 
-  const initPay = (order) => {
-    if (!order) { toast.error('Invalid order data received from server'); return }
-    if (order.id === 'order_mock_123') { verifyRazorpay(order.id, order.receipt); return }
+  const loadRazorpayScript = () =>
+    new Promise((resolve) => {
+      if (window.Razorpay) { resolve(true); return }
+      const script = document.createElement('script')
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      script.onload = () => resolve(true)
+      script.onerror = () => resolve(false)
+      document.body.appendChild(script)
+    })
+
+  const initPay = async (order, appointmentId) => {
+    if (!order || !order.id) { toast.error('Invalid order data received from server'); return }
+
+    const loaded = await loadRazorpayScript()
+    if (!loaded) { toast.error('Failed to load Razorpay. Check your internet connection.'); return }
+
     const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_DUMMY_KEY',
-      amount: order.amount, currency: order.currency,
-      name: 'Medinexus AI Appointment', description: 'Payment for Appointment',
-      order_id: order.id, receipt: order.receipt,
-      handler: async (response) => verifyRazorpay(response.razorpay_order_id, order.receipt)
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: 'MediNexus AI',
+      description: 'Doctor Appointment Payment',
+      image: '/logo.svg',
+      order_id: order.id,
+      handler: async (response) => {
+        // Send all three Razorpay response fields for proper HMAC verification
+        await verifyRazorpay({
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+          appointmentId,
+        })
+      },
+      prefill: {
+        name: userData?.name || '',
+        email: userData?.email || '',
+        contact: userData?.phone || '',
+      },
+      theme: { color: '#06b6d4' },
+      modal: {
+        ondismiss: () => toast.info('Payment cancelled'),
+      },
     }
-    const script = document.createElement('script')
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-    script.onload = () => { const rzp = new window.Razorpay(options); rzp.open() }
-    document.body.appendChild(script)
+
+    const rzp = new window.Razorpay(options)
+    rzp.on('payment.failed', (response) => {
+      toast.error(`Payment failed: ${response.error.description}`)
+    })
+    rzp.open()
   }
 
-  const verifyRazorpay = async (razorpay_order_id, appointmentId) => {
+  const verifyRazorpay = async ({ razorpay_order_id, razorpay_payment_id, razorpay_signature, appointmentId }) => {
     try {
-      const { data } = await axios.post(backendUrl + '/api/user/verify-razorpay', { razorpay_order_id, appointmentId }, { headers: { token } })
-      if (data.success) { toast.success('Payment Successful!'); getUserAppointments() }
+      const { data } = await axios.post(
+        backendUrl + '/api/user/verify-razorpay',
+        { razorpay_order_id, razorpay_payment_id, razorpay_signature, appointmentId },
+        { headers: { token } }
+      )
+      if (data.success) { toast.success('Payment Successful! 🎉'); getUserAppointments() }
       else toast.error(data.message)
     } catch (error) { toast.error(error.message) }
   }
@@ -86,7 +127,7 @@ const MyAppointment = () => {
   const appointmentRazorpay = async (appointmentId) => {
     try {
       const { data } = await axios.post(backendUrl + '/api/user/payment-razorpay', { appointmentId }, { headers: { token } })
-      if (data.success) initPay(data.order)
+      if (data.success) initPay(data.order, appointmentId)
       else toast.error(data.message)
     } catch (error) {
       toast.error(error.response?.data?.message || error.message || 'Failed to initiate payment')
@@ -199,7 +240,7 @@ const MyAppointment = () => {
                             <RefreshCw size={13} /> Reschedule
                           </button>
                           <button
-                            onClick={() => cancelAppointment(item._id)}
+                            onClick={() => setCancelTarget(item._id)}
                             className={`flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 px-4 rounded-xl border transition-all hover:bg-red-500 hover:text-white hover:border-red-500 border-[#1e2d4a] ${textSec}`}
                           >
                             <X size={13} /> Cancel
@@ -262,6 +303,15 @@ const MyAppointment = () => {
       {rescheduleAppt && (
         <RescheduleModal appointment={rescheduleAppt} onClose={() => setRescheduleAppt(null)} onRescheduled={() => { getUserAppointments(); getDoctorsData() }} />
       )}
+      <ConfirmDialog
+        open={!!cancelTarget}
+        title="Cancel Appointment?"
+        message="This will cancel your appointment. This action cannot be undone."
+        confirmLabel="Yes, Cancel"
+        confirmColor="#ef4444"
+        onCancel={() => setCancelTarget(null)}
+        onConfirm={() => { cancelAppointment(cancelTarget); setCancelTarget(null) }}
+      />
     </div>
   )
 }

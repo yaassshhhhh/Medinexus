@@ -46,6 +46,22 @@ const uploadDocument = async (req, res) => {
             return res.json({ success: false, message: 'No file uploaded' });
         }
 
+        // Validate allowed file types
+        const ALLOWED_MIME_TYPES = [
+            'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+        if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+            return res.json({ success: false, message: 'Invalid file type. Only images, PDF, and Word documents are allowed.' });
+        }
+
+        // Max 10MB
+        if (file.size > 10 * 1024 * 1024) {
+            return res.json({ success: false, message: 'File too large. Maximum size is 10MB.' });
+        }
+
         const imageUpload = await cloudinary.uploader.upload(file.path, { resource_type: 'auto' });
 
         const record = await medicalRecordModel.findOne({ userId });

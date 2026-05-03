@@ -17,12 +17,22 @@ const addDoctor = async (req, res) => {
         if (!validator.isEmail(email)) {
             return res.json({ success: false, message: "Please enter a valid email" })
         }
+        if (!imageFile) {
+            return res.json({ success: false, message: "Doctor image is required" })
+        }
 
         const DEFAULT_PASSWORD = '12345678'
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, salt)
 
         const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" })
+
+        let parsedAddress
+        try {
+            parsedAddress = JSON.parse(address)
+        } catch {
+            return res.json({ success: false, message: "Invalid address format" })
+        }
 
         const doctorData = {
             name, email,
@@ -31,12 +41,12 @@ const addDoctor = async (req, res) => {
             speciality, degree, experience, about,
             available: true,
             fees,
-            address: JSON.parse(address),
+            address: parsedAddress,
             date: Date.now()
         }
 
         await new doctorModel(doctorData).save()
-        res.json({ success: true, message: "Doctor Added. Default password: 12345678" })
+        res.json({ success: true, message: "Doctor Added successfully" })
 
     } catch (error) {
         console.log(error)
@@ -87,12 +97,22 @@ const appointmentCancelAdmin = async (req, res) => {
     try {
         const { appointmentId } = req.body
         const appointmentData = await appointmentModel.findById(appointmentId)
+        if (!appointmentData) {
+            return res.json({ success: false, message: 'Appointment not found' })
+        }
+
         await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })
 
         const { docId, slotDate, slotTime } = appointmentData
         const doctorData = await doctorModel.findById(docId)
-        let slots_booked = doctorData.slots_booked
-        slots_booked[slotDate] = slots_booked[slotDate].filter(e => e !== slotTime)
+        if (!doctorData) {
+            return res.json({ success: true, message: 'Appointment Cancelled' })
+        }
+
+        let slots_booked = doctorData.slots_booked || {}
+        if (slots_booked[slotDate]) {
+            slots_booked[slotDate] = slots_booked[slotDate].filter(e => e !== slotTime)
+        }
         await doctorModel.findByIdAndUpdate(docId, { slots_booked })
 
         res.json({ success: true, message: 'Appointment Cancelled' })

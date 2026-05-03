@@ -99,6 +99,24 @@ const Feature = ({ icon: Icon, title, desc }) => (
   </div>
 );
 
+/* ─── password strength ─── */
+const getStrength = (pw) => {
+  if (!pw) return { score: 0, label: '', color: '' }
+  let score = 0
+  if (pw.length >= 8) score++
+  if (/[A-Z]/.test(pw)) score++
+  if (/[0-9]/.test(pw)) score++
+  if (/[^A-Za-z0-9]/.test(pw)) score++
+  const map = [
+    { label: '', color: '' },
+    { label: 'Weak', color: '#ef4444' },
+    { label: 'Fair', color: '#f59e0b' },
+    { label: 'Good', color: '#3b82f6' },
+    { label: 'Strong', color: '#22c55e' },
+  ]
+  return { score, ...map[score] }
+}
+
 /* ─── main component ─── */
 const Login = () => {
   const [state, setState] = useState("Login");
@@ -106,12 +124,14 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [showPass, setShowPass] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const { backendUrl, token, setToken } = useContext(AppContext);
   const navigate = useNavigate();
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       if (state === "Sign Up") {
         const { data } = await axios.post(backendUrl + "/api/user/register", { name, password, email });
@@ -130,6 +150,8 @@ const Login = () => {
       }
     } catch (err) {
       toast.error(err.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -282,6 +304,25 @@ const Login = () => {
                   </button>
                 </div>
 
+                {/* Password strength — sign up only */}
+                {state === "Sign Up" && password && (() => {
+                  const { score, label, color } = getStrength(password)
+                  return (
+                    <div className="mt-2">
+                      <div className="flex gap-1 mb-1">
+                        {[1,2,3,4].map(i => (
+                          <div
+                            key={i}
+                            className="flex-1 h-1 rounded-full transition-all duration-300"
+                            style={{ background: i <= score ? color : 'rgba(255,255,255,0.1)' }}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-xs font-medium" style={{ color }}>{label}</p>
+                    </div>
+                  )
+                })()}
+
                 {/* Forgot password */}
                 {state === "Login" && (
                   <div className="text-right mt-2">
@@ -299,14 +340,20 @@ const Login = () => {
               {/* Submit */}
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm text-white transition-all hover:opacity-90 active:scale-[0.98]"
+                disabled={submitting}
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm text-white transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-70"
                 style={{
                   background: "linear-gradient(90deg, #6366f1 0%, #818cf8 100%)",
                   boxShadow: "0 8px 24px rgba(99,102,241,0.4)",
                 }}
               >
-                {state === "Login" ? <LogIn size={16} /> : <UserPlus size={16} />}
-                {state === "Login" ? "Login" : "Create Account"}
+                {submitting ? (
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                ) : state === "Login" ? <LogIn size={16} /> : <UserPlus size={16} />}
+                {submitting ? 'Please wait...' : state === "Login" ? "Login" : "Create Account"}
               </button>
             </form>
 

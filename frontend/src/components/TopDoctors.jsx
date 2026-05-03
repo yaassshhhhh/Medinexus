@@ -4,6 +4,19 @@ import { AppContext } from '../context/AppContext'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 
+const containerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.1 } },
+}
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 40, scale: 0.93 },
+  show: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+  },
+}
+
 const TopDoctors = () => {
   const navigate = useNavigate()
   const { doctors, darkMode } = useContext(AppContext)
@@ -12,10 +25,10 @@ const TopDoctors = () => {
     <section className='py-4'>
       {/* Section header */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className='flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8'
       >
         <div>
@@ -39,18 +52,22 @@ const TopDoctors = () => {
       </motion.div>
 
       {/* Doctor grid */}
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'>
+      <motion.div
+        variants={containerVariants}
+        initial='hidden'
+        whileInView='show'
+        viewport={{ once: true, margin: '-40px' }}
+        className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'
+      >
         {doctors.slice(0, 10).map((item, index) => (
           <motion.div
             key={index}
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.05, duration: 0.4 }}
+            variants={cardVariants}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 22 }}
             onClick={() => { navigate(`/appointment/${item._id}`); scrollTo(0, 0) }}
             className='relative rounded-2xl overflow-hidden cursor-pointer border border-[#1e2d4a] bg-[#0f1629] group
-              transition-all duration-300
-              hover:-translate-y-2
+              transition-colors duration-300
               hover:border-cyan-500/40
               hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]'
           >
@@ -103,7 +120,7 @@ const TopDoctors = () => {
             </div>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   )
 }

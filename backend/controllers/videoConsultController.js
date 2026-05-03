@@ -41,18 +41,10 @@ const bookVideoConsult = async (req, res) => {
         }
 
         let userData;
-        if (userId && userId.startsWith('guest_')) {
-            userData = {
-                name: 'Guest Patient',
-                email: 'guest@example.com',
-                image: 'https://via.placeholder.com/150', // Placeholder or default image
-                _id: userId
-            }
-        } else {
-            userData = await userModel.findById(userId).select('-password');
-            if (!userData) {
-                return res.json({ success: false, message: 'User not found' });
-            }
+        // Since authUser middleware is now required, userId is always a valid authenticated user
+        userData = await userModel.findById(userId).select('-password');
+        if (!userData) {
+            return res.json({ success: false, message: 'User not found' });
         }
 
         // Don't delete docData.slots_booked here as we need to save the updated one back to the doctor.
@@ -67,10 +59,10 @@ const bookVideoConsult = async (req, res) => {
             userId,
             docId,
             userData,
-            docData: { ...docData.toObject(), slots_booked: undefined }, // safely exclude slots from stored doc data
-            docName,
-            docImage,
-            docSpeciality,
+            docData: docData.toObject ? { ...docData.toObject(), slots_booked: undefined } : { ...docData, slots_booked: undefined },
+            docName: docData.name || docName,
+            docImage: docData.image || docImage,
+            docSpeciality: docData.speciality || docSpeciality,
             amount: docData.fees || 0,
             slotTime,
             slotDate,

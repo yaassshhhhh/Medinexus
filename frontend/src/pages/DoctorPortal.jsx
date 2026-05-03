@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
-import { motion } from 'framer-motion'
-import { Video, Clock, User, LogIn, Calendar, ChevronRight, RefreshCw, CheckCircle, IndianRupee, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Video, Clock, User, LogIn, Calendar, ChevronRight, RefreshCw, CheckCircle, IndianRupee, X, Loader2 } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { AppContext } from '../context/AppContext'
@@ -109,8 +109,8 @@ const DoctorPortal = () => {
             <p className={`text-sm mt-1 ${tSec}`}>Sign in to manage your consultations</p>
           </div>
 
-          <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3 mb-5 text-sm text-amber-400">
-            🔑 Default password: <span className="font-mono font-bold">12345678</span>
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl px-4 py-3 mb-5 text-sm text-blue-300">
+            ℹ️ Use your registered email and the password provided by admin.
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -193,10 +193,19 @@ const DoctorPortal = () => {
 
         {/* Appointment list */}
         {displayed.length === 0 ? (
-          <div className={`text-center py-16 ${tSec}`}>
-            <Calendar size={40} className="mx-auto mb-3 opacity-30" />
-            <p>No {activeTab} appointments.</p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`text-center py-16 ${tSec}`}
+          >
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <Calendar size={40} className="mx-auto mb-3 opacity-30" />
+            </motion.div>
+            <p className="font-medium">No {activeTab} appointments.</p>
+          </motion.div>
         ) : (
           <div className="space-y-3">
             {displayed.map((appt, i) => {

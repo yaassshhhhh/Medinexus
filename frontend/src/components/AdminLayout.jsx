@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AdminContext } from '../context/AdminContext';
 import {
-  LayoutDashboard, CalendarDays, UserPlus, Users, LogOut, Menu, X, ShieldCheck
+  LayoutDashboard, CalendarDays, UserPlus, Users, LogOut, Menu, X, ShieldCheck, BarChart2
 } from 'lucide-react';
 
 const AdminLayout = ({ children }) => {
@@ -21,6 +21,7 @@ const AdminLayout = ({ children }) => {
     { to: '/admin/appointments', label: 'Appointments', icon: CalendarDays },
     { to: '/admin/add-doctor',   label: 'Add Doctor',   icon: UserPlus },
     { to: '/admin/doctors',      label: 'Doctors List', icon: Users },
+    { to: '/admin/analytics',    label: 'Analytics',    icon: BarChart2 },
   ];
 
   const SidebarContent = () => (

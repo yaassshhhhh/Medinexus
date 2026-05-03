@@ -1,6 +1,7 @@
+import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
-import 'dotenv/config'
+import jwt from 'jsonwebtoken'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import connectDB from './config/mongodb.js'
@@ -43,7 +44,7 @@ const corsOptions = {
             callback(null, true);
         } else {
             console.log('Blocked origin:', origin);
-            callback(null, true); // Allow for now, change to false for strict security
+            callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true,
@@ -143,7 +144,37 @@ const socketRoomMap = {}
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id)
 
-    socket.on('join-room', async ({ roomId, userId, role }) => {
+    socket.on('join-room', async ({ roomId, userId, role, token }) => {
+        // Validate token for non-doctor roles
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                // Ensure userId matches token payload
+                if (decoded.id && userId && decoded.id !== userId) {
+                    socket.emit('error', { message: 'Unauthorized: token mismatch' });
+                    return;
+                }
+            } catch (err) {
+                socket.emit('error', { message: 'Unauthorized: invalid token' });
+                return;
+            }
+        }
+
+        // Validate roomId exists in DB (appointment or video consult)
+        if (roomId) {
+            try {
+                const appt = await appointmentModel.findOne({ roomId })
+                    || await callModel.findOne({ roomId });
+                // Allow join if room exists OR if it's a new room being created
+                if (!appt) {
+                    // New room — allow but log
+                    console.log(`[new-room] ${socket.id} creating room: ${roomId}`);
+                }
+            } catch (err) {
+                console.error('Room validation error:', err.message);
+            }
+        }
+
         socket.join(roomId)
         socketRoomMap[socket.id] = { roomId, userId, role }
         console.log(`[${role || 'user'}] ${socket.id} joined room: ${roomId}`)
@@ -194,7 +225,9 @@ io.on('connection', (socket) => {
     // End call — notify the other peer
     socket.on('end-call', ({ roomId }) => {
         socket.to(roomId).emit('call-ended')
-        callModel.findOneAndUpdate({ roomId }, { status: 'ended', endTime: new Date() }).catch(() => { })
+        callModel.findOneAndUpdate({ roomId }, { status: 'ended', endTime: new Date() }).catch((err) => {
+            console.error('DB end-call update error:', err.message)
+        })
     })
 
     socket.on('disconnect', async () => {
@@ -209,48 +242,6 @@ io.on('connection', (socket) => {
 
 app.get('/', (req, res) => {
     res.send('API WORKING')
-})
-
-// Debug endpoint to test email configuration
-app.get('/api/test-email', async (req, res) => {
-    try {
-        const testEmail = req.query.email || process.env.ADMIN_EMAIL;
-
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            host: 'smtp.gmail.com',
-            port: 587,
-            secure: false,
-            auth: {
-                user: process.env.ADMIN_EMAIL,
-                pass: process.env.ADMIN_PASSWORD
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        });
-
-        const info = await transporter.sendMail({
-            from: process.env.ADMIN_EMAIL,
-            to: testEmail,
-            subject: 'Medinexus AI - Email Test',
-            text: 'If you receive this email, your email configuration is working correctly!'
-        });
-
-        res.json({
-            success: true,
-            message: 'Test email sent successfully',
-            messageId: info.messageId,
-            to: testEmail
-        });
-    } catch (error) {
-        res.json({
-            success: false,
-            message: 'Email test failed',
-            error: error.message,
-            code: error.code
-        });
-    }
 })
 
 httpServer.listen(port, () => console.log("Server Started", port))

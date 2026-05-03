@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { assets } from '../../assets/assets'
 import { AdminContext } from '../../context/AdminContext'
-import { motion } from 'framer-motion'
 
 const AddDoctor = () => {
     const [docImg, setDocImg] = useState(null)
@@ -17,6 +17,7 @@ const AddDoctor = () => {
     const [loading, setLoading] = useState(false)
 
     const { aToken, backendUrl, addDoctor } = useContext(AdminContext)
+    const navigate = useNavigate()
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
@@ -40,13 +41,13 @@ const AddDoctor = () => {
             setExperience('1 Year'); setFees(''); setAbout('')
             setSpeciality('General physician'); setDegree('')
             setAddress1(''); setAddress2('')
+            navigate('/doctor-list')
         }
         setLoading(false)
     }
 
     return (
-        <motion.form
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        <form
             onSubmit={onSubmitHandler}
             className='m-5 w-full bg-white p-8 rounded-2xl border border-gray-100 shadow-sm max-w-4xl'
         >
@@ -123,7 +124,7 @@ const AddDoctor = () => {
                     </button>
                 </div>
             </div>
-        </motion.form>
+        </form>
     )
 }
 

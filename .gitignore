@@ -80,3 +80,4 @@ test_api.js
 check_models.js
 cleanup.js
 update_db.js
+backend/scratch/
