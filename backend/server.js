@@ -54,7 +54,7 @@ const corsOptions = {
 
 const io = new Server(httpServer, {
     cors: {
-        origin: ['http://localhost:5173', 'http://localhost:5174', 'https://medinexus-ai.vercel.app', 'https://medinexus-ai-5mer.vercel.app'],
+        origin: allowedOrigins,
         methods: ["GET", "POST"],
         credentials: true
     }
