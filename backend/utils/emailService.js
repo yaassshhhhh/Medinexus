@@ -29,6 +29,17 @@ class EmailService {
                             return { messageId: 'mock-id-' + Date.now() };
                         }
                     };
+                } else if (process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASS) {
+                    // Brevo SMTP — reliable on Render
+                    this.transporter = nodemailer.createTransport({
+                        host: 'smtp-relay.brevo.com',
+                        port: 587,
+                        secure: false,
+                        auth: {
+                            user: process.env.BREVO_SMTP_USER,
+                            pass: process.env.BREVO_SMTP_PASS
+                        }
+                    });
                 } else {
                     this.transporter = nodemailer.createTransport({
                         host: 'smtp.gmail.com',

@@ -85,7 +85,15 @@ import callModel from './models/callModel.js'
 
 // ── Email reminder cron (runs every hour) ──────────────────────────────────
 const getTransporter = () => nodemailer.createTransport(
-    process.env.SENDGRID_API_KEY ? {
+    process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASS ? {
+        host: 'smtp-relay.brevo.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: process.env.BREVO_SMTP_USER,
+            pass: process.env.BREVO_SMTP_PASS
+        }
+    } : process.env.SENDGRID_API_KEY ? {
         host: 'smtp.sendgrid.net',
         port: 587,
         secure: false,

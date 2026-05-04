@@ -40,6 +40,19 @@ const getTransporter = () => {
             });
         }
 
+        // Brevo (Sendinblue) SMTP — reliable on Render
+        if (process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASS) {
+            return nodemailer.createTransport({
+                host: 'smtp-relay.brevo.com',
+                port: 587,
+                secure: false,
+                auth: {
+                    user: process.env.BREVO_SMTP_USER,
+                    pass: process.env.BREVO_SMTP_PASS
+                }
+            });
+        }
+
         // Default Gmail configuration — force IPv4 via dns.lookup override for Render
         return nodemailer.createTransport({
             host: 'smtp.gmail.com',
