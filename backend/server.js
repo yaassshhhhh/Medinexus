@@ -19,6 +19,7 @@ import medicalRecordRouter from './routes/medicalRecordRoute.js';
 import contactRouter from './routes/contactRoute.js';
 import nodemailer from 'nodemailer';
 import dns from 'dns';
+import sendBrevoEmail from './utils/brevoEmail.js';
 import appointmentModel from './models/appointmentModel.js';
 
 //  app config //
@@ -84,38 +85,6 @@ app.use('/api/contact', contactRouter)
 import callModel from './models/callModel.js'
 
 // ── Email reminder cron (runs every hour) ──────────────────────────────────
-const getTransporter = () => nodemailer.createTransport(
-    process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASS ? {
-        host: 'smtp-relay.brevo.com',
-        port: 587,
-        secure: false,
-        auth: {
-            user: process.env.BREVO_SMTP_USER,
-            pass: process.env.BREVO_SMTP_PASS
-        }
-    } : process.env.SENDGRID_API_KEY ? {
-        host: 'smtp.sendgrid.net',
-        port: 587,
-        secure: false,
-        auth: {
-            user: 'apikey',
-            pass: process.env.SENDGRID_API_KEY
-        }
-    } : {
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: { user: process.env.ADMIN_EMAIL, pass: process.env.ADMIN_PASSWORD },
-        tls: { rejectUnauthorized: false },
-        dnsTimeout: 10000,
-        socketTimeout: 30000,
-        greetingTimeout: 30000,
-        lookup: (hostname, options, callback) => {
-            dns.lookup(hostname, { family: 4, ...options }, callback);
-        }
-    }
-);
-
 const sendReminderEmails = async () => {
     try {
         const now = Date.now();
@@ -134,11 +103,10 @@ const sendReminderEmails = async () => {
                 if (apptTime > now && apptTime <= in24h) {
                     const email = appt.userData?.email;
                     if (!email) continue;
-                    await getTransporter().sendMail({
-                        from: process.env.ADMIN_EMAIL,
+                    await sendBrevoEmail({
                         to: email,
                         subject: `Reminder: Appointment with Dr. ${appt.docData?.name} tomorrow`,
-                        text: `Hi ${appt.userData?.name},\n\nThis is a reminder that you have an appointment with Dr. ${appt.docData?.name} (${appt.docData?.speciality}) on ${appt.slotDate.split('_').join('/')} at ${appt.slotTime}.\n\n${appt.isVideoConsult ? `Join your video call here: ${process.env.FRONTEND_URL || 'http://localhost:5173'}/video-consult?roomId=${appt.roomId}` : `Location: ${appt.docData?.address?.line1 || ''}`}\n\nThanks,\nMedinexus AI Team`
+                        text: `Hi ${appt.userData?.name},\n\nReminder: Appointment with Dr. ${appt.docData?.name} (${appt.docData?.speciality}) on ${appt.slotDate.split('_').join('/')} at ${appt.slotTime}.\n\n${appt.isVideoConsult ? `Join: ${process.env.FRONTEND_URL}/video-consult?roomId=${appt.roomId}` : `Location: ${appt.docData?.address?.line1 || ''}`}\n\nThanks,\nMediNexus AI Team`
                     });
                     await appointmentModel.findByIdAndUpdate(appt._id, { reminderSent: true });
                     console.log(`Reminder sent to ${email}`);

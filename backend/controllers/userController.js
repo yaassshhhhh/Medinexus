@@ -5,6 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 import nodemailer from "nodemailer";
 import dns from "dns";
 import Razorpay from "razorpay";
+import sendBrevoEmail from "../utils/brevoEmail.js";
 import userModel from "../models/userModel.js";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
@@ -221,22 +222,25 @@ const sendBookingOTP = async (req, res) => {
             slotTime
         });
 
-        // Send Email
-        const transporter = getTransporter();
-        const mailOptions = {
-            from: process.env.ADMIN_EMAIL,
-            to: userData.email,
-            subject: 'Medinexus AI - Appointment Booking OTP',
-            text: `Your OTP for booking an appointment with Medinexus AI is ${otp}. It is valid for 10 minutes.`
-        };
-
+        // Send Email via Brevo HTTP API
         try {
-            const info = await transporter.sendMail(mailOptions);
-            console.log("✅ Email sent successfully:", info.messageId);
+            await sendBrevoEmail({
+                to: userData.email,
+                subject: 'MediNexus AI - Appointment Booking OTP',
+                html: `<div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px">
+                    <h2 style="color:#0d9488">MediNexus AI 🏥</h2>
+                    <p>Your OTP for booking an appointment:</p>
+                    <div style="background:#f0fdf4;border:2px solid #0d9488;border-radius:12px;padding:20px;text-align:center;margin:20px 0">
+                        <span style="font-size:36px;font-weight:bold;letter-spacing:10px;color:#0d9488">${otp}</span>
+                    </div>
+                    <p style="color:#666;font-size:13px">⏱️ Valid for <strong>10 minutes</strong>. Do not share this OTP.</p>
+                    <p style="color:#999;font-size:12px">If you didn't request this, please ignore this email.</p>
+                </div>`
+            });
+            console.log("✅ OTP email sent via Brevo");
             res.json({ success: true, message: "OTP sent to your email." });
         } catch (emailError) {
-            console.error("❌ Email send failed:", emailError.message);
-            // OTP is saved in DB; inform user to retry or contact support
+            console.error("❌ Brevo email failed:", emailError.message);
             res.json({ success: false, message: "Failed to send OTP email. Please try again later." });
         }
 
@@ -317,20 +321,11 @@ const bookAppointment = async (req, res) => {
 
         // Trigger Doctor Notification for Video Consult
         if (isVideoConsult) {
-            try {
-                const transporter = getTransporter();
-                const mailOptions = {
-                    from: process.env.ADMIN_EMAIL,
-                    to: process.env.ADMIN_EMAIL, // Acting as Doctor Email for development
-                    subject: `Medinexus AI - Video Consult Scheduled with ${userData.name}`,
-                    text: `Hello Dr. ${docData.name},\n\nYou have a scheduled Video Consultation with ${userData.name} on ${slotDate.split('_').join('/')} at ${slotTime}.\n\nPlease click the link below to join the meeting at the scheduled time:\nhttps://doctor-appointment-system-s54z.vercel.app/video-consult?roomId=${roomId}&doctorView=true\n\nThanks,\nMedinexus AI Team`
-                };
-                transporter.sendMail(mailOptions, (err) => {
-                    if (err) console.error("Doctor Email Notice Failed: ", err);
-                });
-            } catch (err) {
-                console.error(err);
-            }
+            sendBrevoEmail({
+                to: process.env.ADMIN_EMAIL,
+                subject: `MediNexus AI - Video Consult with ${userData.name}`,
+                text: `Hello Dr. ${docData.name},\n\nVideo Consultation with ${userData.name} on ${slotDate.split('_').join('/')} at ${slotTime}.\n\nJoin: ${process.env.FRONTEND_URL}/video-consult?roomId=${roomId}&doctorView=true\n\nThanks,\nMediNexus AI Team`
+            }).catch(err => console.error("Doctor email failed:", err.message));
         }
 
         res.json({ success: true, message: "Appointment Booked" });
@@ -528,23 +523,19 @@ const forgotPassword = async (req, res) => {
         // Save OTP to database
         await otpModel.create({ email, otp, type: 'password-reset' });
 
-        // Send OTP email
-        const transporter = getTransporter();
-        await transporter.sendMail({
-            from: process.env.ADMIN_EMAIL,
+        // Send OTP email via Brevo HTTP API
+        await sendBrevoEmail({
             to: email,
-            subject: 'Password Reset OTP - Medinexus AI',
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #5f57ff;">Password Reset Request</h2>
-                    <p>You requested to reset your password. Use the OTP below:</p>
-                    <div style="background: #f5f5f5; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 20px 0;">
-                        ${otp}
-                    </div>
-                    <p>This OTP is valid for 10 minutes.</p>
-                    <p>If you didn't request this, please ignore this email.</p>
+            subject: 'Password Reset OTP - MediNexus AI',
+            html: `<div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px">
+                <h2 style="color:#0d9488">MediNexus AI 🔐</h2>
+                <p>You requested to reset your password. Use the OTP below:</p>
+                <div style="background:#f0fdf4;border:2px solid #0d9488;border-radius:12px;padding:20px;text-align:center;margin:20px 0">
+                    <span style="font-size:36px;font-weight:bold;letter-spacing:10px;color:#0d9488">${otp}</span>
                 </div>
-            `
+                <p style="color:#666;font-size:13px">⏱️ Valid for <strong>10 minutes</strong>.</p>
+                <p style="color:#999;font-size:12px">If you didn't request this, ignore this email.</p>
+            </div>`
         });
 
         res.json({ success: true, message: "OTP sent to your email" });
