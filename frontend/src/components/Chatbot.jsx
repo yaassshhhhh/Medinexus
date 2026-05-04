@@ -597,12 +597,14 @@ const Chatbot = () => {
   const quickReplies = !loading && lastBot?.quickReplies?.length ? lastBot.quickReplies : [];
   const unreadCount = !isOpen ? messages.filter(m => m.role === 'bot' && m.id !== 1).length : 0;
 
-  // ── Dimensions ───────────────────────────────────────────────────────────
-  const chatW = isExpanded ? 'w-[95vw] sm:w-[680px]' : 'w-[92vw] sm:w-[420px]';
-  const chatH = isExpanded ? 'h-[90vh] sm:h-[780px]' : 'h-[85vh] sm:h-[580px] md:h-[640px]';
+  // ── Dimensions — full screen on mobile, floating on desktop ────────────
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+  const chatW = isExpanded ? 'w-[95vw] sm:w-[680px]' : 'w-full sm:w-[420px]';
+  const chatH = isExpanded ? 'h-[100dvh] sm:h-[780px]' : 'h-[100dvh] sm:h-[600px] md:h-[640px]';
+  const chatPos = 'bottom-0 right-0 sm:bottom-6 sm:right-6';
 
   return (
-    <div className='fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans'>
+    <div className={`fixed z-50 flex flex-col items-end font-sans ${isOpen ? 'inset-0 sm:inset-auto sm:bottom-6 sm:right-6' : 'bottom-6 right-6'}`}>
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -610,7 +612,7 @@ const Chatbot = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.88, y: 24 }}
             transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-            className={`mb-4 overflow-hidden flex flex-col ${chatW} ${chatH} rounded-2xl border border-[#1e2d4a] shadow-2xl shadow-black/50 transition-all duration-300`}
+            className={`mb-0 sm:mb-4 overflow-hidden flex flex-col w-full sm:w-[420px] ${isExpanded ? 'sm:w-[680px]' : ''} h-[100dvh] sm:h-[600px] ${isExpanded ? 'sm:h-[780px]' : 'md:h-[640px]'} rounded-none sm:rounded-2xl border-0 sm:border border-[#1e2d4a] shadow-2xl shadow-black/50 transition-all duration-300`}
             style={{ background: '#0a1628' }}
           >
             {/* ── Header ── */}
@@ -633,27 +635,27 @@ const Chatbot = () => {
               </div>
 
               <div className='flex items-center gap-0.5 relative z-10'>
-                {/* TTS toggle */}
+                {/* TTS toggle — hidden on mobile */}
                 <button onClick={() => { setTtsEnabled(p => !p); window.speechSynthesis?.cancel(); setSpeakingId(null); }}
-                  className={`p-2 rounded-lg transition-all ${ttsEnabled ? 'text-teal-400 bg-teal-500/10' : 'text-gray-500 hover:text-gray-300'}`}
+                  className={`hidden sm:block p-2 rounded-lg transition-all ${ttsEnabled ? 'text-teal-400 bg-teal-500/10' : 'text-gray-500 hover:text-gray-300'}`}
                   title={ttsEnabled ? 'Mute AI voice' : 'Enable AI voice'}>
                   {ttsEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
                 </button>
-                {/* Search */}
+                {/* Search — hidden on mobile */}
                 <button onClick={() => setSearchMode(p => !p)}
-                  className={`p-2 rounded-lg transition-all ${searchMode ? 'text-teal-400 bg-teal-500/10' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                  className={`hidden sm:block p-2 rounded-lg transition-all ${searchMode ? 'text-teal-400 bg-teal-500/10' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
                   title='Search messages'>
                   <Search size={14} />
                 </button>
-                {/* Export */}
+                {/* Export — hidden on mobile */}
                 <button onClick={exportChat}
-                  className='p-2 rounded-lg text-gray-400 hover:text-teal-400 hover:bg-teal-500/10 transition-all'
+                  className='hidden sm:block p-2 rounded-lg text-gray-400 hover:text-teal-400 hover:bg-teal-500/10 transition-all'
                   title='Export chat'>
                   <Download size={14} />
                 </button>
-                {/* Expand */}
+                {/* Expand — hidden on mobile */}
                 <button onClick={() => setIsExpanded(p => !p)}
-                  className='p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-all'
+                  className='hidden sm:block p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-all'
                   title={isExpanded ? 'Minimize' : 'Expand'}>
                   {isExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
                 </button>
