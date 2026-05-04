@@ -73,7 +73,7 @@ const Contact = () => {
             backgroundSize: '40px 40px'
           }} />
 
-        <div className='relative flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 max-w-5xl mx-auto'>
+        <div className='relative flex flex-col md:flex-row items-start md:items-center justify-between gap-8 max-w-5xl mx-auto'>
           {/* Left text */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             {/* Badge */}

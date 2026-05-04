@@ -377,7 +377,7 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
                 <motion.div
                     drag
                     dragConstraints={{ left: -900, right: 0, top: 0, bottom: 500 }}
-                    className="absolute top-4 right-4 w-44 h-28 sm:w-52 sm:h-36 rounded-xl overflow-hidden border-2 border-gray-600 shadow-2xl cursor-move z-20 bg-gray-800"
+                    className="absolute top-4 right-4 w-28 h-20 sm:w-44 sm:h-28 md:w-52 md:h-36 rounded-xl overflow-hidden border-2 border-gray-600 shadow-2xl cursor-move z-20 bg-gray-800"
                 >
                     <video
                         ref={localVideoRef}
@@ -730,7 +730,7 @@ const VideoConsult = () => {
                         <div className="w-1 h-5 rounded-full" style={{ background: 'linear-gradient(180deg, #6366f1, #00d4ff)' }} />
                         <h2 className="text-lg font-bold text-white">How It Works</h2>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-6 items-start">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 items-start">
                         {[
                             { title: 'Choose Doctor', desc: 'Browse verified specialists' },
                             { title: 'Click Consult', desc: 'Start instantly, no wait' },

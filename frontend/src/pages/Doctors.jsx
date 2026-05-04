@@ -423,7 +423,7 @@ const Doctors = () => {
           </motion.div>
 
           {/* Doctor Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {/* Skeleton loaders while doctors are loading */}
             {doctors.length === 0 && (
               <>
@@ -526,15 +526,15 @@ const Doctors = () => {
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-8">
               <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}
-                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-30"
+                className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-30"
                 style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}>
                 <ChevronLeft size={16} />
               </button>
               {getPageNumbers().map((page, i) => (
                 page === '...'
-                  ? <span key={'e' + i} className="w-9 h-9 flex items-center justify-center text-sm" style={{ color: '#8ba3c7' }}>...</span>
+                  ? <span key={'e' + i} className="w-10 h-10 sm:w-9 sm:h-9 flex items-center justify-center text-sm" style={{ color: '#8ba3c7' }}>...</span>
                   : <button key={page} onClick={() => setCurrentPage(page)}
-                      className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-semibold transition-all"
+                      className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-sm font-semibold transition-all"
                       style={currentPage === page
                         ? { background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white', boxShadow: '0 4px 12px rgba(14,165,233,0.4)' }
                         : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#8ba3c7' }}>
@@ -542,7 +542,7 @@ const Doctors = () => {
                     </button>
               ))}
               <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
-                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-30"
+                className="w-10 h-10 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-30"
                 style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}>
                 <ChevronRight size={16} />
               </button>

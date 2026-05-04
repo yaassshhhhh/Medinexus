@@ -136,7 +136,7 @@ const Appointment = () => {
         </motion.div>
 
         {/* Info panel */}
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className={`flex-1 rounded-2xl p-6 sm:p-8 ${card}`}>
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className={`flex-1 rounded-2xl p-4 sm:p-6 lg:p-8 ${card}`}>
           <div className='flex items-start justify-between gap-4 flex-wrap'>
             <div>
               <div className='flex items-center gap-2'>
@@ -196,7 +196,7 @@ const Appointment = () => {
                   key={index}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => { setSlotIndex(index); setSlotTime('') }}
-                  className={`flex-shrink-0 flex flex-col items-center px-4 py-3.5 rounded-xl border transition-all min-w-[64px] ${
+                  className={`flex-shrink-0 flex flex-col items-center px-4 py-3.5 rounded-xl border transition-all min-w-[56px] sm:min-w-[64px] ${
                     slotIndex === index
                       ? 'bg-cyan-500 text-black border-cyan-500 shadow-lg shadow-cyan-500/25'
                       : 'border-[#1e2d4a] text-gray-400 hover:border-cyan-500/40 hover:bg-[#0d1b3e]'
@@ -220,7 +220,7 @@ const Appointment = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: index * 0.015 }}
                       onClick={() => setSlotTime(item.time)}
-                      className={`text-sm font-medium px-4 py-2 rounded-xl border transition-all ${
+                      className={`text-xs sm:text-sm font-medium px-4 py-2 rounded-xl border transition-all ${
                         item.time === slotTime
                           ? 'bg-cyan-500 text-black border-cyan-500 shadow-md'
                           : 'text-gray-400 border-[#1e2d4a] hover:border-cyan-500/40 hover:bg-[#0d1b3e]'

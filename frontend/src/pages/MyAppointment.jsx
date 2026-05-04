@@ -220,7 +220,7 @@ const MyAppointment = () => {
                           ) : (
                             <button
                               onClick={() => appointmentRazorpay(item._id)}
-                              className='flex items-center justify-center gap-1.5 text-xs font-bold py-2.5 px-4 rounded-xl bg-primary text-white hover:bg-indigo-600 transition-all shadow-sm'
+                              className='flex items-center justify-center gap-1.5 text-xs font-bold py-3 sm:py-2.5 px-4 rounded-xl bg-primary text-white hover:bg-indigo-600 transition-all shadow-sm'
                             >
                               <CreditCard size={13} /> Pay Now
                             </button>
@@ -235,13 +235,13 @@ const MyAppointment = () => {
                           )}
                           <button
                             onClick={() => setRescheduleAppt(item)}
-                            className={`flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 px-4 rounded-xl border transition-all hover:bg-indigo-500 hover:text-white hover:border-indigo-500 border-[#1e2d4a] ${textSec}`}
+                            className={`flex items-center justify-center gap-1.5 text-xs font-semibold py-3 sm:py-2.5 px-4 rounded-xl border transition-all hover:bg-indigo-500 hover:text-white hover:border-indigo-500 border-[#1e2d4a] ${textSec}`}
                           >
                             <RefreshCw size={13} /> Reschedule
                           </button>
                           <button
                             onClick={() => setCancelTarget(item._id)}
-                            className={`flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 px-4 rounded-xl border transition-all hover:bg-red-500 hover:text-white hover:border-red-500 border-[#1e2d4a] ${textSec}`}
+                            className={`flex items-center justify-center gap-1.5 text-xs font-semibold py-3 sm:py-2.5 px-4 rounded-xl border transition-all hover:bg-red-500 hover:text-white hover:border-red-500 border-[#1e2d4a] ${textSec}`}
                           >
                             <X size={13} /> Cancel
                           </button>

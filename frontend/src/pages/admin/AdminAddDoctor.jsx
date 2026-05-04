@@ -108,7 +108,7 @@ const AdminAddDoctor = () => {
             </div>
 
             {/* Form fields */}
-            <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-5">
               <Field label="Doctor Name">
                 <input
                   value={name} onChange={e => setName(e.target.value)}

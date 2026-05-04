@@ -43,7 +43,7 @@ const Footer = () => {
   return (
     <footer style={{ background: '#060c18', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
       <div className="max-w-7xl mx-auto px-6 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1.5fr] gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1.5fr] gap-10">
 
           {/* Brand */}
           <div>

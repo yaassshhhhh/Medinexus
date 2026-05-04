@@ -76,7 +76,7 @@ const TypingIndicator = () => (
 
 // ── Nearby doctor card ────────────────────────────────────────────────────────
 const NearbyDoctorCard = ({ doctor }) => (
-  <div className='bg-[#0d1b3e] border border-[#1e2d4a] rounded-xl p-3 min-w-[220px] max-w-[240px] flex-shrink-0 hover:border-teal-500/40 transition-colors'>
+  <div className='bg-[#0d1b3e] border border-[#1e2d4a] rounded-xl p-3 min-w-[180px] max-w-[200px] sm:min-w-[220px] sm:max-w-[240px] flex-shrink-0 hover:border-teal-500/40 transition-colors'>
     <div className='flex justify-between items-start gap-1 mb-1'>
       <p className='font-semibold text-gray-100 text-xs leading-tight'>{doctor.name}</p>
       {doctor.distance && (
@@ -181,7 +181,7 @@ const MessageBubble = ({ msg, nearbyDoctors, onConfirmBooking, onCancelBooking, 
           <Bot size={14} />
         </div>
       )}
-      <div className={`flex flex-col max-w-[82%] ${isUser ? 'items-end' : 'items-start'}`}>
+      <div className={`flex flex-col max-w-[90%] sm:max-w-[82%] ${isUser ? 'items-end' : 'items-start'}`}>
         <div className={`px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
           isUser
             ? 'bg-gradient-to-br from-teal-500 to-cyan-500 text-white rounded-br-none shadow-lg shadow-teal-500/20'
@@ -599,7 +599,7 @@ const Chatbot = () => {
 
   // ── Dimensions ───────────────────────────────────────────────────────────
   const chatW = isExpanded ? 'w-[95vw] sm:w-[680px]' : 'w-[92vw] sm:w-[420px]';
-  const chatH = isExpanded ? 'h-[90vh] sm:h-[780px]' : 'h-[580px] sm:h-[640px]';
+  const chatH = isExpanded ? 'h-[90vh] sm:h-[780px]' : 'h-[85vh] sm:h-[580px] md:h-[640px]';
 
   return (
     <div className='fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans'>
@@ -745,7 +745,7 @@ const Chatbot = () => {
                       {SYMPTOM_CHIPS.map(({ emoji, label, query }) => (
                         <button key={label}
                           onClick={() => { sendMessage(query); setShowSymptoms(false); }}
-                          className='flex items-center gap-1 bg-[#0a1628] border border-[#1e2d4a] hover:border-teal-500/40 hover:bg-teal-500/10 text-gray-300 hover:text-teal-300 text-xs px-2.5 py-1.5 rounded-full transition-all'>
+                          className='flex items-center gap-1 bg-[#0a1628] border border-[#1e2d4a] hover:border-teal-500/40 hover:bg-teal-500/10 text-gray-300 hover:text-teal-300 text-xs px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full transition-all'>
                           <span>{emoji}</span> {label}
                         </button>
                       ))}
@@ -844,7 +844,7 @@ const Chatbot = () => {
           >
             <span className='absolute inset-0 rounded-full animate-ping opacity-30'
               style={{ background: 'radial-gradient(circle, #14b8a6, #06b6d4)' }} />
-            <div className='relative w-14 h-14 rounded-full flex items-center justify-center shadow-2xl shadow-teal-500/30'
+            <div className='relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-2xl shadow-teal-500/30'
               style={{ background: 'linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%)', border: '2px solid rgba(20,184,166,0.4)' }}>
               <MessageCircle size={26} className='text-white' />
             </div>

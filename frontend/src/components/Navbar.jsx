@@ -242,7 +242,7 @@ const Navbar = () => {
             {/* Mobile hamburger */}
             <button
               onClick={() => setShowMenu(true)}
-              className="md:hidden p-2 rounded-lg transition-colors"
+              className="md:hidden p-3 rounded-lg transition-colors"
               style={{ color: 'rgba(255,255,255,0.8)' }}
             >
               <Menu size={20} />
@@ -258,7 +258,7 @@ const Navbar = () => {
           onClick={() => setShowMenu(false)}
         />
         <div
-          className={`absolute right-0 top-0 bottom-0 w-72 transition-transform duration-300 ${showMenu ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}
+          className={`absolute right-0 top-0 bottom-0 w-[85vw] sm:w-72 transition-transform duration-300 ${showMenu ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}
           style={{ background: '#080c1a', borderLeft: '1px solid rgba(255,255,255,0.08)' }}
         >
           {/* Drawer header */}
