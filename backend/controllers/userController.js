@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import nodemailer from "nodemailer";
+import dns from "dns";
 import Razorpay from "razorpay";
 import userModel from "../models/userModel.js";
 import doctorModel from "../models/doctorModel.js";
@@ -39,18 +40,24 @@ const getTransporter = () => {
             });
         }
 
-        // Default Gmail configuration — force IPv4 for Render compatibility
+        // Default Gmail configuration — force IPv4 via dns.lookup override for Render
         return nodemailer.createTransport({
             host: 'smtp.gmail.com',
             port: 587,
             secure: false,
-            family: 4, // Force IPv4 — Render free tier blocks IPv6
             auth: {
                 user: process.env.ADMIN_EMAIL,
                 pass: process.env.ADMIN_PASSWORD
             },
             tls: {
                 rejectUnauthorized: false
+            },
+            dnsTimeout: 10000,
+            socketTimeout: 30000,
+            greetingTimeout: 30000,
+            // Override DNS to force IPv4
+            lookup: (hostname, options, callback) => {
+                dns.lookup(hostname, { family: 4, ...options }, callback);
             }
         });
     } catch (error) {

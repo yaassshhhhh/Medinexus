@@ -18,6 +18,7 @@ import prescriptionRouter from './routes/prescriptionRoute.js';
 import medicalRecordRouter from './routes/medicalRecordRoute.js';
 import contactRouter from './routes/contactRoute.js';
 import nodemailer from 'nodemailer';
+import dns from 'dns';
 import appointmentModel from './models/appointmentModel.js';
 
 //  app config //
@@ -96,9 +97,14 @@ const getTransporter = () => nodemailer.createTransport(
         host: 'smtp.gmail.com',
         port: 587,
         secure: false,
-        family: 4, // Force IPv4 — Render free tier blocks IPv6
         auth: { user: process.env.ADMIN_EMAIL, pass: process.env.ADMIN_PASSWORD },
-        tls: { rejectUnauthorized: false }
+        tls: { rejectUnauthorized: false },
+        dnsTimeout: 10000,
+        socketTimeout: 30000,
+        greetingTimeout: 30000,
+        lookup: (hostname, options, callback) => {
+            dns.lookup(hostname, { family: 4, ...options }, callback);
+        }
     }
 );
 
