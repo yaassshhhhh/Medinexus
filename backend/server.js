@@ -33,6 +33,7 @@ const allowedOrigins = [
     'http://localhost:5174',
     'https://medinexus-ai.vercel.app',
     'https://medinexus-ai-5mer.vercel.app',
+    'https://medinexus-eight.vercel.app',
     process.env.FRONTEND_URL,
     process.env.ADMIN_URL
 ].filter(Boolean)
