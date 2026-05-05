@@ -63,6 +63,8 @@ const App = () => {
   const location = useLocation()
   const [splashDone, setSplashDone] = useState(false)
 
+  const isAdminRoute = location.pathname.startsWith('/admin')
+
   return (
     <>
       <AnimatePresence>
@@ -72,30 +74,42 @@ const App = () => {
       </AnimatePresence>
 
       {splashDone && (
-    <div style={{ background: '#0a0f1e', minHeight: '100vh', color: 'white' }}>
-      <Navbar />
-      <AnimatePresence mode='wait'>
-        <Routes location={location} key={location.pathname}>
-          <Route path='/' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Home /></div></AnimatedPage>} />
-          <Route path='/doctors' element={<AnimatedPage><Doctors /></AnimatedPage>} />
-          <Route path="/doctors/:speciality" element={<AnimatedPage><Doctors /></AnimatedPage>} />
-          <Route path='/login' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Login /></div></AnimatedPage>} />
-          <Route path='/forgot-password' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><ForgotPassword /></div></AnimatedPage>} />
-          <Route path='/about' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><About /></div></AnimatedPage>} />
-          <Route path='/contact' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Contact /></div></AnimatedPage>} />
-          <Route path='/my-profile' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><MyProfile /></div></AnimatedPage>} />
-          <Route path='/my-appointment' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><MyAppointment /></div></AnimatedPage>} />
-          <Route path='/appointment/:docId' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Appointment /></div></AnimatedPage>} />
-          <Route path='/video-consult' element={<AnimatedPage><VideoConsult /></AnimatedPage>} />
-          <Route path='/doctor-portal' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><DoctorPortal /></div></AnimatedPage>} />
-          <Route path='/privacy-policy' element={<AnimatedPage><PrivacyPolicy /></AnimatedPage>} />
-          <Route path='/admin/*' element={<AdminRoutes />} />
-        </Routes>
-      </AnimatePresence>
-      <Footer />
-      <Chatbot />
-      <ToastContainer theme='dark' />
-    </div>
+        <>
+          {/* ADMIN ROUTES — no Navbar, Footer, Chatbot */}
+          {isAdminRoute ? (
+            <div style={{ background: '#f5f5f5', minHeight: '100vh' }}>
+              <Routes location={location} key={location.pathname}>
+                <Route path='/admin/*' element={<AdminRoutes />} />
+              </Routes>
+              <ToastContainer theme='light' />
+            </div>
+          ) : (
+            /* USER ROUTES — full layout */
+            <div style={{ background: '#0a0f1e', minHeight: '100vh', color: 'white' }}>
+              <Navbar />
+              <AnimatePresence mode='wait'>
+                <Routes location={location} key={location.pathname}>
+                  <Route path='/' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Home /></div></AnimatedPage>} />
+                  <Route path='/doctors' element={<AnimatedPage><Doctors /></AnimatedPage>} />
+                  <Route path="/doctors/:speciality" element={<AnimatedPage><Doctors /></AnimatedPage>} />
+                  <Route path='/login' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Login /></div></AnimatedPage>} />
+                  <Route path='/forgot-password' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><ForgotPassword /></div></AnimatedPage>} />
+                  <Route path='/about' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><About /></div></AnimatedPage>} />
+                  <Route path='/contact' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Contact /></div></AnimatedPage>} />
+                  <Route path='/my-profile' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><MyProfile /></div></AnimatedPage>} />
+                  <Route path='/my-appointment' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><MyAppointment /></div></AnimatedPage>} />
+                  <Route path='/appointment/:docId' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Appointment /></div></AnimatedPage>} />
+                  <Route path='/video-consult' element={<AnimatedPage><VideoConsult /></AnimatedPage>} />
+                  <Route path='/doctor-portal' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><DoctorPortal /></div></AnimatedPage>} />
+                  <Route path='/privacy-policy' element={<AnimatedPage><PrivacyPolicy /></AnimatedPage>} />
+                </Routes>
+              </AnimatePresence>
+              <Footer />
+              <Chatbot />
+              <ToastContainer theme='dark' />
+            </div>
+          )}
+        </>
       )}
     </>
   )
