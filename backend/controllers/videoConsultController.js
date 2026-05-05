@@ -1,12 +1,22 @@
 import mongoose from "mongoose";
 import videoConsultModel from "../models/videoConsultModel.js";
+import appointmentModel from "../models/appointmentModel.js";
 import userModel from "../models/userModel.js";
 import doctorModel from "../models/doctorModel.js";
 
 // API to book a video consultation
 const bookVideoConsult = async (req, res) => {
     try {
-        const { userId, docId, slotDate, slotTime, docName, docImage, docSpeciality } = req.body;
+        const { docId, slotDate, slotTime, docName, docImage, docSpeciality } = req.body;
+        // userId is always set by authUser middleware from JWT token
+        const userId = req.body.userId;
+
+        if (!userId) {
+            return res.json({ success: false, message: 'Unauthorized. Please login again.' });
+        }
+        if (!docId || !slotDate || !slotTime) {
+            return res.json({ success: false, message: 'Missing required fields: docId, slotDate, slotTime' });
+        }
 
         let docData;
         if (mongoose.Types.ObjectId.isValid(docId)) {
@@ -21,14 +31,14 @@ const bookVideoConsult = async (req, res) => {
                 image: docImage,
                 speciality: docSpeciality,
                 available: true,
-                fees: 50, // Default fee for static doctors
+                fees: 50,
                 slots_booked: {}
             };
         }
 
         let slots_booked = docData.slots_booked || {};
 
-        // Checking for slot availability 
+        // Checking for slot availability
         if (slots_booked[slotDate]) {
             if (slots_booked[slotDate].includes(slotTime)) {
                 return res.json({ success: false, message: 'Slot not available' })
@@ -40,26 +50,41 @@ const bookVideoConsult = async (req, res) => {
             slots_booked[slotDate].push(slotTime)
         }
 
-        let userData;
-        // Since authUser middleware is now required, userId is always a valid authenticated user
-        userData = await userModel.findById(userId).select('-password');
+        const userData = await userModel.findById(userId).select('-password');
         if (!userData) {
             return res.json({ success: false, message: 'User not found' });
         }
-
-        // Don't delete docData.slots_booked here as we need to save the updated one back to the doctor.
-        // Also it's good practice not to mutate the fetched object if we are using it for other things unless necessary.
-        // We will construct appointment data manually.
 
         // Generate a unique room ID for the video call
         const roomId = `room_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const meetingLink = `/video-call/${roomId}`;
 
+        const cleanDocData = docData.toObject
+            ? { ...docData.toObject(), slots_booked: undefined }
+            : { ...docData, slots_booked: undefined };
+
+        // ── Save to appointmentModel so it shows in My Appointments ──
         const appointmentData = {
             userId,
             docId,
             userData,
-            docData: docData.toObject ? { ...docData.toObject(), slots_booked: undefined } : { ...docData, slots_booked: undefined },
+            docData: cleanDocData,
+            amount: docData.fees || 0,
+            slotTime,
+            slotDate,
+            date: Date.now(),
+            isVideoConsult: true,
+            roomId
+        };
+        const newAppointment = new appointmentModel(appointmentData);
+        await newAppointment.save();
+
+        // ── Also save to videoConsultModel for doctor portal ──
+        const videoConsultData = {
+            userId,
+            docId,
+            userData,
+            docData: cleanDocData,
             docName: docData.name || docName,
             docImage: docData.image || docImage,
             docSpeciality: docData.speciality || docSpeciality,
@@ -69,12 +94,11 @@ const bookVideoConsult = async (req, res) => {
             date: Date.now(),
             roomId,
             meetingLink
-        }
+        };
+        const newVideoConsult = new videoConsultModel(videoConsultData);
+        await newVideoConsult.save();
 
-        const newAppointment = new videoConsultModel(appointmentData);
-        await newAppointment.save();
-
-        // Save new slots data in docData only if it's a real DB doctor
+        // Save updated slots back to doctor
         if (mongoose.Types.ObjectId.isValid(docId)) {
             await doctorModel.findByIdAndUpdate(docId, { slots_booked });
         }

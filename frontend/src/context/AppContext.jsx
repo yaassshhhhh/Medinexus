@@ -57,8 +57,8 @@ const AppContextProvider = (props) => {
 
     useEffect(() => {
         getDoctorsData();
-        // Refresh doctors list every 2 minutes to pick up newly added doctors
-        const interval = setInterval(getDoctorsData, 2 * 60 * 1000);
+        // Refresh doctors list every 30 seconds to reflect availability changes from admin
+        const interval = setInterval(getDoctorsData, 30 * 1000);
         return () => clearInterval(interval);
     }, []);
 

@@ -102,13 +102,40 @@ const AdminContextProvider = (props) => {
     }
   };
 
+  const completeAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(backendUrl + '/api/admin/complete-appointment', { appointmentId }, { headers: { aToken } });
+      if (data.success) { toast.success(data.message); getAllAppointments(); }
+      else toast.error(data.message);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to complete appointment');
+    }
+  };
+
+  const editDoctor = async (formData) => {
+    try {
+      const { data } = await axios.post(backendUrl + '/api/admin/edit-doctor', formData, { headers: { aToken } });
+      if (data.success) {
+        toast.success(data.message);
+        getAllDoctors();
+        return true;
+      } else {
+        toast.error(data.message);
+        return false;
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update doctor');
+      return false;
+    }
+  };
+
   const value = {
     aToken, setAToken,
     backendUrl,
     appointments, setAppointments,
-    getAllAppointments, cancelAppointment,
+    getAllAppointments, cancelAppointment, completeAppointment,
     doctors, getAllDoctors,
-    addDoctor, deleteDoctor, toggleAvailability
+    addDoctor, deleteDoctor, toggleAvailability, editDoctor
   };
 
   return (

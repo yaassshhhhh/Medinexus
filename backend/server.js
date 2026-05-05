@@ -16,11 +16,13 @@ import reviewRouter from './routes/reviewRoute.js';
 import newsletterRouter from './routes/newsletterRoute.js';
 import prescriptionRouter from './routes/prescriptionRoute.js';
 import medicalRecordRouter from './routes/medicalRecordRoute.js';
-import contactRouter from './routes/contactRoute.js';
+import contactRouter from './routes/contactRoute.js'
+import messageRouter from './routes/messageRoute.js'
 import nodemailer from 'nodemailer';
 import dns from 'dns';
 import sendBrevoEmail from './utils/brevoEmail.js';
 import appointmentModel from './models/appointmentModel.js';
+import messageModel from './models/messageModel.js';
 
 //  app config //
 const app = express()
@@ -52,7 +54,7 @@ const corsOptions = {
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'token', 'aToken', 'atoken']
+    allowedHeaders: ['Content-Type', 'Authorization', 'token', 'aToken', 'atoken', 'dtoken', 'dToken']
 }
 
 const io = new Server(httpServer, {
@@ -82,6 +84,7 @@ app.use('/api/newsletter', newsletterRouter)
 app.use('/api/prescription', prescriptionRouter)
 app.use('/api/medical-record', medicalRecordRouter)
 app.use('/api/contact', contactRouter)
+app.use('/api/messages', messageRouter)
 
 import callModel from './models/callModel.js'
 
@@ -220,6 +223,39 @@ io.on('connection', (socket) => {
             delete socketRoomMap[socket.id]
         }
         console.log('User disconnected:', socket.id)
+    })
+
+    // ── Direct Messaging (Doctor ↔ Patient) ──────────────────────────────
+    socket.on('join-dm', ({ appointmentId }) => {
+        socket.join(`dm_${appointmentId}`)
+        console.log(`[dm] ${socket.id} joined dm_${appointmentId}`)
+    })
+
+    socket.on('dm-message', async ({ appointmentId, senderId, senderRole, senderName, message, tempId }) => {
+        if (!appointmentId || !message?.trim()) return
+        try {
+            const newMsg = await messageModel.create({
+                appointmentId,
+                senderId,
+                senderRole,
+                senderName,
+                message: message.trim()
+            })
+            // Broadcast to everyone in the DM room (including sender for confirmation)
+            // Echo tempId back so sender can replace their optimistic bubble
+            io.to(`dm_${appointmentId}`).emit('dm-message', {
+                _id: newMsg._id,
+                appointmentId,
+                senderId,
+                senderRole,
+                senderName,
+                message: message.trim(),
+                createdAt: newMsg.createdAt,
+                tempId: tempId || null
+            })
+        } catch (err) {
+            console.error('DM message error:', err.message)
+        }
     })
 })
 

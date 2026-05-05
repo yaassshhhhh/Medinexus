@@ -95,7 +95,7 @@ const Doctors = () => {
     }
     list = list.filter(d => (parseInt(d.fees) || 0) <= maxFee)
     if (minRating > 0) list = list.filter(d => (d.rating || 4.5) >= minRating)
-    if (gender !== 'All') list = list.filter(d => (d.gender || 'Male') === gender)
+    if (gender !== 'All') list = list.filter(d => (d.gender || '').toLowerCase() === gender.toLowerCase())
     if (selectedDept) list = list.filter(d => d.speciality === selectedDept)
     if (selectedExp)  list = list.filter(d => matchExp(d.experience, selectedExp))
     if (selectedAvail === 'available') list = list.filter(d => d.available === true)

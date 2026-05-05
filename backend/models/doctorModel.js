@@ -15,7 +15,8 @@ const doctorSchema = new mongoose.Schema({
     date: { type: Number, required: true },
     slots_booked: { type: Object, default: {} },
     rating: { type: Number, default: 4.5 },
-    reviewCount: { type: Number, default: 0 }
+    reviewCount: { type: Number, default: 0 },
+    gender: { type: String, default: 'Male' }
 }, { minimize: false })
 
 const doctorModel = mongoose.models.doctor || mongoose.model('doctor', doctorSchema)

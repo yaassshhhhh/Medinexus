@@ -16,6 +16,7 @@ import Footer from './components/Footer'
 import Chatbot from './components/Chatbot'
 import VideoConsult from './pages/VideoConsult'
 import DoctorPortal from './pages/DoctorPortal'
+import DoctorChat from './pages/DoctorChat'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { AppContext } from './context/AppContext'
@@ -63,6 +64,7 @@ const App = () => {
               <Route path='/appointment/:docId' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><Appointment /></div></AnimatedPage>} />
               <Route path='/video-consult' element={<AnimatedPage><VideoConsult /></AnimatedPage>} />
               <Route path='/doctor-portal' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><DoctorPortal /></div></AnimatedPage>} />
+              <Route path='/chat/:appointmentId' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><DoctorChat /></div></AnimatedPage>} />
               <Route path='/privacy-policy' element={<AnimatedPage><PrivacyPolicy /></AnimatedPage>} />
             </Routes>
           </AnimatePresence>

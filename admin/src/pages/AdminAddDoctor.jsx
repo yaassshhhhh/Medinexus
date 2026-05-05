@@ -1,9 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { AdminContext } from '../context/AdminContext';
-import { AppContext } from '../context/AppContext';
-import { motion } from 'framer-motion';
-import { assets } from '../assets/assets';
-import { Upload, UserPlus } from 'lucide-react';
+import { Upload, UserPlus, Eye, EyeOff } from 'lucide-react';
+import gsap from 'gsap';
 
 // ── Defined OUTSIDE component so it never re-creates on re-render ─────────────
 const inputCls = `w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition-all
@@ -22,6 +20,7 @@ const AdminAddDoctor = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
   const [experience, setExperience] = useState('1 Year');
   const [fees, setFees] = useState('');
   const [about, setAbout] = useState('');
@@ -31,7 +30,24 @@ const AdminAddDoctor = () => {
   const [address2, setAddress2] = useState('');
 
   const { addDoctor } = useContext(AdminContext);
-  const { getDoctorsData } = useContext(AppContext);
+
+  const headerRef = useRef(null);
+  const formRef = useRef(null);
+  const btnRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.set(headerRef.current, { opacity: 0, y: -20 });
+      gsap.to(headerRef.current, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' });
+
+      gsap.set(formRef.current, { opacity: 0, y: 30 });
+      gsap.to(formRef.current, { opacity: 1, y: 0, duration: 0.65, delay: 0.15, ease: 'expo.out' });
+
+      gsap.set(btnRef.current, { opacity: 0, scale: 0.85 });
+      gsap.to(btnRef.current, { opacity: 1, scale: 1, duration: 0.5, delay: 0.5, ease: 'back.out(1.7)' });
+    });
+    return () => ctx.revert();
+  }, []);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -51,8 +67,6 @@ const AdminAddDoctor = () => {
 
     const success = await addDoctor(formData);
     if (success) {
-      // Refresh frontend doctors list so new doctor appears immediately
-      await getDoctorsData();
       setDocImg(null); setName(''); setEmail(''); setPassword('');
       setExperience('1 Year'); setFees(''); setAbout('');
       setSpeciality('General physician'); setDegree('');
@@ -61,15 +75,16 @@ const AdminAddDoctor = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6">
+    <div className="p-6">
       {/* Header */}
-      <div className="mb-7">
+      <div ref={headerRef} className="mb-7">
         <h1 className="text-2xl font-bold text-white">Add New Doctor</h1>
         <p className="text-sm mt-1" style={{ color: '#8ba3c7' }}>Fill in the details to register a new doctor</p>
       </div>
 
       <form onSubmit={onSubmitHandler}>
         <div
+          ref={formRef}
           className="rounded-2xl p-6"
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
         >
@@ -137,11 +152,21 @@ const AdminAddDoctor = () => {
               </Field>
 
               <Field label="Password">
-                <input
-                  value={password} onChange={e => setPassword(e.target.value)}
-                  className={inputCls} style={inputStyle}
-                  type="password" placeholder="Set a password" required
-                />
+                <div className="relative">
+                  <input
+                    value={password} onChange={e => setPassword(e.target.value)}
+                    className={`${inputCls} pr-11`} style={inputStyle}
+                    type={showPass ? 'text' : 'password'}
+                    placeholder="Set doctor's password (min 6 chars)" required minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(!showPass)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                  >
+                    {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
               </Field>
 
               <Field label="Education / Degree">
@@ -203,13 +228,16 @@ const AdminAddDoctor = () => {
           {/* Submit */}
           <div className="mt-6 flex justify-end">
             <button
+              ref={btnRef}
               type="submit"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98]"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm"
               style={{
                 background: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
                 color: 'white',
                 boxShadow: '0 8px 24px rgba(14,165,233,0.35)',
               }}
+              onMouseEnter={e => gsap.to(e.currentTarget, { scale: 1.04, boxShadow: '0 12px 32px rgba(14,165,233,0.5)', duration: 0.2 })}
+              onMouseLeave={e => gsap.to(e.currentTarget, { scale: 1, boxShadow: '0 8px 24px rgba(14,165,233,0.35)', duration: 0.2 })}
             >
               <UserPlus size={16} />
               Add Doctor
@@ -217,7 +245,7 @@ const AdminAddDoctor = () => {
           </div>
         </div>
       </form>
-    </motion.div>
+    </div>
   );
 };
 

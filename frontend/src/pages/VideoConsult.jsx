@@ -5,12 +5,12 @@ import {
     MessageSquare, X, Send, Monitor, MonitorOff,
     Loader2, ChevronRight, Shield, Clock, Star,
     CheckCircle, Users, Zap, Lock, ArrowRight,
-    Play, Calendar, IndianRupee
+    Play, Calendar, IndianRupee, ChevronLeft
 } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { io } from 'socket.io-client'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
 
 const ICE_SERVERS = {
@@ -501,13 +501,210 @@ const HowItWorksStep = ({ num, title, desc, delay }) => (
     </motion.div>
 )
 
+// ─── Schedule Modal ───────────────────────────────────────────────────────────
+const ScheduleModal = ({ doc, onClose, backendUrl, token, navigate }) => {
+    const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+    const [docSlots, setDocSlots] = useState([])
+    const [slotIndex, setSlotIndex] = useState(0)
+    const [slotTime, setSlotTime] = useState('')
+    const [booking, setBooking] = useState(false)
+
+    // Generate available slots (same logic as Appointment.jsx)
+    useEffect(() => {
+        const today = new Date()
+        const allSlots = []
+        for (let i = 0; i < 7; i++) {
+            const currentDate = new Date(today)
+            currentDate.setDate(today.getDate() + i)
+            const endTime = new Date(currentDate)
+            endTime.setHours(21, 0, 0, 0)
+            if (today.getDate() === currentDate.getDate()) {
+                currentDate.setHours(currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10)
+                currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0)
+            } else {
+                currentDate.setHours(10)
+                currentDate.setMinutes(0)
+            }
+            const timeSlots = []
+            while (currentDate < endTime) {
+                const formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
+                const slotDate = `${currentDate.getDate()}_${currentDate.getMonth() + 1}_${currentDate.getFullYear()}`
+                const available = !(doc?.slots_booked?.[slotDate]?.includes(formattedTime))
+                if (available) timeSlots.push({ datetime: new Date(currentDate), time: formattedTime })
+                currentDate.setMinutes(currentDate.getMinutes() + 30)
+            }
+            if (timeSlots.length > 0) allSlots.push(timeSlots)
+        }
+        setDocSlots(allSlots)
+    }, [doc])
+
+    const handleBook = async () => {
+        if (!token) { toast.warn('Please login to book a consultation'); onClose(); navigate('/login'); return }
+        if (!slotTime) { toast.warn('Please select a time slot'); return }
+        setBooking(true)
+        try {
+            const date = docSlots[slotIndex][0].datetime
+            const slotDate = `${date.getDate()}_${date.getMonth() + 1}_${date.getFullYear()}`
+
+            const { data } = await axios.post(`${backendUrl}/api/video-consult/book`, {
+                docId: doc._id,
+                docName: doc.name,
+                docImage: doc.image,
+                docSpeciality: doc.speciality,
+                slotDate,
+                slotTime
+            }, { headers: { token } })
+
+            if (data.success) {
+                toast.success('Video consultation scheduled! Join from My Appointments.')
+                onClose()
+                navigate('/my-appointments')
+            } else {
+                toast.error(data.message || 'Booking failed')
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.message || err.message || 'Booking failed')
+        } finally {
+            setBooking(false)
+        }
+    }
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+            onClick={e => e.target === e.currentTarget && onClose()}
+        >
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+                className="w-full max-w-lg rounded-3xl overflow-hidden"
+                style={{ background: '#0d1b3e', border: '1px solid rgba(99,102,241,0.25)', boxShadow: '0 32px 80px rgba(0,0,0,0.6)' }}
+            >
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4"
+                    style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                            style={{ background: 'rgba(99,102,241,0.2)' }}>
+                            <Calendar size={18} style={{ color: '#a5b4fc' }} />
+                        </div>
+                        <div>
+                            <p className="text-white font-bold text-sm">Schedule Video Consultation</p>
+                            <p className="text-gray-400 text-xs">with {doc.name}</p>
+                        </div>
+                    </div>
+                    <button onClick={onClose}
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                        <X size={16} />
+                    </button>
+                </div>
+
+                <div className="p-6 space-y-5">
+                    {/* Doctor info strip */}
+                    <div className="flex items-center gap-3 p-3 rounded-2xl"
+                        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                        <img src={doc.image} alt={doc.name}
+                            className="w-12 h-12 rounded-xl object-cover object-top" />
+                        <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold text-sm truncate">{doc.name}</p>
+                            <p className="text-xs" style={{ color: '#a5b4fc' }}>{doc.speciality}</p>
+                            <p className="text-xs text-gray-500">{doc.experience} experience</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                            <p className="text-white font-bold text-sm">₹{doc.fees || 400}</p>
+                            <p className="text-xs text-gray-500">per session</p>
+                        </div>
+                    </div>
+
+                    {/* Day selector */}
+                    <div>
+                        <p className="text-gray-300 text-xs font-semibold mb-3 uppercase tracking-wider">Select Date</p>
+                        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                            {docSlots.map((daySlots, idx) => {
+                                const d = daySlots[0].datetime
+                                const isToday = idx === 0
+                                return (
+                                    <button key={idx}
+                                        onClick={() => { setSlotIndex(idx); setSlotTime('') }}
+                                        className="flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl transition-all text-xs font-semibold"
+                                        style={slotIndex === idx
+                                            ? { background: 'linear-gradient(135deg, #6366f1, #4f46e5)', color: '#fff', boxShadow: '0 4px 16px rgba(99,102,241,0.4)' }
+                                            : { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#9ca3af' }
+                                        }
+                                    >
+                                        <span className="text-[10px] opacity-70">{daysOfWeek[d.getDay()]}</span>
+                                        <span className="text-base font-bold">{d.getDate()}</span>
+                                        {isToday && <span className="text-[9px] opacity-80">Today</span>}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Time slots */}
+                    <div>
+                        <p className="text-gray-300 text-xs font-semibold mb-3 uppercase tracking-wider">Select Time</p>
+                        {docSlots[slotIndex]?.length > 0 ? (
+                            <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto pr-1">
+                                {docSlots[slotIndex].map((slot, i) => (
+                                    <button key={i}
+                                        onClick={() => setSlotTime(slot.time)}
+                                        className="py-2 px-1 rounded-xl text-xs font-semibold transition-all"
+                                        style={slotTime === slot.time
+                                            ? { background: 'rgba(99,102,241,0.3)', border: '1px solid rgba(99,102,241,0.6)', color: '#a5b4fc' }
+                                            : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#9ca3af' }
+                                        }
+                                    >
+                                        {slot.time}
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500 text-sm text-center py-4">No slots available for this day</p>
+                        )}
+                    </div>
+
+                    {/* Selected summary */}
+                    {slotTime && docSlots[slotIndex] && (
+                        <div className="flex items-center gap-2 px-4 py-3 rounded-xl"
+                            style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)' }}>
+                            <CheckCircle size={14} style={{ color: '#22c55e' }} />
+                            <p className="text-green-400 text-xs font-semibold">
+                                Scheduled for {daysOfWeek[docSlots[slotIndex][0].datetime.getDay()]}, {docSlots[slotIndex][0].datetime.getDate()} at {slotTime}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Book button */}
+                    <button
+                        onClick={handleBook}
+                        disabled={booking || !slotTime}
+                        className="w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm text-white transition-all hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+                        style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: slotTime ? '0 4px 20px rgba(99,102,241,0.4)' : 'none' }}
+                    >
+                        {booking
+                            ? <><Loader2 className="animate-spin" size={16} /> Scheduling...</>
+                            : <><Video size={16} /> Confirm & Schedule</>
+                        }
+                    </button>
+                    <p className="text-center text-gray-500 text-xs">
+                        You can join the call from <span className="text-indigo-400 font-semibold">My Appointments</span> at the scheduled time
+                    </p>
+                </div>
+            </motion.div>
+        </div>
+    )
+}
+
 // ─── Patient: Doctor Selection Page ──────────────────────────────────────────
 const VideoConsult = () => {
-    const { doctors, backendUrl, token, userData } = useContext(AppContext)
+    const { doctors, backendUrl, token } = useContext(AppContext)
     const [searchParams] = useSearchParams()
     const [callState, setCallState] = useState(null)
-    const [loading, setLoading] = useState(false)
-    const [loadingDocId, setLoadingDocId] = useState(null)
+    const [scheduleDoc, setScheduleDoc] = useState(null)
+    const navigate = useNavigate()
 
     // Join via direct link (from MyAppointments "Join Video Consult" button)
     useEffect(() => {
@@ -522,44 +719,6 @@ const VideoConsult = () => {
             })
         }
     }, [searchParams])
-
-    const handleStartCall = async (doc) => {
-        if (!token) { toast.error('Please login to start a consultation.'); return }
-        setLoading(true)
-        setLoadingDocId(doc._id)
-        try {
-            const now = new Date()
-            const slotDate = `${now.getDate()}_${now.getMonth() + 1}_${now.getFullYear()}`
-            const slotTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-
-            const { data } = await axios.post(`${backendUrl}/api/video-consult/book`, {
-                userId: userData?._id || 'guest_' + Date.now(),
-                docId: doc._id,
-                docName: doc.name,
-                docImage: doc.image,
-                docSpeciality: doc.speciality,
-                slotDate,
-                slotTime
-            })
-
-            if (data.success) {
-                toast.success('Consultation booked! Connecting...')
-                setCallState({
-                    roomId: data.roomId,
-                    role: 'patient',
-                    peerName: doc.name,
-                    peerImage: doc.image
-                })
-            } else {
-                toast.error(data.message)
-            }
-        } catch (err) {
-            toast.error(err.message || 'Failed to book consultation.')
-        } finally {
-            setLoading(false)
-            setLoadingDocId(null)
-        }
-    }
 
     if (callState) {
         return (
@@ -576,6 +735,19 @@ const VideoConsult = () => {
 
     return (
         <div className="min-h-screen" style={{ background: '#0a0f1e' }}>
+
+            {/* ── Schedule Modal ── */}
+            <AnimatePresence>
+                {scheduleDoc && (
+                    <ScheduleModal
+                        doc={scheduleDoc}
+                        onClose={() => setScheduleDoc(null)}
+                        backendUrl={backendUrl}
+                        token={token}
+                        navigate={navigate}
+                    />
+                )}
+            </AnimatePresence>
 
             {/* ── Hero Section ── */}
             <div className="relative overflow-hidden">
@@ -733,9 +905,9 @@ const VideoConsult = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 items-start">
                         {[
                             { title: 'Choose Doctor', desc: 'Browse verified specialists' },
-                            { title: 'Click Consult', desc: 'Start instantly, no wait' },
-                            { title: 'Allow Access', desc: 'Camera & microphone' },
-                            { title: 'Doctor Joins', desc: 'Secure private room' },
+                            { title: 'Pick a Slot', desc: 'Select date & time' },
+                            { title: 'Confirm Booking', desc: 'Schedule your session' },
+                            { title: 'Join at Time', desc: 'From My Appointments' },
                             { title: 'Consultation', desc: 'Get expert advice' },
                         ].map((step, i) => (
                             <React.Fragment key={i}>
@@ -755,7 +927,7 @@ const VideoConsult = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-8 pb-8">
                 <div className="grid sm:grid-cols-3 gap-4">
                     {[
-                        { icon: Clock, title: 'Available Today', desc: 'Book your slot at a time that suits you.', cta: 'View Slots', color: '#6366f1' },
+                        { icon: Clock, title: 'Flexible Scheduling', desc: 'Book your slot for today or the next 7 days at a time that suits you.', cta: 'View Slots', color: '#6366f1' },
                         { icon: IndianRupee, title: 'Consultation Fee', desc: '₹400 for 15–20 mins with a specialist doctor.', cta: null, color: '#00d4ff' },
                         { icon: Shield, title: 'You Will Get', desc: 'Prescription, advice, report sharing & follow-up support.', cta: null, color: '#22c55e' },
                     ].map(({ icon: Icon, title, desc, cta, color }, i) => (
@@ -855,15 +1027,14 @@ const VideoConsult = () => {
                                     </span>
                                 </div>
                                 <button
-                                    onClick={() => handleStartCall(doc)}
-                                    disabled={loading}
-                                    className="w-full py-2.5 rounded-xl flex items-center justify-center gap-2 font-semibold text-sm text-white transition-all hover:opacity-90 disabled:opacity-50"
+                                    onClick={() => {
+                                        if (!token) { toast.warn('Please login to book a consultation'); navigate('/login'); return }
+                                        setScheduleDoc(doc)
+                                    }}
+                                    className="w-full py-2.5 rounded-xl flex items-center justify-center gap-2 font-semibold text-sm text-white transition-all hover:opacity-90"
                                     style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 4px 16px rgba(99,102,241,0.3)' }}
                                 >
-                                    {loading && loadingDocId === doc._id
-                                        ? <><Loader2 className="animate-spin" size={15} /> Connecting...</>
-                                        : <><Video size={15} /> Consult Now</>
-                                    }
+                                    <Calendar size={15} /> Schedule Consult
                                 </button>
                             </div>
                         </motion.div>

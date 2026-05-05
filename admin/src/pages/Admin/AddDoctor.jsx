@@ -14,6 +14,7 @@ const AddDoctor = () => {
     const [degree, setDegree] = useState('')
     const [address1, setAddress1] = useState('')
     const [address2, setAddress2] = useState('')
+    const [gender, setGender] = useState('Male')
     const [loading, setLoading] = useState(false)
 
     const { aToken, backendUrl, addDoctor } = useContext(AdminContext)
@@ -34,13 +35,14 @@ const AddDoctor = () => {
         formData.append('speciality', speciality)
         formData.append('degree', degree)
         formData.append('address', JSON.stringify({ line1: address1, line2: address2 }))
+        formData.append('gender', gender)
 
         const success = await addDoctor(formData)
         if (success) {
             setDocImg(null); setName(''); setEmail('')
             setExperience('1 Year'); setFees(''); setAbout('')
             setSpeciality('General physician'); setDegree('')
-            setAddress1(''); setAddress2('')
+            setAddress1(''); setAddress2(''); setGender('Male')
             navigate('/doctor-list')
         }
         setLoading(false)
@@ -99,6 +101,12 @@ const AddDoctor = () => {
                         <div className='flex flex-col gap-1'>
                             <p className='text-sm font-bold ml-1'>Consultation Fees (₹)</p>
                             <input onChange={e => setFees(e.target.value)} value={fees} className='border rounded-xl px-4 py-2.5 outline-none focus:border-primary transition-colors' type="number" placeholder='500' required />
+                        </div>
+                        <div className='flex flex-col gap-1'>
+                            <p className='text-sm font-bold ml-1'>Gender</p>
+                            <select onChange={e => setGender(e.target.value)} value={gender} className='border rounded-xl px-4 py-2.5 outline-none focus:border-primary bg-white'>
+                                {['Male', 'Female', 'Other'].map(g => <option key={g}>{g}</option>)}
+                            </select>
                         </div>
                         <div className='flex flex-col gap-1'>
                             <p className='text-sm font-bold ml-1'>Address Line 1</p>

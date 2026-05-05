@@ -107,7 +107,7 @@ const DoctorHero = () => (
     />
 
     {/* Three doctors layout */}
-    <div className='relative flex items-end justify-center gap-3 w-full px-2'>
+    <div className='relative flex items-end justify-end gap-3 w-full px-2'>
 
       {/* Left doctor */}
       <DoctorCard
@@ -328,7 +328,7 @@ const Header = () => {
         </div>
 
         {/* ── RIGHT: Doctor + Stats ── */}
-        <div className='hidden md:flex md:w-[42%] lg:w-[40%] relative flex-col items-center'>
+        <div className='hidden md:flex md:w-[42%] lg:w-[40%] relative flex-col items-end translate-x-6 lg:translate-x-10'>
           {/* Stat badges */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
@@ -344,7 +344,7 @@ const Header = () => {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className='w-full flex justify-center items-end pt-4 float'
+            className='w-full flex justify-end items-end pt-4 pr-2 float'
           >
             <DoctorHero />
           </motion.div>

@@ -8,7 +8,7 @@ import appointmentModel from "../models/appointmentModel.js"
 // API for adding doctor — default password is always 12345678
 const addDoctor = async (req, res) => {
     try {
-        const { name, email, speciality, degree, experience, about, fees, address } = req.body
+        const { name, email, speciality, degree, experience, about, fees, address, gender } = req.body
         const imageFile = req.file
 
         if (!name || !email || !speciality || !degree || !experience || !about || !fees || !address) {
@@ -17,13 +17,15 @@ const addDoctor = async (req, res) => {
         if (!validator.isEmail(email)) {
             return res.json({ success: false, message: "Please enter a valid email" })
         }
+        if (!password || password.length < 6) {
+            return res.json({ success: false, message: "Password must be at least 6 characters" })
+        }
         if (!imageFile) {
             return res.json({ success: false, message: "Doctor image is required" })
         }
 
-        const DEFAULT_PASSWORD = '12345678'
         const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, salt)
+        const hashedPassword = await bcrypt.hash(password, salt)
 
         const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" })
 
@@ -42,6 +44,7 @@ const addDoctor = async (req, res) => {
             available: true,
             fees,
             address: parsedAddress,
+            gender: gender || 'Male',
             date: Date.now()
         }
 
@@ -116,6 +119,83 @@ const appointmentCancelAdmin = async (req, res) => {
         await doctorModel.findByIdAndUpdate(docId, { slots_booked })
 
         res.json({ success: true, message: 'Appointment Cancelled' })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// API for admin dashboard stats
+export const adminDashboard = async (req, res) => {
+    try {
+        const doctors = await doctorModel.find({})
+        const appointments = await appointmentModel.find({})
+
+        // unique patients
+        const patientIds = new Set(appointments.map(a => String(a.userId)))
+
+        // revenue from paid, non-cancelled appointments
+        const revenue = appointments
+            .filter(a => a.payment && !a.cancelled)
+            .reduce((sum, a) => sum + (a.amount || 0), 0)
+
+        const latestAppointments = appointments.slice(-5).reverse()
+
+        res.json({
+            success: true,
+            dashData: {
+                doctors: doctors.length,
+                appointments: appointments.length,
+                patients: patientIds.size,
+                revenue,
+                latestAppointments
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// API to complete an appointment (admin)
+export const appointmentCompleteAdmin = async (req, res) => {
+    try {
+        const { appointmentId } = req.body
+        const appointment = await appointmentModel.findById(appointmentId)
+        if (!appointment) return res.json({ success: false, message: 'Appointment not found' })
+        await appointmentModel.findByIdAndUpdate(appointmentId, { isCompleted: true })
+        res.json({ success: true, message: 'Appointment marked as completed' })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// API to edit doctor details
+export const editDoctor = async (req, res) => {
+    try {
+        const { doctorId, name, speciality, degree, experience, fees, about, address, available, gender } = req.body
+        if (!doctorId) return res.json({ success: false, message: 'Doctor ID required' })
+
+        const updateData = {}
+        if (name)       updateData.name       = name
+        if (speciality) updateData.speciality = speciality
+        if (degree)     updateData.degree     = degree
+        if (experience) updateData.experience = experience
+        if (fees)       updateData.fees       = Number(fees)
+        if (about)      updateData.about      = about
+        if (address)    updateData.address    = typeof address === 'string' ? JSON.parse(address) : address
+        if (gender)     updateData.gender     = gender
+        if (typeof available === 'boolean') updateData.available = available
+
+        // Handle image update if provided
+        if (req.file) {
+            const imageUpload = await cloudinary.uploader.upload(req.file.path, { resource_type: 'image' })
+            updateData.image = imageUpload.secure_url
+        }
+
+        await doctorModel.findByIdAndUpdate(doctorId, updateData)
+        res.json({ success: true, message: 'Doctor updated successfully' })
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })

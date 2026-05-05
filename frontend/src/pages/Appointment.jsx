@@ -187,7 +187,25 @@ const Appointment = () => {
           <Calendar size={20} className='text-cyan-400' /> Book an Appointment
         </h2>
 
-        {docSlots.length > 0 ? (
+        {!docInfo.available ? (
+          <div className='flex flex-col items-center justify-center py-12 gap-4 text-center'>
+            <div className='w-16 h-16 rounded-full flex items-center justify-center bg-red-500/10 border border-red-500/20'>
+              <X size={28} className='text-red-400' />
+            </div>
+            <div>
+              <p className='text-base font-bold text-red-400'>Doctor Not Available</p>
+              <p className={`text-sm mt-1 ${tSec}`}>
+                {docInfo.name} is currently unavailable for appointments.<br />Please check back later or choose another doctor.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/doctors')}
+              className='mt-2 flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-6 py-3 rounded-xl transition-all text-sm'
+            >
+              <Calendar size={15} /> Find Another Doctor
+            </button>
+          </div>
+        ) : docSlots.length > 0 ? (
           <>
             {/* Day selector */}
             <div className='flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide'>

@@ -1,10 +1,44 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { AdminContext } from '../context/AdminContext';
-import { motion } from 'framer-motion';
 import { Users, CalendarDays, UserCheck, X, CheckCircle, Clock } from 'lucide-react';
+import gsap from 'gsap';
+
+// Animated counter component
+const AnimatedCount = ({ value }) => {
+  const ref = useRef(null);
+  const prevValue = useRef(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const isNumber = typeof value === 'number';
+    if (!isNumber) {
+      el.textContent = value;
+      return;
+    }
+    const from = prevValue.current;
+    const to = value;
+    prevValue.current = to;
+    const obj = { val: from };
+    gsap.to(obj, {
+      val: to,
+      duration: 1.2,
+      ease: 'power3.out',
+      onUpdate: () => { el.textContent = Math.round(obj.val); }
+    });
+  }, [value]);
+
+  return <span ref={ref}>0</span>;
+};
 
 const AdminDashboard = () => {
   const { aToken, appointments, doctors, getAllAppointments, getAllDoctors, cancelAppointment } = useContext(AdminContext);
+
+  // Refs
+  const headerRef = useRef(null);
+  const statsRef = useRef([]);
+  const tableRef = useRef(null);
+  const rowsRef = useRef([]);
 
   useEffect(() => {
     if (aToken) {
@@ -12,6 +46,40 @@ const AdminDashboard = () => {
       getAllDoctors();
     }
   }, [aToken]);
+
+  // Animate on mount
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Header
+      gsap.set(headerRef.current, { opacity: 0, y: -20 });
+      gsap.to(headerRef.current, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' });
+
+      // Stat cards stagger with 3D flip
+      gsap.set(statsRef.current, { opacity: 0, y: 40, rotateY: -15, scale: 0.9 });
+      gsap.to(statsRef.current, {
+        opacity: 1, y: 0, rotateY: 0, scale: 1,
+        duration: 0.65, stagger: 0.1, delay: 0.2, ease: 'back.out(1.4)'
+      });
+
+      // Table
+      gsap.set(tableRef.current, { opacity: 0, y: 30 });
+      gsap.to(tableRef.current, {
+        opacity: 1, y: 0, duration: 0.6, delay: 0.55, ease: 'power3.out'
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
+
+  // Animate rows when appointments load
+  useEffect(() => {
+    if (rowsRef.current.length === 0) return;
+    gsap.set(rowsRef.current, { opacity: 0, x: -20 });
+    gsap.to(rowsRef.current, {
+      opacity: 1, x: 0,
+      duration: 0.4, stagger: 0.06, delay: 0.1, ease: 'power3.out'
+    });
+  }, [appointments.length]);
 
   const uniquePatients = new Set(appointments.map(a => a.userId)).size;
 
@@ -62,33 +130,38 @@ const AdminDashboard = () => {
     );
   };
 
+  const handleCardHover = (el, enter, border, bg) => {
+    gsap.to(el, {
+      y: enter ? -6 : 0,
+      scale: enter ? 1.02 : 1,
+      borderColor: enter ? border : 'rgba(255,255,255,0.08)',
+      boxShadow: enter ? `0 16px 40px ${bg}` : 'none',
+      duration: 0.25, ease: 'power2.out'
+    });
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="p-4 sm:p-6"
-    >
+    <div className="p-4 sm:p-6">
       {/* Page header */}
-      <div className="mb-7">
+      <div ref={headerRef} className="mb-7">
         <h1 className="text-2xl font-bold text-white">Dashboard</h1>
         <p className="text-sm mt-1" style={{ color: '#8ba3c7' }}>Overview of your platform activity</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8" style={{ perspective: '800px' }}>
         {stats.map(({ label, count, icon: Icon, color, bg, border }, i) => (
-          <motion.div
+          <div
             key={label}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
-            className="rounded-2xl p-5 flex items-center gap-4 transition-all hover:-translate-y-0.5"
+            ref={el => (statsRef.current[i] = el)}
+            className="rounded-2xl p-5 flex items-center gap-4 cursor-default"
             style={{
               background: 'rgba(255,255,255,0.04)',
-              border: `1px solid rgba(255,255,255,0.08)`,
+              border: '1px solid rgba(255,255,255,0.08)',
+              transformStyle: 'preserve-3d',
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = border; e.currentTarget.style.boxShadow = `0 8px 24px ${bg}` }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none' }}
+            onMouseEnter={e => handleCardHover(e.currentTarget, true, border, bg)}
+            onMouseLeave={e => handleCardHover(e.currentTarget, false, border, bg)}
           >
             <div
               className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -97,15 +170,18 @@ const AdminDashboard = () => {
               <Icon size={22} style={{ color }} />
             </div>
             <div>
-              <p className="text-3xl font-bold text-white">{count}</p>
+              <p className="text-3xl font-bold text-white">
+                <AnimatedCount value={count} />
+              </p>
               <p className="text-sm font-medium" style={{ color: '#8ba3c7' }}>{label}</p>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
       {/* Latest Appointments */}
       <div
+        ref={tableRef}
         className="rounded-2xl overflow-hidden"
         style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
       >
@@ -123,10 +199,17 @@ const AdminDashboard = () => {
           {appointments.slice(0, 5).map((item, i) => (
             <div
               key={i}
-              className="flex flex-col sm:flex-row items-start sm:items-center px-4 sm:px-6 py-4 gap-3 sm:gap-4 transition-colors"
+              ref={el => (rowsRef.current[i] = el)}
+              className="flex flex-col sm:flex-row items-start sm:items-center px-4 sm:px-6 py-4 gap-3 sm:gap-4 transition-colors cursor-default"
               style={{ borderBottom: i < 4 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                gsap.to(e.currentTarget, { x: 4, duration: 0.2, ease: 'power2.out' });
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'transparent';
+                gsap.to(e.currentTarget, { x: 0, duration: 0.2, ease: 'power2.out' });
+              }}
             >
               <img
                 className="w-11 h-11 rounded-xl object-cover flex-shrink-0"
@@ -146,6 +229,8 @@ const AdminDashboard = () => {
                   <button
                     onClick={() => cancelAppointment(item._id)}
                     className="text-xs text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-500/40 rounded-lg px-3 py-1.5 transition-all hover:bg-red-500/10"
+                    onMouseEnter={e => gsap.to(e.currentTarget, { scale: 1.05, duration: 0.15 })}
+                    onMouseLeave={e => gsap.to(e.currentTarget, { scale: 1, duration: 0.15 })}
                   >
                     Cancel
                   </button>
@@ -166,7 +251,7 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

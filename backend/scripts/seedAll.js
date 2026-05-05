@@ -103,7 +103,8 @@ const seedDB = async () => {
             doc.rating = parseFloat((4.0 + Math.random() * 1.0).toFixed(1));
             doc.reviewCount = Math.floor(Math.random() * 200) + 30;
             doc.about = aboutText.replace('{name}', firstName);
-            doc.image = `/doc${(doctors.indexOf(doc) % 15) + 1}.png`;
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+            doc.image = `${frontendUrl}/doc${(doctors.indexOf(doc) % 15) + 1}.png`;
             await new doctorModel(doc).save();
         }
 

@@ -1,32 +1,41 @@
 # MediNexus AI — Deployment Guide
 
 ## Architecture
-- **Backend** → [Render.com](https://render.com) (free tier)
-- **Frontend** → [Vercel](https://vercel.com) — includes User App + Admin Panel + Doctor Portal
-
-> ℹ️ The `/admin` folder in the repo is a legacy standalone app — **do NOT deploy it**.
-> Admin panel is already embedded in the frontend at `/admin/*` routes.
-
----
-
-## What gets deployed where
 
 ```
-your-frontend.vercel.app/              → User facing app
-your-frontend.vercel.app/admin         → Admin panel (same Vercel deployment)
-your-frontend.vercel.app/doctor-portal → Doctor portal (same Vercel deployment)
+┌─────────────────────────────────────────────────────────┐
+│  Render.com (Backend)                                   │
+│  Node.js + Express + Socket.IO                          │
+│  https://your-backend.onrender.com                      │
+└─────────────────────────────────────────────────────────┘
+         ↑ API calls + WebSocket
+┌──────────────────────┐    ┌──────────────────────────┐
+│  Vercel (Frontend)   │    │  Vercel (Admin)           │
+│  User App            │    │  Admin Panel              │
+│  Doctor Portal       │    │  https://your-admin.      │
+│  Video Consult       │    │  vercel.app               │
+│  Messaging           │    │                           │
+└──────────────────────┘    └──────────────────────────┘
 ```
+
+**3 separate deployments:**
+1. `Medinexus-Ai-/backend` → Render.com
+2. `Medinexus-Ai-/frontend` → Vercel (user app + doctor portal)
+3. `Medinexus-Ai-/admin` → Vercel (admin panel, separate project)
 
 ---
 
 ## Step 1 — Deploy Backend on Render
 
-1. Go to [render.com](https://render.com) → New → Web Service
+1. Go to [render.com](https://render.com) → **New → Web Service**
 2. Connect your GitHub repo
-3. Set **Root Directory**: `Medinexus-Ai-/backend`
-4. **Build Command**: `npm install`
-5. **Start Command**: `npm start`
-6. Add all environment variables from `.env.example`:
+3. Settings:
+   - **Root Directory**: `Medinexus-Ai-/backend`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Node Version**: 18+
+
+4. Add **Environment Variables**:
 
 | Key | Value |
 |-----|-------|
@@ -34,90 +43,154 @@ your-frontend.vercel.app/doctor-portal → Doctor portal (same Vercel deployment
 | `PORT` | `4000` |
 | `MONGODB_URI` | Your MongoDB Atlas URI |
 | `JWT_SECRET` | Strong random string (32+ chars) |
-| `GEMINI_API_KEY` | From Google AI Studio |
+| `GEMINI_API_KEY` | From [Google AI Studio](https://aistudio.google.com) |
 | `CLOUDINARY_NAME` | Your Cloudinary cloud name |
 | `CLOUDINARY_API_KEY` | Your Cloudinary API key |
 | `CLOUDINARY_SECRET_KEY` | Your Cloudinary secret |
-| `ADMIN_EMAIL` | Gmail address |
-| `ADMIN_PASSWORD` | Gmail App Password (16 chars) |
-| `RAZORPAY_KEY_ID` | `rzp_test_SkrWttzP0SczbB` |
+| `ADMIN_EMAIL` | Gmail address for sending emails |
+| `ADMIN_PASSWORD` | Gmail App Password (16 chars, see below) |
+| `RAZORPAY_KEY_ID` | Your Razorpay key ID |
 | `RAZORPAY_KEY_SECRET` | Your Razorpay secret |
-| `FRONTEND_URL` | Fill after Step 2 |
-| `ADMIN_URL` | Fill after Step 3 |
+| `FRONTEND_URL` | *(fill after Step 2)* |
+| `ADMIN_URL` | *(fill after Step 3)* |
 
-7. Deploy → Copy the backend URL (e.g. `https://medinexus-backend.onrender.com`)
+5. Deploy → Copy the backend URL (e.g. `https://medinexus-backend.onrender.com`)
 
 ---
 
 ## Step 2 — Deploy Frontend on Vercel
 
-> This single deployment covers the **User App + Admin Panel + Doctor Portal**
+1. Go to [vercel.com](https://vercel.com) → **New Project**
+2. Import your GitHub repo
+3. Settings:
+   - **Root Directory**: `Medinexus-Ai-/frontend`
+   - **Framework Preset**: Vite (auto-detected)
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
 
-1. Go to [vercel.com](https://vercel.com) → New Project
-2. Import GitHub repo
-3. Set **Root Directory**: `Medinexus-Ai-/frontend`
-4. **Framework**: Vite (auto-detected)
-5. Add environment variables:
+4. Add **Environment Variables**:
 
 | Key | Value |
 |-----|-------|
-| `VITE_BACKEND_URL` | `https://medinexus-backend-k427.onrender.com` |
-| `VITE_RAZORPAY_KEY_ID` | `rzp_test_SkrWttzP0SczbB` |
+| `VITE_BACKEND_URL` | `https://your-backend.onrender.com` |
+| `VITE_RAZORPAY_KEY_ID` | Your Razorpay key ID |
+| `VITE_ADMIN_URL` | *(fill after Step 3 — your admin Vercel URL)* |
 
-6. Deploy → Copy the frontend URL
+5. Deploy → Copy the frontend URL (e.g. `https://medinexus.vercel.app`)
 
-After deploy, your URLs will be:
-- `https://your-app.vercel.app/` — User app
-- `https://your-app.vercel.app/admin` — Admin panel
-- `https://your-app.vercel.app/doctor-portal` — Doctor portal
-
----
-
-## Step 3 — Update Backend with Frontend URL
-
-Go back to Render → Environment Variables → Update:
-- `FRONTEND_URL` = `https://medinexus-eight.vercel.app`
-- `ADMIN_URL` = `https://medinexus-eight.vercel.app`
-
-Then **Redeploy** the backend.
+> **Note:** Add a `vercel.json` in the frontend folder if you haven't already (for SPA routing):
+> ```json
+> { "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
+> ```
 
 ---
 
-## Step 5 — Verify Deployment
+## Step 3 — Deploy Admin Panel on Vercel
 
+1. Go to [vercel.com](https://vercel.com) → **New Project** (separate project)
+2. Import the same GitHub repo
+3. Settings:
+   - **Root Directory**: `Medinexus-Ai-/admin`
+   - **Framework Preset**: Vite
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+
+4. Add **Environment Variables**:
+
+| Key | Value |
+|-----|-------|
+| `VITE_BACKEND_URL` | `https://your-backend.onrender.com` |
+
+5. Deploy → Copy the admin URL (e.g. `https://medinexus-admin.vercel.app`)
+
+---
+
+## Step 4 — Update Backend & Frontend with Final URLs
+
+### On Render (Backend env vars):
+- `FRONTEND_URL` = `https://medinexus.vercel.app`
+- `ADMIN_URL` = `https://medinexus-admin.vercel.app`
+
+Then click **Manual Deploy → Deploy latest commit** on Render.
+
+### On Vercel (Frontend env vars):
+- `VITE_ADMIN_URL` = `https://medinexus-admin.vercel.app`
+
+Then redeploy the frontend on Vercel.
+
+---
+
+## Step 5 — Verify Everything Works
+
+- [ ] `GET https://your-backend.onrender.com/` → returns `API WORKING`
 - [ ] Frontend loads at Vercel URL
-- [ ] Admin panel loads at Vercel admin URL
-- [ ] Backend health check: `GET https://your-backend.onrender.com/`  → `API WORKING`
-- [ ] User registration works
+- [ ] User can register and login
 - [ ] Doctor list loads
-- [ ] Chatbot responds
-- [ ] Payment flow works (use Razorpay test card: `4111 1111 1111 1111`)
+- [ ] Appointment booking works (OTP email received)
+- [ ] Razorpay payment works (test card: `4111 1111 1111 1111`, CVV `123`, any future date)
+- [ ] Video call works (open in two tabs — user + doctor portal)
+- [ ] Doctor-Patient messaging works (send from user, check doctor portal)
+- [ ] Admin panel loads and admin can login
+- [ ] AI Chatbot responds
 
 ---
 
 ## Gmail App Password Setup
 
+Required for OTP emails and appointment reminders.
+
 1. Go to [myaccount.google.com](https://myaccount.google.com)
-2. Security → 2-Step Verification → Enable
-3. Security → App Passwords → Generate
+2. **Security → 2-Step Verification** → Enable it
+3. **Security → App Passwords** → Generate new
 4. Select "Mail" → Copy the 16-character password
-5. Use this as `ADMIN_PASSWORD` in backend env
+5. Use this as `ADMIN_PASSWORD` in backend env vars
 
 ---
 
 ## MongoDB Atlas Setup
 
-1. [mongodb.com/atlas](https://mongodb.com/atlas) → Free cluster
-2. Database Access → Add user with password
-3. Network Access → Allow `0.0.0.0/0` (all IPs for Render)
-4. Connect → Drivers → Copy connection string
+1. Go to [mongodb.com/atlas](https://mongodb.com/atlas) → Create free cluster
+2. **Database Access** → Add user with username + password
+3. **Network Access** → Add IP `0.0.0.0/0` (allows Render to connect)
+4. **Connect → Drivers** → Copy connection string
 5. Replace `<password>` with your DB user password
+6. Use as `MONGODB_URI`
 
 ---
 
-## Notes
+## Razorpay Setup
 
-- Render free tier **spins down after 15 min inactivity** — first request may take 30-60 seconds
-- For production, upgrade to Render paid plan or use Railway/Fly.io
-- Razorpay test mode: use test card `4111 1111 1111 1111`, CVV `123`, any future date
-- For live payments, switch to `rzp_live_*` keys in Razorpay dashboard
+1. Go to [razorpay.com](https://razorpay.com) → Create account
+2. **Settings → API Keys** → Generate test keys
+3. Use `rzp_test_*` keys for testing, `rzp_live_*` for production
+4. Test card: `4111 1111 1111 1111`, CVV `123`, any future expiry
+
+---
+
+## Important Notes
+
+### Socket.IO (Video Call + Messaging)
+- Socket.IO requires a **persistent server** — this is why backend is on Render, not Vercel
+- Vercel is serverless and **cannot** run Socket.IO
+- Render free tier spins down after 15 min inactivity — first request takes 30-60 sec
+- For production with heavy traffic, upgrade to Render paid plan or use Railway/Fly.io
+
+### CORS
+- Backend automatically allows your Vercel frontend URLs
+- If you use a custom domain, add it to `allowedOrigins` in `server.js`
+
+### Environment Variables
+- Never commit `.env` files to git (already in `.gitignore`)
+- Always set env vars through Render/Vercel dashboards
+
+---
+
+## Quick Reference — All URLs After Deploy
+
+| Service | URL |
+|---------|-----|
+| Backend API | `https://your-backend.onrender.com` |
+| User App | `https://your-frontend.vercel.app` |
+| Doctor Portal | `https://your-frontend.vercel.app/doctor-portal` |
+| Admin Panel | `https://your-admin.vercel.app` |
+| Video Consult | `https://your-frontend.vercel.app/video-consult` |

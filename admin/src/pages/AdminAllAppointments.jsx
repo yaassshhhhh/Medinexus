@@ -1,14 +1,41 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { AdminContext } from '../context/AdminContext';
-import { motion } from 'framer-motion';
 import { X, CheckCircle, Clock, CreditCard, CalendarDays } from 'lucide-react';
+import gsap from 'gsap';
 
 const AdminAllAppointments = () => {
   const { aToken, appointments, getAllAppointments, cancelAppointment } = useContext(AdminContext);
 
+  const headerRef = useRef(null);
+  const tableRef = useRef(null);
+  const rowsRef = useRef([]);
+
   useEffect(() => {
     if (aToken) getAllAppointments();
   }, [aToken]);
+
+  // Mount animation
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.set(headerRef.current, { opacity: 0, y: -20 });
+      gsap.to(headerRef.current, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' });
+
+      gsap.set(tableRef.current, { opacity: 0, y: 30 });
+      gsap.to(tableRef.current, { opacity: 1, y: 0, duration: 0.6, delay: 0.2, ease: 'power3.out' });
+    });
+    return () => ctx.revert();
+  }, []);
+
+  // Rows animate when data loads
+  useEffect(() => {
+    const validRows = rowsRef.current.filter(Boolean);
+    if (!validRows.length) return;
+    gsap.set(validRows, { opacity: 0, x: -24 });
+    gsap.to(validRows, {
+      opacity: 1, x: 0,
+      duration: 0.4, stagger: 0.05, delay: 0.1, ease: 'power3.out'
+    });
+  }, [appointments.length]);
 
   const getStatusBadge = (item) => {
     if (item.cancelled)
@@ -21,9 +48,9 @@ const AdminAllAppointments = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 sm:p-6">
+    <div className="p-4 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-7 flex-wrap gap-3">
+      <div ref={headerRef} className="flex items-center justify-between mb-7 flex-wrap gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white">All Appointments</h1>
           <p className="text-sm mt-1" style={{ color: '#8ba3c7' }}>{appointments.length} total appointments</p>
@@ -35,6 +62,7 @@ const AdminAllAppointments = () => {
 
       {/* Table */}
       <div
+        ref={tableRef}
         className="rounded-2xl overflow-hidden"
         style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
       >
@@ -55,10 +83,17 @@ const AdminAllAppointments = () => {
           {appointments.map((item, index) => (
             <div
               key={index}
-              className="flex flex-wrap sm:grid grid-cols-[0.4fr_2.5fr_2.5fr_2fr_1.5fr_1fr] items-center py-4 px-4 sm:px-6 gap-3 transition-colors"
+              ref={el => (rowsRef.current[index] = el)}
+              className="flex flex-wrap sm:grid grid-cols-[0.4fr_2.5fr_2.5fr_2fr_1.5fr_1fr] items-center py-4 px-4 sm:px-6 gap-3 transition-colors cursor-default"
               style={{ borderBottom: index < appointments.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                gsap.to(e.currentTarget, { x: 4, duration: 0.2, ease: 'power2.out' });
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'transparent';
+                gsap.to(e.currentTarget, { x: 0, duration: 0.2, ease: 'power2.out' });
+              }}
             >
               <p className="max-sm:hidden text-sm font-medium" style={{ color: '#8ba3c7' }}>{index + 1}</p>
 
@@ -108,6 +143,8 @@ const AdminAllAppointments = () => {
                 <button
                   onClick={() => cancelAppointment(item._id)}
                   className="text-xs text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-500/40 rounded-lg px-3 py-1.5 transition-all hover:bg-red-500/10 w-fit"
+                  onMouseEnter={e => gsap.to(e.currentTarget, { scale: 1.06, duration: 0.15 })}
+                  onMouseLeave={e => gsap.to(e.currentTarget, { scale: 1, duration: 0.15 })}
                 >
                   Cancel
                 </button>
@@ -125,7 +162,7 @@ const AdminAllAppointments = () => {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

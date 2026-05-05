@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { AppContext } from '../context/AppContext'
 import AnimatedCounter from './AnimatedCounter'
 import { Building2, UserCheck, CalendarCheck, Video, ArrowRight, ShieldCheck, Star, Zap } from 'lucide-react'
+import doctorImg from '../assets/doc2.png'
 
 const steps = [
   {
@@ -147,21 +148,31 @@ const StatsSection = () => {
             </div>
           </div>
 
-          {/* Shield visual */}
+          {/* Doctor visual */}
           <motion.div
-            whileHover={{ scale: 1.08, rotate: 3 }}
+            whileHover={{ scale: 1.06, y: -4 }}
             transition={{ type: 'spring', stiffness: 260, damping: 18 }}
-            className='hidden md:flex w-28 h-28 flex-shrink-0 items-center justify-center rounded-3xl text-5xl relative'
+            className='hidden md:flex w-28 h-36 flex-shrink-0 items-end justify-center rounded-3xl overflow-hidden relative'
             style={{
-              background: 'linear-gradient(135deg, rgba(0,212,255,0.12), rgba(99,102,241,0.12))',
-              border: '1px solid rgba(0,212,255,0.2)',
-              boxShadow: '0 8px 32px rgba(0,212,255,0.15)',
+              background: 'linear-gradient(180deg, rgba(0,212,255,0.15) 0%, rgba(13,27,53,0.9) 100%)',
+              border: '1px solid rgba(0,212,255,0.25)',
+              boxShadow: '0 8px 32px rgba(0,212,255,0.18)',
             }}
           >
-            🛡️
-            {/* Glow dot */}
-            <span className='absolute top-2 right-2 w-2.5 h-2.5 rounded-full'
-              style={{ background: '#00d4ff', boxShadow: '0 0 8px #00d4ff' }} />
+            <img
+              src={doctorImg}
+              alt='Doctor'
+              className='w-full h-full object-cover object-top'
+            />
+            {/* Verified badge */}
+            <div className='absolute top-2 right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full'
+              style={{ background: 'rgba(0,212,255,0.85)', backdropFilter: 'blur(6px)' }}>
+              <ShieldCheck size={8} className='text-white' />
+              <span className='text-[8px] text-white font-bold'>MD</span>
+            </div>
+            {/* Bottom gradient */}
+            <div className='absolute bottom-0 left-0 right-0 h-8'
+              style={{ background: 'linear-gradient(to top, rgba(13,27,53,0.8), transparent)' }} />
           </motion.div>
         </div>
 

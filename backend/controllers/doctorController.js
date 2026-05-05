@@ -62,7 +62,7 @@ const completeAppointment = async (req, res) => {
         const { docId, appointmentId } = req.body;
         const appointment = await appointmentModel.findById(appointmentId);
         if (!appointment) return res.json({ success: false, message: "Appointment not found" });
-        if (appointment.docId !== docId) return res.json({ success: false, message: "Unauthorized" });
+        if (String(appointment.docId) !== String(docId)) return res.json({ success: false, message: "Unauthorized" });
         await appointmentModel.findByIdAndUpdate(appointmentId, { isCompleted: true });
         res.json({ success: true, message: "Appointment marked as completed" });
     } catch (error) {

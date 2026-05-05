@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, Video, CreditCard, X, Clock, MapPin, CheckCircle, ExternalLink, Star, RefreshCw } from 'lucide-react'
+import { Calendar, Video, CreditCard, X, Clock, MapPin, CheckCircle, ExternalLink, Star, RefreshCw, MessageCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import ReviewModal from '../components/ReviewModal'
 import RescheduleModal from '../components/RescheduleModal'
@@ -225,14 +225,20 @@ const MyAppointment = () => {
                               <CreditCard size={13} /> Pay Now
                             </button>
                           )}
-                          {item.isVideoConsult && (
+                          {item.isVideoConsult && item.roomId && (
                             <button
-                              onClick={() => window.open(`/video-consult?roomId=${item.roomId}`, '_blank')}
+                              onClick={() => navigate(`/video-consult?roomId=${item.roomId}`)}
                               className='flex items-center justify-center gap-1.5 text-xs font-bold py-2.5 px-4 rounded-xl bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500 hover:text-white transition-all'
                             >
-                              <Video size={13} /> Join Call <ExternalLink size={11} />
+                              <Video size={13} /> Join Now
                             </button>
                           )}
+                          <button
+                            onClick={() => navigate(`/chat/${item._id}`)}
+                            className='flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 px-4 rounded-xl bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 hover:bg-indigo-500 hover:text-white transition-all'
+                          >
+                            <MessageCircle size={13} /> Message
+                          </button>
                           <button
                             onClick={() => setRescheduleAppt(item)}
                             className={`flex items-center justify-center gap-1.5 text-xs font-semibold py-3 sm:py-2.5 px-4 rounded-xl border transition-all hover:bg-indigo-500 hover:text-white hover:border-indigo-500 border-[#1e2d4a] ${textSec}`}
@@ -247,11 +253,7 @@ const MyAppointment = () => {
                           </button>
                         </>
                       )}
-                      {item.cancelled && (
-                        <div className='text-center text-xs font-bold py-2 px-4 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20'>
-                          Cancelled
-                        </div>
-                      )}
+
                       {item.isCompleted && (
                         <div className='flex flex-col gap-2'>
                           <div className='text-center text-xs font-bold py-2 px-4 rounded-xl bg-green-500/10 text-green-400 border border-green-500/20'>
@@ -270,6 +272,12 @@ const MyAppointment = () => {
                               ⭐ Reviewed
                             </div>
                           )}
+                          <button
+                            onClick={() => navigate(`/chat/${item._id}`)}
+                            className='flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 px-4 rounded-xl bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 hover:bg-indigo-500 hover:text-white transition-all'
+                          >
+                            <MessageCircle size={13} /> Message
+                          </button>
                         </div>
                       )}
                     </div>
