@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useContext, useCallback } from 'rea
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { AppContext } from '../context/AppContext';
+import { AdminContext } from '../context/AdminContext';
 import { useNavigate } from 'react-router-dom';
 import {
   MessageCircle, X, Send, Loader2, Sparkles, MapPin, ExternalLink,
@@ -272,7 +273,11 @@ const INITIAL_MSG = {
 // ── Main Chatbot ──────────────────────────────────────────────────────────────
 const Chatbot = () => {
   const { backendUrl, token, doctors: allDoctors } = useContext(AppContext);
+  const { aToken } = useContext(AdminContext);
   const navigate = useNavigate();
+
+  // Admin logged in hai toh Chatbot mat dikhao
+  if (aToken) return null;
 
   const [isOpen, setIsOpen]           = useState(false);
   const [isExpanded, setIsExpanded]   = useState(false);
@@ -337,20 +342,28 @@ const Chatbot = () => {
     }
     window.speechSynthesis.cancel();
 
-    // Strip markdown and emojis for clean speech
+    // Strip markdown and emojis for clean speech, add natural pauses
     const clean = text
       .replace(/[*_#`~]/g, '')
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
       .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
       .replace(/[⚠️✅🔐📍🗺️🚨👍👎🏥💊❤️📅🔒🩺😊]/g, '')
-      .replace(/\n{2,}/g, '. ')
-      .replace(/\n/g, ', ')
+      .replace(/\n{2,}/g, '. ')   // double newlines → sentence pause
+      .replace(/\n/g, ', ')       // single newlines → short pause
+      .replace(/\s{2,}/g, ' ')    // collapse extra spaces
+      .replace(/([.!?])\s*/g, '$1 ')  // ensure space after sentence end
       .trim();
 
-    // ── Detect if text is primarily Hindi (Devanagari) ──────────────────
+    // ── Language detection ───────────────────────────────────────────────
     const devanagariChars = (clean.match(/[\u0900-\u097F]/g) || []).length;
-    const totalChars = clean.replace(/\s/g, '').length || 1;
-    const isHindi = devanagariChars / totalChars > 0.25; // >25% Devanagari = Hindi
+    const totalChars      = clean.replace(/\s/g, '').length || 1;
+    const devanagariRatio = devanagariChars / totalChars;
+
+    // Marathi-specific words / characters that don't appear in Hindi
+    // Marathi uses ळ (U+0933), ऱ (U+0931), and common words like आहे, नाही, आपण, मला, करा
+    const marathiMarkers = /[ळऱ]|आहे|नाही|आपण|मला|करा|सांगा|बरं|होय|नको|कसे|काय|तुम्ही|आम्ही|त्यांना|येथे|जवळ/;
+    const isMarathi = devanagariRatio > 0.25 && marathiMarkers.test(clean);
+    const isHindi   = devanagariRatio > 0.25 && !isMarathi;
 
     const utt = new SpeechSynthesisUtterance(clean);
 
@@ -358,12 +371,37 @@ const Chatbot = () => {
       const voices = window.speechSynthesis.getVoices();
       let chosen = null;
 
-      if (isHindi) {
-        // ── Hindi voice priority ──────────────────────────────────────
+      if (isMarathi) {
+        // ── Marathi voice priority (Google Assistant style) ───────────
+        const MARATHI_VOICES = [
+          'Google मराठी',           // Chrome Marathi — best option
+          'Google Marathi',
+          'Microsoft Aashna Online (Natural) - Marathi (India)',
+          'Microsoft Aashna - Marathi (India)',
+          'Lekha',                  // macOS mr-IN (same voice, different lang)
+        ];
+        for (const name of MARATHI_VOICES) {
+          chosen = voices.find(v => v.name === name);
+          if (chosen) break;
+        }
+        // Fallback: any mr-IN voice
+        if (!chosen) chosen = voices.find(v => v.lang === 'mr-IN' && v.localService);
+        if (!chosen) chosen = voices.find(v => v.lang === 'mr-IN');
+        if (!chosen) chosen = voices.find(v => v.lang.startsWith('mr'));
+        // Last resort: use Hindi voice — still Devanagari, better than English
+        if (!chosen) chosen = voices.find(v => v.lang === 'hi-IN');
+
+        // Marathi sounds best slightly slower — clear pronunciation
+        utt.rate  = 0.85;
+        utt.pitch = 0.95;
+        utt.lang  = 'mr-IN';
+
+      } else if (isHindi) {
+        // ── Hindi voice priority (Google Assistant style) ─────────────
         const HINDI_VOICES = [
-          'Lekha',            // macOS hi-IN — best Hindi voice on Mac
-          'Google हिन्दी',    // Chrome Hindi
+          'Google हिन्दी',    // Chrome Hindi — closest to Google Assistant
           'Google Hindi',
+          'Lekha',            // macOS hi-IN natural voice
           'Microsoft Swara Online (Natural) - Hindi (India)',
           'Microsoft Hemant - Hindi (India)',
           'Microsoft Kalpana - Hindi (India)',
@@ -372,26 +410,27 @@ const Chatbot = () => {
           chosen = voices.find(v => v.name === name);
           if (chosen) break;
         }
-        // Fallback: any hi-IN local voice
         if (!chosen) chosen = voices.find(v => v.lang === 'hi-IN' && v.localService);
         if (!chosen) chosen = voices.find(v => v.lang === 'hi-IN');
         if (!chosen) chosen = voices.find(v => v.lang.startsWith('hi'));
 
-        utt.rate  = 1.1;    // Hindi TTS sounds better slightly slower
-        utt.pitch = 1.05;
+        // Google Assistant Hindi — calm, clear
+        utt.rate  = 0.88;
+        utt.pitch = 0.95;
+        utt.lang  = 'hi-IN';
+
       } else {
-        // ── English / Hinglish voice priority (Siri-like) ────────────
+        // ── English voice priority (Google Assistant style) ───────────
         const ENGLISH_VOICES = [
-          'Samantha',                              // macOS — closest to Siri
-          'Karen',                                 // macOS Australian
-          'Moira',                                 // macOS Irish
-          'Tessa',                                 // macOS South African
-          'Aarav',                                 // macOS en-IN
-          'Rishi',                                 // macOS en-IN
-          'Google UK English Female',
+          'Google UK English Female',   // Chrome — closest to Google Assistant
           'Google US English',
-          'Microsoft Aria Online (Natural)',
-          'Microsoft Jenny Online (Natural)',
+          'Google UK English Male',
+          'Microsoft Aria Online (Natural) - English (United States)',
+          'Microsoft Jenny Online (Natural) - English (United States)',
+          'Samantha',                   // macOS fallback
+          'Karen',
+          'Aarav',                      // macOS en-IN
+          'Rishi',
         ];
         for (const name of ENGLISH_VOICES) {
           chosen = voices.find(v => v.name === name);
@@ -402,12 +441,15 @@ const Chatbot = () => {
         if (!chosen) chosen = voices.find(v => v.lang.startsWith('en') && v.localService);
         if (!chosen) chosen = voices.find(v => v.lang.startsWith('en'));
 
-        utt.rate  = 1.18;   // Siri-like — smooth, not rushed
-        utt.pitch = 1.08;
+        // Google Assistant English — calm, natural
+        utt.rate  = 0.88;
+        utt.pitch = 0.95;
+        utt.lang  = 'en-IN';
       }
 
       if (chosen) utt.voice = chosen;
-      utt.lang   = chosen?.lang || (isHindi ? 'hi-IN' : 'en-IN');
+      // lang already set per branch above; override only if voice has a lang
+      if (chosen?.lang) utt.lang = chosen.lang;
       utt.volume = 1;
 
       utt.onend   = () => setSpeakingId(null);
@@ -440,14 +482,20 @@ const Chatbot = () => {
     }
 
     const recognition = new SpeechRecognition();
-    recognition.lang = 'hi-IN';
+    // Accept Hindi, Marathi, and English in one session
+    recognition.lang = 'hi-IN';          // primary lang; browser also picks up mr-IN & en-IN
     recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    recognition.maxAlternatives = 3;     // get top 3 alternatives for better accuracy
     recognitionRef.current = recognition;
 
     recognition.onstart = () => setIsListening(true);
     recognition.onresult = (e) => {
-      const transcript = e.results[0][0].transcript;
+      // Pick the best alternative — prefer Marathi/Hindi over English if Devanagari present
+      let transcript = e.results[0][0].transcript;
+      for (let i = 0; i < e.results[0].length; i++) {
+        const alt = e.results[0][i].transcript;
+        if (/[\u0900-\u097F]/.test(alt)) { transcript = alt; break; }
+      }
       setInput(prev => prev + (prev ? ' ' : '') + transcript);
     };
     recognition.onerror = () => { setIsListening(false); toast.error('Voice recognition failed'); };
