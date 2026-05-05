@@ -96,5 +96,5 @@
   <text x="896" y="530" font-family="Arial, sans-serif" font-size="12" fill="#8ba3c7">4.9</text>
 
   <!-- Bottom URL -->
-  <text x="600" y="600" font-family="Arial, sans-serif" font-size="16" fill="rgba(139,163,199,0.6)" text-anchor="middle">medinexus.vercel.app</text>
+  <text x="600" y="600" font-family="Arial, sans-serif" font-size="16" fill="rgba(139,163,199,0.6)" text-anchor="middle">medinexus-eight.vercel.app</text>
 </svg>
