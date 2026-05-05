@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import SplashScreen from './components/SplashScreen'
 import Home from './pages/Home'
@@ -47,7 +47,7 @@ const AdminRoutes = () => {
   return (
     <AdminLayout>
       <Routes>
-        <Route path='login'        element={<AdminLogin />} />
+        <Route path='login'        element={<Navigate to='/admin/dashboard' replace />} />
         <Route path='dashboard'    element={<AdminDashboard />} />
         <Route path='appointments' element={<AdminAllAppointments />} />
         <Route path='add-doctor'   element={<AdminAddDoctor />} />
@@ -61,10 +61,11 @@ const AdminRoutes = () => {
 
 const App = () => {
   const { darkMode } = useContext(AppContext)
+  const { aToken } = useContext(AdminContext)
   const location = useLocation()
   const [splashDone, setSplashDone] = useState(false)
 
-  const isAdminRoute = location.pathname.startsWith('/admin')
+  const isAdminRoute = location.pathname.startsWith('/admin') || aToken
 
   return (
     <>
@@ -76,16 +77,18 @@ const App = () => {
 
       {splashDone && (
         <>
-          {/* ADMIN ROUTES — no Navbar, Footer, Chatbot */}
+          {/* ADMIN — agar aToken hai ya /admin route pe hai toh sirf admin panel */}
           {isAdminRoute ? (
             <div style={{ background: '#060c18', minHeight: '100vh' }}>
               <Routes location={location} key={location.pathname}>
                 <Route path='/admin/*' element={<AdminRoutes />} />
+                {/* Agar admin logged in hai aur kisi aur route pe gaya toh admin dashboard pe bhejo */}
+                <Route path='*' element={<AdminRoutes />} />
               </Routes>
               <ToastContainer theme='dark' />
             </div>
           ) : (
-            /* USER ROUTES — full layout */
+            /* USER ROUTES — sirf tab jab admin logged in nahi hai */
             <div style={{ background: '#0a0f1e', minHeight: '100vh', color: 'white' }}>
               <Navbar />
               <AnimatePresence mode='wait'>
@@ -103,6 +106,7 @@ const App = () => {
                   <Route path='/video-consult' element={<AnimatedPage><VideoConsult /></AnimatedPage>} />
                   <Route path='/doctor-portal' element={<AnimatedPage><div className='mx-4 sm:mx-[8%]'><DoctorPortal /></div></AnimatedPage>} />
                   <Route path='/privacy-policy' element={<AnimatedPage><PrivacyPolicy /></AnimatedPage>} />
+                  <Route path='/admin/*' element={<AdminRoutes />} />
                 </Routes>
               </AnimatePresence>
               <Footer />
