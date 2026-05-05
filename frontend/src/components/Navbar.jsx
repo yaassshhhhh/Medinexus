@@ -145,28 +145,26 @@ const Navbar = () => {
             </NavLink>
 
             {/* Admin pill */}
-            <NavLink to="/admin" className="hidden md:block">
-              {({ isActive }) => (
-                <div
-                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold cursor-pointer transition-all duration-200"
-                  style={{
-                    background: isActive ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'rgba(245,158,11,0.1)',
-                    color: isActive ? 'white' : '#fbbf24',
-                    border: '1px solid rgba(245,158,11,0.35)',
-                    boxShadow: isActive ? '0 0 18px rgba(245,158,11,0.4)' : 'none',
-                  }}
-                  onMouseEnter={e => {
-                    if (!isActive) { e.currentTarget.style.background = 'rgba(245,158,11,0.22)'; e.currentTarget.style.color = 'white' }
-                  }}
-                  onMouseLeave={e => {
-                    if (!isActive) { e.currentTarget.style.background = 'rgba(245,158,11,0.1)'; e.currentTarget.style.color = '#fbbf24' }
-                  }}
-                >
-                  <ShieldCheck size={13} />
-                  Admin
-                </div>
-              )}
-            </NavLink>
+            <a
+              href={import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:block"
+            >
+              <div
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold cursor-pointer transition-all duration-200"
+                style={{
+                  background: 'rgba(245,158,11,0.1)',
+                  color: '#fbbf24',
+                  border: '1px solid rgba(245,158,11,0.35)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.22)'; e.currentTarget.style.color = 'white' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.1)'; e.currentTarget.style.color = '#fbbf24' }}
+              >
+                <ShieldCheck size={13} />
+                Admin
+              </div>
+            </a>
             {token ? (
               <div className="relative group cursor-pointer">
                 <div
@@ -322,21 +320,24 @@ const Navbar = () => {
               )}
             </NavLink>
 
-            <NavLink to="/admin" onClick={() => setShowMenu(false)}>
-              {({ isActive }) => (
-                <div
-                  className="px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors"
-                  style={{
-                    color: isActive ? 'white' : '#fbbf24',
-                    background: isActive ? 'rgba(245,158,11,0.25)' : 'rgba(245,158,11,0.1)',
-                    border: '1px solid rgba(245,158,11,0.3)',
-                  }}
-                >
-                  <ShieldCheck size={14} />
-                  Admin
-                </div>
-              )}
-            </NavLink>
+            <a
+              href={import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174'}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setShowMenu(false)}
+            >
+              <div
+                className="px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors"
+                style={{
+                  color: '#fbbf24',
+                  background: 'rgba(245,158,11,0.1)',
+                  border: '1px solid rgba(245,158,11,0.3)',
+                }}
+              >
+                <ShieldCheck size={14} />
+                Admin
+              </div>
+            </a>
 
             {token && (
               <>
