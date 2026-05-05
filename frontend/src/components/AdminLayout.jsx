@@ -13,7 +13,7 @@ const AdminLayout = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('aToken');
     setAToken('');
-    navigate('/');
+    navigate('/admin/login');
   };
 
   const navItems = [
@@ -86,8 +86,8 @@ const AdminLayout = ({ children }) => {
 
   return (
     <div
-      className="flex min-h-[80vh] rounded-2xl overflow-hidden"
-      style={{ background: '#0a0f1e', border: '1px solid rgba(255,255,255,0.07)' }}
+      className="flex min-h-screen"
+      style={{ background: '#060c18' }}
     >
       {/* Desktop sidebar */}
       <div

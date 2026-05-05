@@ -47,6 +47,7 @@ const AdminRoutes = () => {
   return (
     <AdminLayout>
       <Routes>
+        <Route path='login'        element={<AdminLogin />} />
         <Route path='dashboard'    element={<AdminDashboard />} />
         <Route path='appointments' element={<AdminAllAppointments />} />
         <Route path='add-doctor'   element={<AdminAddDoctor />} />
@@ -77,11 +78,11 @@ const App = () => {
         <>
           {/* ADMIN ROUTES — no Navbar, Footer, Chatbot */}
           {isAdminRoute ? (
-            <div style={{ background: '#f5f5f5', minHeight: '100vh' }}>
+            <div style={{ background: '#060c18', minHeight: '100vh' }}>
               <Routes location={location} key={location.pathname}>
                 <Route path='/admin/*' element={<AdminRoutes />} />
               </Routes>
-              <ToastContainer theme='light' />
+              <ToastContainer theme='dark' />
             </div>
           ) : (
             /* USER ROUTES — full layout */
