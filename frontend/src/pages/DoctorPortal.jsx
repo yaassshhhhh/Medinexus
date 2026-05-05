@@ -99,7 +99,7 @@ const DoctorPortal = () => {
       <div className="min-h-screen flex items-center justify-center pt-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className={`rounded-2xl p-8 w-full max-w-md ${card}`}
+          className={`rounded-2xl p-5 sm:p-8 w-full max-w-md ${card}`}
         >
           <div className="text-center mb-6">
             <div className="w-16 h-16 bg-cyan-500/10 border border-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -214,7 +214,7 @@ const DoctorPortal = () => {
                 <motion.div key={appt._id || i}
                   initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.04 }}
-                  className={`flex items-center gap-4 p-4 rounded-2xl border transition-all hover:-translate-y-0.5 hover:border-cyan-500/30 hover:shadow-lg hover:shadow-blue-900/20 ${
+                  className={`flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 rounded-2xl border transition-all hover:-translate-y-0.5 hover:border-cyan-500/30 hover:shadow-lg hover:shadow-blue-900/20 ${
                     isToday ? 'bg-cyan-500/5 border-cyan-500/20' : `${card}`
                   }`}
                 >
@@ -234,7 +234,7 @@ const DoctorPortal = () => {
                       {appt.payment && <span className="text-xs bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">✓ Paid ₹{appt.amount}</span>}
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2 flex-shrink-0">
+                  <div className="flex flex-row sm:flex-col gap-2 flex-shrink-0 w-full sm:w-auto">
                     {activeTab === 'upcoming' && (
                       <>
                         {appt.isVideoConsult && appt.roomId && (

@@ -65,7 +65,7 @@ const Contact = () => {
     <div className='min-h-screen' style={{ background: '#0a0f1e', color: 'white' }}>
 
       {/* ── Hero Section ─────────────────────────────────────────── */}
-      <div className='relative overflow-hidden pt-12 pb-10 px-4 sm:px-0'>
+      <div className='relative overflow-hidden pt-10 sm:pt-12 pb-10 px-4 sm:px-0'>
         {/* Background grid dots */}
         <div className='absolute inset-0 opacity-10'
           style={{
@@ -342,7 +342,7 @@ const Contact = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.35 }}
-          className='mt-6 rounded-2xl border border-[#1e3a5f] bg-[#0d1b2e] px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4'
+          className='mt-6 rounded-2xl border border-[#1e3a5f] bg-[#0d1b2e] px-4 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left'
         >
           {/* Left */}
           <div className='flex items-center gap-4'>

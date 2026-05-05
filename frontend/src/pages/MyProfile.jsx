@@ -71,7 +71,7 @@ const MyProfile = () => {
       >
         {/* Profile header band */}
         <div
-          className="px-6 pt-6 pb-4 flex items-end gap-5 flex-wrap"
+          className="px-4 sm:px-6 pt-6 pb-4 flex items-start sm:items-end gap-4 sm:gap-5 flex-wrap"
           style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
         >
           {/* Avatar */}
@@ -141,7 +141,7 @@ const MyProfile = () => {
             {isEdit ? (
               <button
                 onClick={updateUserProfileData}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
+                className="w-full sm:w-auto flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
                 style={{ background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white', boxShadow: '0 4px 14px rgba(14,165,233,0.3)' }}
               >
                 <Check size={15} /> Save Changes
@@ -161,7 +161,7 @@ const MyProfile = () => {
         </div>
 
         {/* Body */}
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-6">
 
           {/* Contact Information */}
           <div>

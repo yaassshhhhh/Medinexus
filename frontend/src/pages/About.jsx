@@ -152,7 +152,7 @@ const About = () => {
       {/* ── Hero ─────────────────────────────────────────── */}
       <motion.div
         {...fadeUp()}
-        className='relative overflow-hidden rounded-2xl mt-8 mb-10 px-8 py-14 md:py-20 flex flex-col md:flex-row items-center gap-10'
+        className='relative overflow-hidden rounded-2xl mt-6 sm:mt-8 mb-10 px-4 sm:px-8 py-10 sm:py-14 md:py-20 flex flex-col md:flex-row items-center gap-8 md:gap-10'
         style={{ background: 'linear-gradient(135deg, #0d1b3e 0%, #0a0f1e 60%)' }}
       >
         {/* Glow blobs */}
@@ -164,7 +164,7 @@ const About = () => {
           <span className='inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 mb-5'>
             <ShieldCheck size={12} /> Trusted by 50,000+ patients
           </span>
-          <h1 className={`text-4xl md:text-5xl font-extrabold leading-tight ${textPri}`}>
+          <h1 className={`text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight ${textPri}`}>
             About{' '}
             <span className='gradient-text'>MediNexus AI</span>
           </h1>
@@ -193,12 +193,12 @@ const About = () => {
           <motion.div
             animate={{ y: [0, -6, 0] }}
             transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-            className={`absolute -bottom-4 -left-4 px-4 py-3 rounded-xl shadow-xl border ${cardBg} ${border} flex items-center gap-2`}
+            className={`absolute -bottom-4 left-0 sm:-left-4 px-3 py-2 rounded-xl shadow-xl border ${cardBg} ${border} flex items-center gap-2`}
           >
-            <Award size={18} className='text-cyan-400' />
+            <Award size={16} className='text-cyan-400' />
             <div>
-              <p className={`text-xl font-bold ${textPri}`}>10+</p>
-              <p className={`text-xs ${textSec}`}>Years of Excellence</p>
+              <p className={`text-lg font-bold ${textPri}`}>10+</p>
+              <p className={`text-[10px] ${textSec}`}>Years of Excellence</p>
             </div>
           </motion.div>
 
@@ -206,12 +206,12 @@ const About = () => {
           <motion.div
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
-            className={`absolute -top-4 -right-4 px-4 py-3 rounded-xl shadow-xl border ${cardBg} ${border} flex items-center gap-2`}
+            className={`absolute -top-4 right-0 sm:-right-4 px-3 py-2 rounded-xl shadow-xl border ${cardBg} ${border} flex items-center gap-2`}
           >
-            <ShieldCheck size={18} className='text-emerald-400' />
+            <ShieldCheck size={16} className='text-emerald-400' />
             <div>
-              <p className={`text-xl font-bold ${textPri}`}>150+</p>
-              <p className={`text-xs ${textSec}`}>Verified Doctors</p>
+              <p className={`text-lg font-bold ${textPri}`}>150+</p>
+              <p className={`text-[10px] ${textSec}`}>Verified Doctors</p>
             </div>
           </motion.div>
 
@@ -219,25 +219,25 @@ const About = () => {
           <motion.div
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
-            className={`absolute -bottom-4 -right-4 px-4 py-3 rounded-xl shadow-xl border ${cardBg} ${border} flex items-center gap-2`}
+            className={`absolute -bottom-4 right-0 sm:-right-4 px-3 py-2 rounded-xl shadow-xl border ${cardBg} ${border} flex items-center gap-2`}
           >
-            <Users size={18} className='text-violet-400' />
+            <Users size={16} className='text-violet-400' />
             <div>
-              <p className={`text-xl font-bold ${textPri}`}>50K+</p>
-              <p className={`text-xs ${textSec}`}>Patients Served</p>
+              <p className={`text-lg font-bold ${textPri}`}>50K+</p>
+              <p className={`text-[10px] ${textSec}`}>Patients Served</p>
             </div>
           </motion.div>
 
-          {/* Mid-left: Rating */}
+          {/* Mid-left: Rating — hidden on small mobile */}
           <motion.div
             animate={{ y: [0, -4, 0] }}
             transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-            className={`absolute top-1/2 -translate-y-1/2 -left-6 px-4 py-3 rounded-xl shadow-xl border ${cardBg} ${border} flex items-center gap-2`}
+            className={`hidden sm:flex absolute top-1/2 -translate-y-1/2 -left-6 px-3 py-2 rounded-xl shadow-xl border ${cardBg} ${border} items-center gap-2`}
           >
-            <Star size={18} className='text-yellow-400' />
+            <Star size={16} className='text-yellow-400' />
             <div>
-              <p className={`text-xl font-bold ${textPri}`}>4.9★</p>
-              <p className={`text-xs ${textSec}`}>Avg Rating</p>
+              <p className={`text-lg font-bold ${textPri}`}>4.9★</p>
+              <p className={`text-[10px] ${textSec}`}>Avg Rating</p>
             </div>
           </motion.div>
         </motion.div>
@@ -495,7 +495,7 @@ const About = () => {
         {/* Bottom join team CTA */}
         <motion.div
           {...fadeUp(0.3)}
-          className='mt-10 rounded-2xl px-8 py-7 flex flex-col sm:flex-row items-center justify-between gap-5'
+          className='mt-10 rounded-2xl px-6 sm:px-8 py-6 sm:py-7 flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left'
           style={{
             background: 'linear-gradient(135deg, #0d1b35 0%, #0f2040 100%)',
             border: '1px solid rgba(0,212,255,0.15)',

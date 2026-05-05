@@ -163,7 +163,7 @@ const Banner = () => {
       <motion.div animate={{ scale: [1, 1.15, 1], opacity: [0.08, 0.15, 0.08] }} transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
         className='absolute -bottom-10 right-10 w-56 h-56 bg-indigo-600/10 rounded-full blur-2xl pointer-events-none' />
 
-      <motion.div style={{ y: bannerY }} className='relative z-10 flex flex-col md:flex-row items-center px-8 sm:px-12 md:px-16 py-12 gap-10'>
+      <motion.div style={{ y: bannerY }} className='relative z-10 flex flex-col md:flex-row items-center px-5 sm:px-10 md:px-16 py-10 sm:py-12 gap-10'>
 
         {/* ── LEFT: Text ── */}
         <div className='flex-1 min-w-0'>
@@ -171,7 +171,7 @@ const Banner = () => {
             <span className='w-1.5 h-1.5 bg-teal-400 rounded-full animate-pulse' />
             100+ Trusted Specialists
           </p>
-          <h2 className='text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-snug'>
+          <h2 className='text-xl sm:text-3xl lg:text-4xl font-bold text-white leading-snug'>
             Book Appointment<br />
             <span className='text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-300'>
               With Trusted Doctors
@@ -191,7 +191,7 @@ const Banner = () => {
             onClick={() => { navigate('/login'); scrollTo(0, 0) }}
             whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className='mt-8 flex items-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold px-7 py-3 rounded-xl text-sm shadow-lg shadow-teal-500/25 transition-all duration-200'
+            className='mt-8 w-full sm:w-auto flex items-center justify-center sm:justify-start gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold px-7 py-3 rounded-xl text-sm shadow-lg shadow-teal-500/25 transition-all duration-200'
           >
             Create Free Account
             <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}>→</motion.span>

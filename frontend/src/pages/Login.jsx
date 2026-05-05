@@ -224,7 +224,7 @@ const Login = () => {
 
           {/* ── RIGHT PANEL — login card ── */}
           <div
-            className="w-full rounded-2xl p-8"
+            className="w-full rounded-2xl p-6 sm:p-8"
             style={{
               background: "rgba(255,255,255,0.04)",
               border: "1px solid rgba(255,255,255,0.08)",
@@ -365,7 +365,7 @@ const Login = () => {
             </div>
 
             {/* Social buttons */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
                 className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-white transition-all hover:opacity-80"
@@ -423,9 +423,9 @@ const Login = () => {
           borderTop: "1px solid rgba(255,255,255,0.06)",
         }}
       >
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-5xl mx-auto flex flex-col gap-4 text-center sm:text-left">
           {/* left */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 justify-center sm:justify-start">
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
               style={{
@@ -444,7 +444,7 @@ const Login = () => {
           </div>
 
           {/* right */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 justify-center">
             <div className="flex items-center gap-3">
               <div
                 className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"

@@ -210,7 +210,7 @@ const MyAppointment = () => {
                     </div>
 
                     {/* Actions */}
-                    <div className='flex flex-row sm:flex-col gap-2 justify-start sm:justify-center sm:min-w-[160px]'>
+                    <div className='flex flex-row sm:flex-col gap-2 justify-start sm:justify-center sm:min-w-[160px] flex-wrap'>
                       {!item.cancelled && !item.isCompleted && (
                         <>
                           {item.payment ? (

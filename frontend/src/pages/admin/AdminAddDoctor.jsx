@@ -73,7 +73,7 @@ const AdminAddDoctor = () => {
           className="rounded-2xl p-6"
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
         >
-          <div className="flex flex-col lg:flex-row items-start gap-8">
+          <div className="flex flex-col lg:flex-row items-start gap-6 sm:gap-8">
             {/* Photo upload */}
             <div className="flex flex-col items-center gap-3 flex-shrink-0">
               <label htmlFor="doc-img" className="cursor-pointer group">
@@ -187,7 +187,7 @@ const AdminAddDoctor = () => {
                 />
               </Field>
 
-              <div className="md:col-span-2">
+              <div className="sm:col-span-2">
                 <Field label="About Doctor">
                   <textarea
                     value={about} onChange={e => setAbout(e.target.value)}
@@ -204,7 +204,7 @@ const AdminAddDoctor = () => {
           <div className="mt-6 flex justify-end">
             <button
               type="submit"
-              className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98]"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98]"
               style={{
                 background: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
                 color: 'white',

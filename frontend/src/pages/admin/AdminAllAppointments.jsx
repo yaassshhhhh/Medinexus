@@ -21,11 +21,11 @@ const AdminAllAppointments = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-7">
+      <div className="flex items-center justify-between mb-7 flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white">All Appointments</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">All Appointments</h1>
           <p className="text-sm mt-1" style={{ color: '#8ba3c7' }}>{appointments.length} total appointments</p>
         </div>
         <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
@@ -55,7 +55,7 @@ const AdminAllAppointments = () => {
           {appointments.map((item, index) => (
             <div
               key={index}
-              className="flex flex-wrap sm:grid grid-cols-[0.4fr_2.5fr_2.5fr_2fr_1.5fr_1fr] items-center py-4 px-6 gap-3 transition-colors"
+              className="flex flex-wrap sm:grid grid-cols-[0.4fr_2.5fr_2.5fr_2fr_1.5fr_1fr] items-center py-4 px-4 sm:px-6 gap-3 transition-colors"
               style={{ borderBottom: index < appointments.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}

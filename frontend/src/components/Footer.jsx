@@ -93,7 +93,7 @@ const Footer = () => {
           <div>
             <p className="font-bold text-sm uppercase tracking-wider mb-5 text-white">Stay Updated</p>
             <p className="text-sm mb-4" style={{ color: '#8ba3c7' }}>Get health tips and updates in your inbox.</p>
-            <form onSubmit={handleSubscribe} className="flex gap-2">
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
               <input
                 type="email" value={email} onChange={e => setEmail(e.target.value)}
                 placeholder="your@email.com" disabled={loading}
@@ -101,7 +101,7 @@ const Footer = () => {
                 style={{ background: 'rgba(255,255,255,0.06)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
               />
               <button type="submit" disabled={loading}
-                className="px-4 py-2.5 rounded-xl text-sm font-semibold flex-shrink-0 transition-all hover:opacity-90"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-sm font-semibold flex-shrink-0 transition-all hover:opacity-90"
                 style={{ background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white' }}>
                 {loading ? '...' : '→'}
               </button>
@@ -111,7 +111,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom bar */}
-      <div className="max-w-7xl mx-auto px-6 pb-6 flex flex-col sm:flex-row items-center justify-between gap-3"
+      <div className="max-w-7xl mx-auto px-6 pb-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left"
         style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '20px' }}>
         <p className="text-xs" style={{ color: '#4a5568' }}>
           © 2025 <span className="font-semibold" style={{ color: '#00d4ff' }}>MediCare+</span> — All Rights Reserved.

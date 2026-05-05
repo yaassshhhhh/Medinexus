@@ -13,7 +13,7 @@ const StatBadge = ({ icon, value, label, className }) => (
   <motion.div
     whileHover={{ scale: 1.06, y: -3 }}
     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-    className={`flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-4 py-3 ${className}`}
+    className={`flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-3 py-2 sm:px-4 sm:py-3 ${className}`}
   >
     <div className='w-10 h-10 rounded-xl bg-teal-400/20 flex items-center justify-center text-teal-300 text-xl'>
       {icon}
@@ -199,7 +199,7 @@ const Header = () => {
   }
 
   return (
-    <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a1628] via-[#0d1f3c] to-[#0a1628] min-h-[480px] mt-8'>
+    <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a1628] via-[#0d1f3c] to-[#0a1628] min-h-[480px] mt-4 sm:mt-8'>
 
       {/* Floating particles */}
       <FloatingParticles count={35} color='#00d4ff' opacity={0.25} speed={0.3} />
@@ -231,7 +231,7 @@ const Header = () => {
       {/* Scan line */}
       <div className='scan-line' />
 
-      <div className='relative z-10 flex flex-col md:flex-row items-center px-6 md:px-12 lg:px-16 py-10 gap-8'>
+      <div className='relative z-10 flex flex-col md:flex-row items-center px-4 sm:px-6 md:px-12 lg:px-16 py-8 sm:py-10 gap-8'>
 
         {/* ── LEFT CONTENT ── */}
         <div className='flex-1 max-w-xl'>
@@ -239,7 +239,7 @@ const Header = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className='text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white'
+            className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white'
           >
             Your Health,<br />
             <span className='gradient-text-animated'>
@@ -319,7 +319,7 @@ const Header = () => {
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                className='ripple-btn flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg shadow-teal-500/25 hover:shadow-teal-400/40 transition-all duration-200 whitespace-nowrap glow-pulse'
+                className='ripple-btn w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg shadow-teal-500/25 hover:shadow-teal-400/40 transition-all duration-200 whitespace-nowrap glow-pulse'
               >
                 Book Now →
               </motion.button>

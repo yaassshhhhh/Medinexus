@@ -52,7 +52,7 @@ const Navbar = () => {
           {/* ── Logo (far left, no space) ── */}
           <div
             onClick={() => navigate('/')}
-            className="flex items-center gap-2.5 cursor-pointer group"
+            className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group"
           >
             {/* Icon */}
             <div
@@ -71,7 +71,7 @@ const Navbar = () => {
             {/* Brand name */}
             <div className="flex flex-col gap-0.5 leading-none">
               <div className="flex items-center gap-1.5">
-                <span className="text-[17px] font-extrabold tracking-tight text-white leading-none">
+                <span className="text-[15px] sm:text-[17px] font-extrabold tracking-tight text-white leading-none">
                   Medi<span style={{ color: '#00d4ff' }}>Nexus</span>
                 </span>
                 <span
@@ -188,7 +188,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Dropdown */}
-                <div className="absolute top-full right-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-1 group-hover:translate-y-0">
+                <div className="absolute top-full right-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-1 group-hover:translate-y-0 z-50">
                   <div
                     className="rounded-xl shadow-2xl overflow-hidden"
                     style={{ background: '#0d1b2e', border: '1px solid rgba(255,255,255,0.1)' }}
@@ -258,7 +258,7 @@ const Navbar = () => {
           onClick={() => setShowMenu(false)}
         />
         <div
-          className={`absolute right-0 top-0 bottom-0 w-[85vw] sm:w-72 transition-transform duration-300 ${showMenu ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}
+          className={`absolute right-0 top-0 bottom-0 w-[85vw] max-w-[320px] transition-transform duration-300 ${showMenu ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}
           style={{ background: '#080c1a', borderLeft: '1px solid rgba(255,255,255,0.08)' }}
         >
           {/* Drawer header */}

@@ -249,17 +249,17 @@ const Appointment = () => {
             </AnimatePresence>
 
             {/* CTA row */}
-            <div className='mt-6 flex flex-wrap items-center gap-3'>
+            <div className='mt-6 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3'>
               <button
                 onClick={initiateBooking}
                 disabled={isLoading}
-                className={`flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-cyan-500/20 hover:-translate-y-0.5 transition-all text-sm ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`w-full sm:w-auto flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-cyan-500/20 hover:-translate-y-0.5 transition-all text-sm ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
                 <Clock size={16} />
                 {isLoading ? 'Sending OTP...' : 'Book Appointment'}
               </button>
 
-              <label className={`flex items-center gap-2.5 cursor-pointer px-4 py-3.5 rounded-xl border transition-all text-sm font-semibold ${
+              <label className={`flex items-center gap-2.5 cursor-pointer px-4 py-3.5 rounded-xl border transition-all text-sm font-semibold w-full sm:w-auto justify-center sm:justify-start ${
                 isVideoConsult
                   ? 'bg-indigo-500/10 border-indigo-500/40 text-indigo-400'
                   : 'border-[#1e2d4a] text-gray-400 hover:border-cyan-500/40'

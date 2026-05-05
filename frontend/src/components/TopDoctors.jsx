@@ -57,7 +57,7 @@ const TopDoctors = () => {
         initial='hidden'
         whileInView='show'
         viewport={{ once: true, margin: '-40px' }}
-        className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'
+        className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4'
       >
         {doctors.slice(0, 10).map((item, index) => (
           <motion.div
@@ -78,7 +78,7 @@ const TopDoctors = () => {
             <div className='relative overflow-hidden bg-[#0d1b3e]'>
               {item.image ? (
                 <img
-                  className='w-full h-48 object-cover object-top group-hover:scale-105 transition-transform duration-500'
+                  className='w-full h-36 sm:h-48 object-cover object-top group-hover:scale-105 transition-transform duration-500'
                   src={item.image}
                   alt={item.name}
                   loading="lazy"

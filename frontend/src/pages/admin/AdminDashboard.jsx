@@ -66,7 +66,7 @@ const AdminDashboard = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-6"
+      className="p-4 sm:p-6"
     >
       {/* Page header */}
       <div className="mb-7">
@@ -123,7 +123,7 @@ const AdminDashboard = () => {
           {appointments.slice(0, 5).map((item, i) => (
             <div
               key={i}
-              className="flex items-center px-6 py-4 gap-4 transition-colors"
+              className="flex flex-col sm:flex-row items-start sm:items-center px-4 sm:px-6 py-4 gap-3 sm:gap-4 transition-colors"
               style={{ borderBottom: i < 4 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
@@ -140,7 +140,7 @@ const AdminDashboard = () => {
                   {item.slotDate?.split('_').join('/')} at {item.slotTime}
                 </p>
               </div>
-              <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="flex flex-1 items-center gap-3 flex-wrap justify-between sm:justify-end flex-shrink-0">
                 {getStatusBadge(item)}
                 {!item.cancelled && !item.isCompleted && (
                   <button

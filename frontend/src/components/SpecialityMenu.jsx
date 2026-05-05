@@ -63,7 +63,7 @@ const SpecialityMenu = () => {
               <Link
                 onClick={() => scrollTo(0, 0)}
                 to={`/doctors/${item.speciality}`}
-                className={`group flex flex-col items-start gap-3 p-4 rounded-2xl border
+                className={`group flex flex-col items-start gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl border
                   bg-[#0f1629] border-[#1e2d4a]
                   transition-colors duration-300
                   hover:border-cyan-500/40
@@ -74,16 +74,16 @@ const SpecialityMenu = () => {
                 <motion.div
                   whileHover={{ rotate: [0, -8, 8, 0], scale: 1.15 }}
                   transition={{ duration: 0.4 }}
-                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${meta.color} border ${meta.border}
-                    flex items-center justify-center text-2xl shadow-lg`}
+                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${meta.color} border ${meta.border}
+                    flex items-center justify-center text-xl sm:text-2xl shadow-lg`}
                 >
                   {meta.icon}
                 </motion.div>
                 <div>
-                  <p className='text-sm font-bold leading-tight text-gray-100 group-hover:text-cyan-400 transition-colors duration-300'>
+                  <p className='text-xs sm:text-sm font-bold leading-tight text-gray-100 group-hover:text-cyan-400 transition-colors duration-300'>
                     {item.speciality}
                   </p>
-                  <p className='text-xs mt-1 leading-snug text-slate-500'>
+                  <p className='text-[10px] sm:text-xs mt-0.5 sm:mt-1 leading-snug text-slate-500 hidden sm:block'>
                     {meta.text}
                   </p>
                 </div>
