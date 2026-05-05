@@ -74,13 +74,41 @@ const AdminContextProvider = (props) => {
     }
   };
 
+  const deleteDoctor = async (doctorId) => {
+    try {
+      const { data } = await axios.post(backendUrl + '/api/admin/delete-doctor', { doctorId }, { headers: { aToken } });
+      if (data.success) {
+        toast.success(data.message);
+        getAllDoctors();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to delete doctor');
+    }
+  };
+
+  const toggleAvailability = async (doctorId) => {
+    try {
+      const { data } = await axios.post(backendUrl + '/api/admin/toggle-availability', { doctorId }, { headers: { aToken } });
+      if (data.success) {
+        toast.success(data.message);
+        getAllDoctors();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update availability');
+    }
+  };
+
   const value = {
     aToken, setAToken,
     backendUrl,
     appointments, setAppointments,
     getAllAppointments, cancelAppointment,
     doctors, getAllDoctors,
-    addDoctor
+    addDoctor, deleteDoctor, toggleAvailability
   };
 
   return (

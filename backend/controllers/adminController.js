@@ -124,6 +124,37 @@ const appointmentCancelAdmin = async (req, res) => {
 
 export { addDoctor, getAllDoctors, loginAdmin, appointmentsAdmin, appointmentCancelAdmin }
 
+// API to delete a doctor
+export const deleteDoctor = async (req, res) => {
+    try {
+        const { doctorId } = req.body
+        if (!doctorId) return res.json({ success: false, message: 'Doctor ID required' })
+
+        await doctorModel.findByIdAndDelete(doctorId)
+        res.json({ success: true, message: 'Doctor deleted successfully' })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// API to toggle doctor availability
+export const toggleDoctorAvailability = async (req, res) => {
+    try {
+        const { doctorId } = req.body
+        if (!doctorId) return res.json({ success: false, message: 'Doctor ID required' })
+
+        const doctor = await doctorModel.findById(doctorId)
+        if (!doctor) return res.json({ success: false, message: 'Doctor not found' })
+
+        await doctorModel.findByIdAndUpdate(doctorId, { available: !doctor.available })
+        res.json({ success: true, message: `Doctor marked as ${!doctor.available ? 'Available' : 'Unavailable'}` })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
 // API for admin analytics
 export const adminAnalytics = async (req, res) => {
     try {
