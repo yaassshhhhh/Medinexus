@@ -4,6 +4,7 @@ import { AppContext } from '../context/AppContext'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Search, Heart, Calendar, ChevronLeft, ChevronRight, RefreshCw, Settings2, ChevronDown, Users } from 'lucide-react'
 import { scrollVariants } from '../hooks/useScrollAnimation'
+import doc1 from '../assets/doc1.png'
 
 const EXP_OPTIONS = [
   { label: 'All Experience', value: '' },
@@ -161,22 +162,17 @@ const Doctors = () => {
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.12) 0%, transparent 70%)' }} />
-            <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ border: '2px solid rgba(0,212,255,0.35)', background: 'rgba(0,212,255,0.07)' }}>
-              <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-                <circle cx="18" cy="15" r="8" stroke="#00d4ff" strokeWidth="2" fill="none"/>
-                <path d="M4 38c0-8 6-14 14-14s14 6 14 14" stroke="#00d4ff" strokeWidth="2" fill="none" strokeLinecap="round"/>
-                <circle cx="32" cy="30" r="9" stroke="#00d4ff" strokeWidth="2" fill="rgba(0,212,255,0.08)"/>
-                <path d="M28 30h8M32 26v8" stroke="#00d4ff" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
+            <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.15) 0%, transparent 70%)' }} />
+            <div className="w-32 h-32 rounded-2xl overflow-hidden flex-shrink-0" style={{ border: '2px solid rgba(0,212,255,0.35)', background: 'rgba(0,212,255,0.07)', boxShadow: '0 0 24px rgba(0,212,255,0.15)' }}>
+              <img src={doc1} alt="Doctor" className="w-full h-full object-cover object-top" />
             </div>
             <motion.div
               animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-2 right-5 w-2.5 h-2.5 rounded-full"
+              className="absolute top-2 right-1 w-2.5 h-2.5 rounded-full"
               style={{ background: '#00d4ff', boxShadow: '0 0 8px #00d4ff' }}
             />
-            <div className="absolute bottom-4 left-3 w-2 h-2 rounded-full" style={{ background: '#00d4ff', opacity: 0.5 }} />
+            <div className="absolute bottom-2 left-1 w-2 h-2 rounded-full" style={{ background: '#00d4ff', opacity: 0.5 }} />
           </motion.div>
           <motion.div
             className="flex-shrink-0 rounded-2xl p-5 flex items-center gap-4"
