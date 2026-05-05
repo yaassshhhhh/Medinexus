@@ -50,40 +50,83 @@ const ChatPanel = ({ messages, onSend, onClose }) => {
     }
 
     return (
-        <motion.div
-            initial={{ x: 320 }} animate={{ x: 0 }} exit={{ x: 320 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="absolute right-0 top-0 h-full w-[85vw] max-w-[288px] bg-gray-900/95 backdrop-blur-md border-l border-gray-700 flex flex-col z-30"
-        >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
-                <span className="text-white font-semibold text-sm">In-call Chat</span>
-                <button onClick={onClose} className="text-gray-400 hover:text-white"><X size={18} /></button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                {messages.length === 0 && <p className="text-gray-500 text-xs text-center mt-8">No messages yet</p>}
-                {messages.map((m, i) => (
-                    <div key={i} className={`flex flex-col ${m.self ? 'items-end' : 'items-start'}`}>
-                        <span className="text-[10px] text-gray-500 mb-0.5">{m.senderName}</span>
-                        <div className={`px-3 py-1.5 rounded-xl text-sm max-w-[90%] ${m.self ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-100'}`}>
-                            {m.message}
+        <>
+            {/* ── Desktop: side panel (md+) ── */}
+            <motion.div
+                initial={{ x: 320 }} animate={{ x: 0 }} exit={{ x: 320 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                className="hidden md:flex absolute right-0 top-0 h-full w-72 bg-gray-900/98 backdrop-blur-md border-l border-gray-700 flex-col z-30"
+            >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 flex-shrink-0">
+                    <span className="text-white font-semibold text-sm">In-call Chat</span>
+                    <button onClick={onClose} className="text-gray-400 hover:text-white p-1"><X size={18} /></button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                    {messages.length === 0 && <p className="text-gray-500 text-xs text-center mt-8">No messages yet</p>}
+                    {messages.map((m, i) => (
+                        <div key={i} className={`flex flex-col ${m.self ? 'items-end' : 'items-start'}`}>
+                            <span className="text-[10px] text-gray-500 mb-0.5">{m.senderName}</span>
+                            <div className={`px-3 py-1.5 rounded-xl text-sm max-w-[90%] ${m.self ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-100'}`}>
+                                {m.message}
+                            </div>
                         </div>
-                    </div>
-                ))}
-                <div ref={bottomRef} />
-            </div>
-            <div className="p-3 border-t border-gray-700 flex gap-2">
-                <input
-                    value={text}
-                    onChange={e => setText(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && send()}
-                    placeholder="Type a message..."
-                    className="flex-1 bg-gray-800 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-gray-500"
-                />
-                <button onClick={send} className="bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700">
-                    <Send size={16} />
-                </button>
-            </div>
-        </motion.div>
+                    ))}
+                    <div ref={bottomRef} />
+                </div>
+                <div className="p-3 border-t border-gray-700 flex gap-2 flex-shrink-0">
+                    <input
+                        value={text}
+                        onChange={e => setText(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && send()}
+                        placeholder="Type a message..."
+                        className="flex-1 bg-gray-800 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-gray-500"
+                    />
+                    <button onClick={send} className="bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700 flex-shrink-0">
+                        <Send size={16} />
+                    </button>
+                </div>
+            </motion.div>
+
+            {/* ── Mobile: bottom drawer (< md) ── */}
+            <motion.div
+                initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                className="md:hidden absolute bottom-0 left-0 right-0 bg-gray-900/98 backdrop-blur-md border-t border-gray-700 flex flex-col z-30 rounded-t-2xl"
+                style={{ maxHeight: '55%' }}
+            >
+                {/* Drag handle */}
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-700 flex-shrink-0">
+                    <div className="w-8 h-1 bg-gray-600 rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-2" />
+                    <span className="text-white font-semibold text-sm">In-call Chat</span>
+                    <button onClick={onClose} className="text-gray-400 hover:text-white p-1"><X size={18} /></button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-3 space-y-2 min-h-0">
+                    {messages.length === 0 && <p className="text-gray-500 text-xs text-center mt-4">No messages yet</p>}
+                    {messages.map((m, i) => (
+                        <div key={i} className={`flex flex-col ${m.self ? 'items-end' : 'items-start'}`}>
+                            <span className="text-[10px] text-gray-500 mb-0.5">{m.senderName}</span>
+                            <div className={`px-3 py-1.5 rounded-xl text-sm max-w-[85%] ${m.self ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-100'}`}>
+                                {m.message}
+                            </div>
+                        </div>
+                    ))}
+                    <div ref={bottomRef} />
+                </div>
+                <div className="p-3 border-t border-gray-700 flex gap-2 flex-shrink-0">
+                    <input
+                        value={text}
+                        onChange={e => setText(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && send()}
+                        placeholder="Type a message..."
+                        autoFocus
+                        className="flex-1 bg-gray-800 text-white text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-gray-500"
+                    />
+                    <button onClick={send} className="bg-indigo-600 text-white p-2.5 rounded-xl hover:bg-indigo-700 flex-shrink-0">
+                        <Send size={16} />
+                    </button>
+                </div>
+            </motion.div>
+        </>
     )
 }
 
@@ -377,7 +420,7 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
                 <motion.div
                     drag
                     dragConstraints={{ left: -900, right: 0, top: 0, bottom: 500 }}
-                    className="absolute top-4 right-4 w-28 h-20 sm:w-44 sm:h-28 md:w-52 md:h-36 rounded-xl overflow-hidden border-2 border-gray-600 shadow-2xl cursor-move z-20 bg-gray-800"
+                    className="absolute top-4 left-4 sm:top-4 sm:right-4 sm:left-auto w-24 h-16 sm:w-44 sm:h-28 md:w-52 md:h-36 rounded-xl overflow-hidden border-2 border-gray-600 shadow-2xl cursor-move z-20 bg-gray-800"
                 >
                     <video
                         ref={localVideoRef}
@@ -420,36 +463,37 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
             </div>
 
             {/* ── Controls bar ── */}
-            <div className="bg-gray-900 border-t border-gray-800 px-4 sm:px-6 py-4 flex items-center justify-center gap-3 sm:gap-4 flex-shrink-0 flex-wrap">
+            <div className="bg-gray-900 border-t border-gray-800 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-center gap-2 sm:gap-4 flex-shrink-0">
                 <button onClick={toggleMute}
                     title={isMuted ? 'Unmute' : 'Mute'}
-                    className={`p-3.5 rounded-full transition-all ${isMuted ? 'bg-red-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}>
-                    {isMuted ? <MicOff size={22} /> : <Mic size={22} />}
+                    className={`p-3 sm:p-3.5 rounded-full transition-all ${isMuted ? 'bg-red-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}>
+                    {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
                 </button>
 
                 <button onClick={toggleVideo}
                     title={isVideoOff ? 'Turn on camera' : 'Turn off camera'}
-                    className={`p-3.5 rounded-full transition-all ${isVideoOff ? 'bg-red-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}>
-                    {isVideoOff ? <VideoOff size={22} /> : <Video size={22} />}
+                    className={`p-3 sm:p-3.5 rounded-full transition-all ${isVideoOff ? 'bg-red-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}>
+                    {isVideoOff ? <VideoOff size={20} /> : <Video size={20} />}
                 </button>
 
+                {/* Screen share — hidden on mobile */}
                 <button onClick={toggleScreenShare}
                     title={isSharing ? 'Stop sharing' : 'Share screen'}
-                    className={`p-3.5 rounded-full transition-all ${isSharing ? 'bg-indigo-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}>
+                    className={`hidden sm:block p-3.5 rounded-full transition-all ${isSharing ? 'bg-indigo-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}>
                     {isSharing ? <MonitorOff size={22} /> : <Monitor size={22} />}
                 </button>
 
                 <button onClick={handleEndCall}
                     title="End call"
-                    className="px-8 py-3.5 rounded-full bg-red-500 text-white hover:bg-red-600 transition-all shadow-lg shadow-red-500/30 hover:scale-105 active:scale-95">
-                    <PhoneOff size={24} />
+                    className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-red-500 text-white hover:bg-red-600 transition-all shadow-lg shadow-red-500/30 hover:scale-105 active:scale-95">
+                    <PhoneOff size={22} />
                 </button>
 
                 <button
                     onClick={() => { setShowChat(s => !s); setUnread(0) }}
                     title="Chat"
-                    className={`relative p-3.5 rounded-full transition-all ${showChat ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}>
-                    <MessageSquare size={22} />
+                    className={`relative p-3 sm:p-3.5 rounded-full transition-all ${showChat ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}>
+                    <MessageSquare size={20} />
                     {unread > 0 && (
                         <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                             {unread}
