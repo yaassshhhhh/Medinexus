@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useContext, useCallback } from 'rea
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { AppContext } from '../context/AppContext';
-import { AdminContext } from '../context/AdminContext';
 import { useNavigate } from 'react-router-dom';
 import {
   MessageCircle, X, Send, Loader2, Sparkles, MapPin, ExternalLink,
@@ -273,11 +272,7 @@ const INITIAL_MSG = {
 // ── Main Chatbot ──────────────────────────────────────────────────────────────
 const Chatbot = () => {
   const { backendUrl, token, doctors: allDoctors } = useContext(AppContext);
-  const { aToken } = useContext(AdminContext);
   const navigate = useNavigate();
-
-  // Admin logged in hai toh Chatbot mat dikhao
-  if (aToken) return null;
 
   const [isOpen, setIsOpen]           = useState(false);
   const [isExpanded, setIsExpanded]   = useState(false);

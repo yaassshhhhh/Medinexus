@@ -3,7 +3,6 @@ import { motion, useScroll, useSpring } from 'framer-motion'
 import { assets } from '../assets/assets'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
-import { AdminContext } from '../context/AdminContext'
 import { Menu, X, ChevronDown, Video, ShieldCheck, Sparkles } from 'lucide-react'
 
 const Navbar = () => {
@@ -11,12 +10,8 @@ const Navbar = () => {
   const [showMenu, setShowMenu] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const { token, setToken, userData } = useContext(AppContext)
-  const { aToken } = useContext(AdminContext)
   const { scrollYProgress } = useScroll()
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 })
-
-  // Admin logged in hai toh Navbar mat dikhao
-  if (aToken) return null
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)

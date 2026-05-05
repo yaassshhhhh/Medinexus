@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react'
 import { AppContext } from '../context/AppContext'
-import { AdminContext } from '../context/AdminContext'
 import { Mail, Phone, MapPin, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
@@ -8,12 +7,8 @@ import { toast } from 'react-toastify'
 
 const Footer = () => {
   const { backendUrl } = useContext(AppContext)
-  const { aToken } = useContext(AdminContext)
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
-
-  // Admin logged in hai toh Footer mat dikhao
-  if (aToken) return null
 
   const links = {
     Platform: [
