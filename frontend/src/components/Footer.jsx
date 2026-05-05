@@ -93,17 +93,17 @@ const Footer = () => {
           <div>
             <p className="font-bold text-sm uppercase tracking-wider mb-5 text-white">Stay Updated</p>
             <p className="text-sm mb-4" style={{ color: '#8ba3c7' }}>Get health tips and updates in your inbox.</p>
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
+            <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
               <input
                 type="email" value={email} onChange={e => setEmail(e.target.value)}
                 placeholder="your@email.com" disabled={loading}
-                className="flex-1 text-sm px-3 py-2.5 rounded-xl border-none outline-none"
+                className="w-full text-sm px-3 py-2.5 rounded-xl border-none outline-none"
                 style={{ background: 'rgba(255,255,255,0.06)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
               />
               <button type="submit" disabled={loading}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-sm font-semibold flex-shrink-0 transition-all hover:opacity-90"
+                className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
                 style={{ background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white' }}>
-                {loading ? '...' : '→'}
+                {loading ? 'Subscribing...' : 'Subscribe →'}
               </button>
             </form>
           </div>

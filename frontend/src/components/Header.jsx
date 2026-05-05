@@ -199,7 +199,7 @@ const Header = () => {
   }
 
   return (
-    <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a1628] via-[#0d1f3c] to-[#0a1628] min-h-[480px] mt-4 sm:mt-8'>
+    <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a1628] via-[#0d1f3c] to-[#0a1628] min-h-[420px] sm:min-h-[480px] mt-4 sm:mt-8'>
 
       {/* Floating particles */}
       <FloatingParticles count={35} color='#00d4ff' opacity={0.25} speed={0.3} />
@@ -231,7 +231,7 @@ const Header = () => {
       {/* Scan line */}
       <div className='scan-line' />
 
-      <div className='relative z-10 flex flex-col md:flex-row items-center px-4 sm:px-6 md:px-12 lg:px-16 py-8 sm:py-10 gap-8'>
+      <div className='relative z-10 flex flex-col md:flex-row items-center px-4 sm:px-6 md:px-12 lg:px-16 py-6 sm:py-8 md:py-10 gap-6 sm:gap-8'>
 
         {/* ── LEFT CONTENT ── */}
         <div className='flex-1 max-w-xl'>
@@ -239,7 +239,7 @@ const Header = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white'
+            className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight text-white'
           >
             Your Health,<br />
             <span className='gradient-text-animated'>
@@ -328,7 +328,7 @@ const Header = () => {
         </div>
 
         {/* ── RIGHT: Doctor + Stats ── */}
-        <div className='hidden md:flex md:w-[42%] lg:w-[40%] relative flex-col items-end translate-x-6 lg:translate-x-10'>
+        <div className='hidden md:flex md:w-[42%] lg:w-[40%] relative flex-col items-end translate-x-4 lg:translate-x-10'>
           {/* Stat badges */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}

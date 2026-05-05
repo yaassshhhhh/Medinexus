@@ -82,7 +82,7 @@ const Contact = () => {
               <span className='text-cyan-400 text-xs font-semibold tracking-widest uppercase'>Get In Touch</span>
             </div>
 
-            <h1 className='text-4xl sm:text-5xl font-bold leading-tight'>
+            <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold leading-tight'>
               Contact <span className='text-cyan-400'>Us</span>
             </h1>
             <p className='mt-3 text-gray-400 text-sm max-w-xs leading-relaxed'>

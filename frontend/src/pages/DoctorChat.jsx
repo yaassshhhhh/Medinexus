@@ -156,7 +156,7 @@ const DoctorChat = () => {
 
   return (
     <div className='flex flex-col bg-[#0a0f1e] rounded-2xl overflow-hidden border border-[#1e2d4a]'
-      style={{ height: 'calc(100vh - 90px)' }}>
+      style={{ height: 'calc(100dvh - 90px)', minHeight: '500px' }}>
 
       {/* ── Header ── */}
       <div className='flex items-center gap-3 px-4 py-3 bg-[#0f1629] border-b border-[#1e2d4a] flex-shrink-0'>

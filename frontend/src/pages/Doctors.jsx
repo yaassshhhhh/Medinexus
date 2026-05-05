@@ -142,14 +142,14 @@ const Doctors = () => {
 
       {/* HERO BANNER */}
       <div ref={heroRef} style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1b2e 60%, #0a1628 100%)', position: 'relative' }}>
-        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex items-center justify-between gap-8 flex-wrap overflow-hidden">
+        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 flex items-center justify-between gap-6 flex-wrap overflow-hidden">
           <motion.div
-            className="flex-1 min-w-[260px]"
+            className="flex-1 min-w-[200px]"
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight">
+            <h1 className="text-2xl sm:text-3xl sm:text-4xl font-bold text-white leading-tight">
               Find Your <span style={{ color: '#00d4ff' }}>Specialist</span>
             </h1>
             <p className="mt-3 text-sm" style={{ color: '#8ba3c7' }}>

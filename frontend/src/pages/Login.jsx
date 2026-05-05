@@ -372,15 +372,14 @@ const Login = () => {
         </div>
       </div>
 
-      {/* ── BOTTOM BAR ── */}
       <div
-        className="w-full px-6 py-4"
+        className="w-full px-4 sm:px-6 py-4"
         style={{
           background: "rgba(255,255,255,0.03)",
           borderTop: "1px solid rgba(255,255,255,0.06)",
         }}
       >
-        <div className="max-w-5xl mx-auto flex flex-col gap-4 text-center sm:text-left">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           {/* left */}
           <div className="flex items-center gap-3 justify-center sm:justify-start">
             <div
@@ -410,7 +409,6 @@ const Login = () => {
                   border: "1px solid rgba(99,102,241,0.3)",
                 }}
               >
-                {/* headset icon */}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
                   <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/>

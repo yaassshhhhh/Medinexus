@@ -51,7 +51,7 @@ const StatsSection = () => {
   const { darkMode } = useContext(AppContext)
 
   return (
-    <div className='my-12 grid grid-cols-1 md:grid-cols-2 gap-6'>
+    <div className='my-8 sm:my-12 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6'>
 
       {/* ── Healthcare Trust Card ── */}
       <motion.div
@@ -59,7 +59,7 @@ const StatsSection = () => {
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className='relative overflow-hidden rounded-3xl p-7 group'
+        className='relative overflow-hidden rounded-3xl p-5 sm:p-7 group'
         style={{
           background: 'linear-gradient(135deg, #0d1b35 0%, #0f2040 60%, #0a1628 100%)',
           border: '1px solid rgba(0,212,255,0.15)',
@@ -204,7 +204,7 @@ const StatsSection = () => {
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-        className='relative overflow-hidden rounded-3xl p-7 group'
+        className='relative overflow-hidden rounded-3xl p-5 sm:p-7 group'
         style={{
           background: 'linear-gradient(135deg, #0d1b35 0%, #0f2040 60%, #0a1628 100%)',
           border: '1px solid rgba(129,140,248,0.15)',

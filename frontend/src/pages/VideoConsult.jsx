@@ -53,7 +53,7 @@ const ChatPanel = ({ messages, onSend, onClose }) => {
         <motion.div
             initial={{ x: 320 }} animate={{ x: 0 }} exit={{ x: 320 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="absolute right-0 top-0 h-full w-72 bg-gray-900/95 backdrop-blur-md border-l border-gray-700 flex flex-col z-30"
+            className="absolute right-0 top-0 h-full w-[85vw] max-w-[288px] bg-gray-900/95 backdrop-blur-md border-l border-gray-700 flex flex-col z-30"
         >
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
                 <span className="text-white font-semibold text-sm">In-call Chat</span>

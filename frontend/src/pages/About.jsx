@@ -152,7 +152,7 @@ const About = () => {
       {/* ── Hero ─────────────────────────────────────────── */}
       <motion.div
         {...fadeUp()}
-        className='relative overflow-hidden rounded-2xl mt-6 sm:mt-8 mb-10 px-4 sm:px-8 py-10 sm:py-14 md:py-20 flex flex-col md:flex-row items-center gap-8 md:gap-10'
+        className='relative overflow-hidden rounded-2xl mt-6 sm:mt-8 mb-10 px-4 sm:px-8 py-8 sm:py-12 md:py-16 flex flex-col md:flex-row items-center gap-6 md:gap-10'
         style={{ background: 'linear-gradient(135deg, #0d1b3e 0%, #0a0f1e 60%)' }}
       >
         {/* Glow blobs */}
@@ -164,7 +164,7 @@ const About = () => {
           <span className='inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 mb-5'>
             <ShieldCheck size={12} /> Trusted by 50,000+ patients
           </span>
-          <h1 className={`text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight ${textPri}`}>
+          <h1 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight ${textPri}`}>
             About{' '}
             <span className='gradient-text'>MediNexus AI</span>
           </h1>
@@ -385,7 +385,7 @@ const About = () => {
           </p>
         </motion.div>
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
           {leadership.map((person, i) => {
             const Icon = person.icon
             return (

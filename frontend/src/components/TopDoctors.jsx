@@ -78,7 +78,7 @@ const TopDoctors = () => {
             <div className='relative overflow-hidden bg-[#0d1b3e]'>
               {item.image ? (
                 <img
-                  className='w-full h-36 sm:h-48 object-cover object-top group-hover:scale-105 transition-transform duration-500'
+                  className='w-full h-32 sm:h-40 md:h-48 object-cover object-top group-hover:scale-105 transition-transform duration-500'
                   src={item.image}
                   alt={item.name}
                   loading="lazy"

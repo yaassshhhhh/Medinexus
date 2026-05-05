@@ -163,7 +163,7 @@ const Banner = () => {
       <motion.div animate={{ scale: [1, 1.15, 1], opacity: [0.08, 0.15, 0.08] }} transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
         className='absolute -bottom-10 right-10 w-56 h-56 bg-indigo-600/10 rounded-full blur-2xl pointer-events-none' />
 
-      <motion.div style={{ y: bannerY }} className='relative z-10 flex flex-col md:flex-row items-center px-5 sm:px-10 md:px-16 py-10 sm:py-12 gap-10'>
+      <motion.div style={{ y: bannerY }} className='relative z-10 flex flex-col md:flex-row items-center px-5 sm:px-8 md:px-16 py-8 sm:py-10 md:py-12 gap-8 md:gap-10'>
 
         {/* ── LEFT: Text ── */}
         <div className='flex-1 min-w-0'>
@@ -171,7 +171,7 @@ const Banner = () => {
             <span className='w-1.5 h-1.5 bg-teal-400 rounded-full animate-pulse' />
             100+ Trusted Specialists
           </p>
-          <h2 className='text-xl sm:text-3xl lg:text-4xl font-bold text-white leading-snug'>
+          <h2 className='text-xl sm:text-2xl lg:text-4xl font-bold text-white leading-snug'>
             Book Appointment<br />
             <span className='text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-300'>
               With Trusted Doctors
