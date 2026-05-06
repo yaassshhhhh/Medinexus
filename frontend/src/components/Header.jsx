@@ -112,7 +112,7 @@ const DoctorHero = () => (
       {/* Left doctor */}
       <DoctorCard
         img={doc1}
-        name='Dr. Sarah Lee'
+        name='Dr. Arjun Mehta'
         specialty='Cardiologist'
         delay={0.3}
         position='left'
@@ -121,7 +121,7 @@ const DoctorHero = () => (
       {/* Center doctor — taller, highlighted */}
       <DoctorCard
         img={doc2}
-        name='Dr. Arjun Mehta'
+        name='Dr. Sarah Lee'
         specialty='General Physician'
         delay={0.1}
         position='center'
