@@ -18,6 +18,22 @@ const ICE_SERVERS = {
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
         { urls: 'stun:stun2.l.google.com:19302' },
+        // Free TURN servers (metered.ca) — required for cross-network calls
+        {
+            urls: 'turn:a.relay.metered.ca:80',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+        },
+        {
+            urls: 'turn:a.relay.metered.ca:443',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+        },
+        {
+            urls: 'turn:a.relay.metered.ca:443?transport=tcp',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+        }
     ]
 }
 
@@ -180,12 +196,24 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
 
         pc.ontrack = (event) => {
             // Attach remote stream to the big video element
-            const remoteStream = event.streams[0]
+            // Use event.streams[0] if available, otherwise build stream from track
+            const remoteStream = event.streams?.[0] || (() => {
+                const s = new MediaStream()
+                s.addTrack(event.track)
+                return s
+            })()
+
             if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = remoteStream
-                // Ensure audio plays — must not be muted
+                // Only update srcObject if it's a new stream
+                if (remoteVideoRef.current.srcObject !== remoteStream) {
+                    remoteVideoRef.current.srcObject = remoteStream
+                }
                 remoteVideoRef.current.muted = false
                 remoteVideoRef.current.volume = 1.0
+                // Force play — some browsers block autoplay
+                remoteVideoRef.current.play().catch(err => {
+                    console.warn('Remote video autoplay blocked:', err)
+                })
             }
             setHasRemote(true)
             setIsConnected(true)
@@ -271,6 +299,7 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
             if (localVideoRef.current) {
                 localVideoRef.current.srcObject = stream
                 localVideoRef.current.muted = true
+                localVideoRef.current.play().catch(() => {})
             }
 
             // 2. Connect socket
