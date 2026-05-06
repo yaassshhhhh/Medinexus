@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef, useCallback } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     Video, Mic, MicOff, VideoOff, PhoneOff,
@@ -170,8 +170,11 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
     const myName = role === 'doctor' ? `Dr. ${peerName}` : 'You (Patient)'
 
     // Create RTCPeerConnection and wire up tracks + events
-    const createPeer = useCallback((targetSocketId, stream, isOfferer) => {
+    const createPeer = (targetSocketId, stream, isOfferer) => {
+        console.log(`[createPeer] Creating peer for ${targetSocketId}, isOfferer: ${isOfferer}`)
+        
         if (peerRef.current) {
+            console.log('[createPeer] Closing existing peer')
             peerRef.current.close()
             peerRef.current = null
         }
@@ -181,11 +184,13 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
 
         // Add ALL tracks (video + audio) from local stream
         stream.getTracks().forEach(track => {
+            console.log(`[createPeer] Adding ${track.kind} track`)
             pc.addTrack(track, stream)
         })
 
         pc.onicecandidate = ({ candidate }) => {
             if (candidate && socketRef.current) {
+                console.log('[ICE] Sending candidate')
                 socketRef.current.emit('signal', {
                     roomId,
                     to: targetSocketId,
@@ -195,6 +200,7 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
         }
 
         pc.ontrack = (event) => {
+            console.log(`[ontrack] Received ${event.track.kind} track`)
             // Attach remote stream to the big video element
             // Use event.streams[0] if available, otherwise build stream from track
             const remoteStream = event.streams?.[0] || (() => {
@@ -206,6 +212,7 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
             if (remoteVideoRef.current) {
                 // Only update srcObject if it's a new stream
                 if (remoteVideoRef.current.srcObject !== remoteStream) {
+                    console.log('[ontrack] Setting remote video srcObject')
                     remoteVideoRef.current.srcObject = remoteStream
                 }
                 remoteVideoRef.current.muted = false
@@ -220,7 +227,19 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
             setCallStatus('Connected')
         }
 
+        pc.oniceconnectionstatechange = () => {
+            console.log('[ICE] Connection state:', pc.iceConnectionState)
+            if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+                setIsConnected(true)
+                setCallStatus('Connected')
+            } else if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
+                setIsConnected(false)
+                setCallStatus('Connection lost...')
+            }
+        }
+
         pc.onconnectionstatechange = () => {
+            console.log('[Peer] Connection state:', pc.connectionState)
             const state = pc.connectionState
             if (state === 'connected') {
                 setIsConnected(true)
@@ -232,46 +251,80 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
         }
 
         if (isOfferer) {
+            console.log('[createPeer] Creating offer...')
             pc.createOffer({
                 offerToReceiveAudio: true,
                 offerToReceiveVideo: true
             }).then(offer => {
-                pc.setLocalDescription(offer)
+                console.log('[createPeer] Setting local description (offer)')
+                return pc.setLocalDescription(offer)
+            }).then(() => {
+                console.log('[createPeer] Sending offer')
                 socketRef.current?.emit('signal', {
                     roomId,
                     to: targetSocketId,
-                    signalData: offer
+                    signalData: pc.localDescription
                 })
             }).catch(err => console.error('Offer error:', err))
         }
 
         return pc
-    }, [roomId])
+    }
 
-    const handleSignal = useCallback(async ({ from, signalData }) => {
+    // ICE candidate queue — buffer candidates until remoteDescription is set
+    const iceCandidateQueue = useRef([])
+
+    const handleSignal = async ({ from, signalData }) => {
         try {
+            console.log(`[signal] type: ${signalData.type || 'candidate'} from: ${from}`)
+
             if (signalData.type === 'offer') {
                 const stream = localStreamRef.current
-                if (!stream) return
+                if (!stream) { console.error('[signal] No local stream for offer'); return }
                 const pc = createPeer(from, stream, false)
                 await pc.setRemoteDescription(new RTCSessionDescription(signalData))
+                console.log('[signal] Remote description set (offer)')
+
+                // Flush queued ICE candidates
+                for (const c of iceCandidateQueue.current) {
+                    await pc.addIceCandidate(new RTCIceCandidate(c)).catch(console.warn)
+                }
+                iceCandidateQueue.current = []
+
                 const answer = await pc.createAnswer()
                 await pc.setLocalDescription(answer)
-                socketRef.current?.emit('signal', { roomId, to: from, signalData: answer })
+                console.log('[signal] Sending answer')
+                socketRef.current?.emit('signal', { roomId, to: from, signalData: pc.localDescription })
 
             } else if (signalData.type === 'answer') {
-                if (peerRef.current?.signalingState === 'have-local-offer') {
-                    await peerRef.current.setRemoteDescription(new RTCSessionDescription(signalData))
+                const pc = peerRef.current
+                if (!pc) { console.error('[signal] No peer for answer'); return }
+                if (pc.signalingState === 'have-local-offer') {
+                    await pc.setRemoteDescription(new RTCSessionDescription(signalData))
+                    console.log('[signal] Remote description set (answer)')
+
+                    // Flush queued ICE candidates
+                    for (const c of iceCandidateQueue.current) {
+                        await pc.addIceCandidate(new RTCIceCandidate(c)).catch(console.warn)
+                    }
+                    iceCandidateQueue.current = []
+                } else {
+                    console.warn('[signal] Unexpected signaling state for answer:', pc.signalingState)
                 }
             } else if (signalData.type === 'candidate') {
-                if (peerRef.current?.remoteDescription) {
-                    await peerRef.current.addIceCandidate(new RTCIceCandidate(signalData.candidate))
+                const pc = peerRef.current
+                if (pc && pc.remoteDescription) {
+                    await pc.addIceCandidate(new RTCIceCandidate(signalData.candidate)).catch(console.warn)
+                } else {
+                    // Queue candidate until remoteDescription is ready
+                    console.log('[signal] Queuing ICE candidate')
+                    iceCandidateQueue.current.push(signalData.candidate)
                 }
             }
         } catch (err) {
             console.error('Signal handling error:', err)
         }
-    }, [createPeer, roomId])
+    }
 
     useEffect(() => {
         let stream
@@ -310,20 +363,24 @@ export const CallRoom = ({ roomId, role, peerName, peerImage, onEndCall, backend
             socketRef.current = socket
 
             socket.on('connect', () => {
+                console.log('[socket] Connected:', socket.id)
                 socket.emit('join-room', { roomId, userId: socket.id, role })
             })
 
             socket.on('room-info', ({ count }) => {
+                console.log('[socket] Room count:', count)
                 if (count > 1) setCallStatus('Connecting...')
             })
 
             // When the other peer joins — we become the offerer
             socket.on('user-joined', ({ socketId }) => {
+                console.log('[socket] user-joined:', socketId)
                 setCallStatus('Connecting...')
                 createPeer(socketId, stream, true)
             })
 
-            socket.on('signal', handleSignal)
+            // Use inline handler to avoid stale closure
+            socket.on('signal', (data) => handleSignal(data))
 
             socket.on('chat-message', (msg) => {
                 setChatMessages(prev => [...prev, { ...msg, self: false }])
