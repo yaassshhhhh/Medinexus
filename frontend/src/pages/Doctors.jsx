@@ -332,8 +332,16 @@ const Doctors = () => {
               <input
                 type="range" min="0" max="2000" step="100" value={maxFee}
                 onChange={e => setMaxFee(parseInt(e.target.value))}
-                className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                style={{ accentColor: '#00d4ff' }}
+                className="w-full cursor-pointer"
+                style={{
+                  accentColor: '#00d4ff',
+                  height: '6px',
+                  borderRadius: '9999px',
+                  appearance: 'none',
+                  WebkitAppearance: 'none',
+                  background: `linear-gradient(to right, #00d4ff 0%, #00d4ff ${(maxFee / 2000) * 100}%, rgba(255,255,255,0.15) ${(maxFee / 2000) * 100}%, rgba(255,255,255,0.15) 100%)`,
+                  outline: 'none',
+                }}
               />
               <div className="flex justify-between mt-2">
                 <span className="text-xs" style={{ color: '#8ba3c7' }}>₹0</span>
