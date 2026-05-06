@@ -164,6 +164,7 @@ const MyProfile = () => {
   const [isEdit, setIsEdit] = useState(false)
   const [image, setImage] = useState(false)          // final cropped Blob
   const [removeImage, setRemoveImage] = useState(false)
+  const [previewDeleted, setPreviewDeleted] = useState(false) // show blank avatar instantly
 
   // Crop modal state
   const [cropSrc, setCropSrc] = useState(null)       // raw data-URL for crop modal
@@ -189,6 +190,7 @@ const MyProfile = () => {
         setIsEdit(false)
         setImage(false)
         setRemoveImage(false)
+        setPreviewDeleted(false)
       } else {
         toast.error(data.message)
       }
@@ -219,6 +221,7 @@ const MyProfile = () => {
   const handleCropDone = (blob) => {
     setImage(blob)
     setRemoveImage(false)
+    setPreviewDeleted(false)
     setCropSrc(null)
   }
 
@@ -234,8 +237,13 @@ const MyProfile = () => {
   const inputCls = `rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500
     bg-[#0d1b3e] border border-[#1e2d4a] text-gray-100 placeholder-gray-500 transition-all`
 
-  // Preview URL: cropped blob takes priority, else existing profile image
-  const previewSrc = image ? URL.createObjectURL(image) : userData?.image
+  // Preview URL: cropped blob takes priority, deleted shows fallback, else existing profile image
+  const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+  const previewSrc = image
+    ? URL.createObjectURL(image)
+    : previewDeleted
+    ? DEFAULT_AVATAR
+    : userData?.image || DEFAULT_AVATAR
 
   return userData && (
     <>
@@ -310,17 +318,18 @@ const MyProfile = () => {
                 >
                   <img
                     className="w-full h-full object-cover"
-                    src={userData.image}
+                    src={userData.image || DEFAULT_AVATAR}
                     alt="profile"
                   />
                 </div>
               )}
 
               {/* Remove button */}
-              {isEdit && !image && userData.image && !userData.image.startsWith("data:") && (
+              {isEdit && !image && userData.image && !userData.image.startsWith("data:") && !previewDeleted && (
                 <button
-                  onClick={() => { setRemoveImage(true); setImage(false) }}
+                  onClick={() => { setRemoveImage(true); setImage(false); setPreviewDeleted(true) }}
                   className="absolute -top-2 -right-2 p-1.5 bg-red-500/20 text-red-400 border border-red-500/30 rounded-full hover:bg-red-500/40 transition-colors"
+                  title="Remove photo"
                 >
                   <Trash2 size={13} />
                 </button>
